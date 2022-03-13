@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 ipykernel = "*"
 numpy = "*"
-matplotlib = "*"
 pyvis = "*"
+networkx = "*"
 
 [dev-packages]
 
