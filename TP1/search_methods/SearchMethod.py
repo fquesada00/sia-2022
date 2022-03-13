@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class SearchMethod(Enum):
-    DFS = 0
-    BFS = 1
-    DLS = 2
-    IDS = 3
-    LHS = 4
-    GHS = 5
-    A_STAR = 6
+    DFS = "DFS"
+    BFS = "BFS"
+    DLS = "DLS"
+    IDS = "IDS"
+    LHS = "LHS"
+    GHS = "GHS"
+    A_STAR = "A_STAR"
