@@ -7,18 +7,21 @@ from search_methods.methods.uninformed.utils import uninformed_search
 from search_methods.utils import is_solvable
 
 
+def get_f(heuristic, w, n):
+    return lambda node: (1-w)*node.path_cost + w*heuristic(node.state, n)
+
+
 def search(initial_state, search_method, n, heuristic=None, max_depth=-1, initial_limit=-1):
     if not is_solvable(initial_state, n):
         print('problem not solvable')
         return None
-        
+
     if search_method in [SearchMethod.GHS, SearchMethod.A_STAR]:
         if search_method == SearchMethod.GHS:
             w = 1
         else:
             w = 0.5
 
-        get_f = lambda heuristic, w, n : lambda node : (1-w)*node.path_cost + w*heuristic(node.state, n)
         return global_frontier_heuristic_search(initial_state, n, get_f(heuristic, w, n))
     elif search_method == SearchMethod.LHS:
         return local_heuristic_search(initial_state, n, heuristic)
