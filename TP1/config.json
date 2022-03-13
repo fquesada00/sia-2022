@@ -1,0 +1,8 @@
+{
+	"grid_size": 3,
+	"initial_state": [4, 6, 1, 3, 2, 0, 5, 7, 8],
+	"search_method": "A_STAR",
+	"heuristic": "manhattan",
+	"iterative_depth_search_initial_limit": null,
+	"depth_limited_search_max_depth": null
+}
