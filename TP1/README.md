@@ -29,5 +29,6 @@ Editar el archivo [config.json](config.json) y establecer los parámetros desead
 Ejecutar el archivo [main.py](main.py)
 
 ```bash
-python main.py
+python main.py [-f --file archivo de configuracion de parámetros]
 ```
+
