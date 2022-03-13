@@ -65,5 +65,5 @@ Cuyas propiedades son:
 
 ## Proximos pasos
 
-- [:white_check_mark:] Implementacion de métodos de búsqueda informados y no informados
+- [x] Implementacion de métodos de búsqueda informados y no informados
 - [ ] Permitir cualquier estado objetivo
