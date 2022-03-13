@@ -1,9 +1,9 @@
 from search_methods.SearchMethod import SearchMethod
 from search_methods.methods.informed.local_heuristic import local_heuristic_search
-from search_methods.methods.informed.utils import global_frontier_heuristic_search
+from search_methods.methods.informed.global_heuristic import global_frontier_heuristic_search
 from search_methods.methods.uninformed.dls import depth_limited_search
 from search_methods.methods.uninformed.ids import iterative_depth_search
-from search_methods.methods.uninformed.utils import uninformed_search
+from search_methods.methods.uninformed import uninformed_search
 from search_methods.utils import is_solvable
 
 

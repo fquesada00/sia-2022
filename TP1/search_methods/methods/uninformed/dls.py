@@ -37,7 +37,7 @@ def depth_limited_search(initial_state, n, max_depth):
                                 node.path_cost + 1, node.depth+1)
 
                 tree.add_node(new_node.id, label=str(
-                    tuple(new_node.state)), level=node.depth)
+                    tuple(new_node.state)), level=new_node.depth)
                 tree.add_edge(new_node.id, new_node.parent.id,
                               label=str(new_node.action))
 

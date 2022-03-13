@@ -34,7 +34,7 @@ def local_heuristic_search(initial_state, n, heuristic):
                                 node.path_cost + 1, node.depth+1, heuristic(new_state, n))
 
                 tree.add_node(new_node.id, label="Estimated cost: " + str(new_node.estimated_cost) + "\n" + str(
-                    tuple(new_node.state)), level=node.depth)
+                    tuple(new_node.state)), level=new_node.depth)
                 tree.add_edge(new_node.id, new_node.parent.id,
                               label=str(new_node.action))
 

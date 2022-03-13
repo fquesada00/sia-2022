@@ -36,7 +36,7 @@ def global_frontier_heuristic_search(initial_state, n, f):
                 new_node.estimated_cost = f(new_node)
 
                 tree.add_node(new_node.id, label="Estimated cost: " + str(new_node.estimated_cost) + "\n" + str(
-                    tuple(new_node.state)), level=node.depth)
+                    tuple(new_node.state)), level=new_node.depth)
                 tree.add_edge(new_node.id, new_node.parent.id,
                               label=str(new_node.action))
 
