@@ -11,7 +11,7 @@ def iterative_depth_search(initial_state, n, initial_limit):
             result = depth_limited_search(initial_state, n, limit)
     else:
         lower_limit = 0
-        upper_limit = result.depth
+        upper_limit = result[0].depth
 
         while lower_limit <= upper_limit:
             mid = lower_limit + (upper_limit - lower_limit) // 2
