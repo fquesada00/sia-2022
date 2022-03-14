@@ -8,8 +8,11 @@ ipykernel = "*"
 numpy = "*"
 pyvis = "*"
 networkx = "*"
+domonic = "*"
+jsonpickle = "*"
 
 [dev-packages]
+autopep8 = "*"
 
 [requires]
 python_version = "3.8"
