@@ -10,7 +10,6 @@ def depth_limited_search(initial_state, n, max_depth):
 
     visited_states = {}
     visited_states[tuple(initial_state)] = 0
-    visited_node_count = 1
 
     tree = nx.Graph()
     tree.add_node(root.id, label=str(tuple(root.state)), level=root.depth)
@@ -19,8 +18,6 @@ def depth_limited_search(initial_state, n, max_depth):
 
     while frontier_len > 0:
         node = frontier.popleft()
-        visited_states[tuple(node.state)] = node.depth
-        visited_node_count += 1
         frontier_len -= 1
 
         if node.depth > max_depth:
@@ -42,5 +39,6 @@ def depth_limited_search(initial_state, n, max_depth):
                               label=str(new_node.action))
 
                 if visited_states.get(tuple(new_state)) is None or visited_states.get(tuple(new_state)) > new_node.depth:
+                    visited_states[tuple(node.state)] = node.depth
                     frontier.appendleft(new_node)
                     frontier_len += 1

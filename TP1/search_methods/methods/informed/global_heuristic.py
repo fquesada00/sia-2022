@@ -11,7 +11,6 @@ def global_frontier_heuristic_search(initial_state, n, f):
 
     visited_states = {}
     visited_states[tuple(initial_state)] = True
-    visited_node_count = 1
 
     tree = nx.Graph()
     tree.add_node(root.id, label=str(tuple(root.state)), level=root.depth)
@@ -20,8 +19,6 @@ def global_frontier_heuristic_search(initial_state, n, f):
 
     while frontier_len > 0:
         node = frontier.popleft()
-        visited_states[tuple(node.state)] = True
-        visited_node_count += 1
         frontier_len -= 1
 
         if is_goal_state(node.state):
@@ -41,5 +38,6 @@ def global_frontier_heuristic_search(initial_state, n, f):
                               label=str(new_node.action))
 
                 if not visited_states.get(tuple(new_state)):
+                    visited_states[tuple(node.state)] = True
                     insort(frontier, new_node)
                     frontier_len += 1
