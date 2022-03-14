@@ -52,12 +52,18 @@ def main():
     exit()
 
   # Load heuristic in case that exists
-  if heuristic.lower() == 'manhattan':
+  heuristic = heuristic.lower()
+
+  if heuristic == 'manhattan':
     parsed_heuristic = Heuristic.MANHATTAN_DISTANCE
-  elif heuristic.lower() == 'euclidean':
+  elif heuristic == 'euclidean':
     parsed_heuristic = Heuristic.EUCLIDEAN_DISTANCE
-  elif heuristic.lower() == 'misplaced_tiles':
+  elif heuristic == 'misplaced_tiles':
     parsed_heuristic = Heuristic.MISPLACED_TILES
+  elif heuristic == 'misplaced_tiles_value':
+    parsed_heuristic = Heuristic.MISPLACED_TILES_VALUE
+  elif heuristic == 'visited_tiles_value':
+    parsed_heuristic = Heuristic.VISITED_TILES_VALUE
 
   # Print search parameters
   print_initial_data(N,initial_state,search_method,heuristic,initial_limit,max_depth)

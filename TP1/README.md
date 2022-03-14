@@ -48,7 +48,7 @@ El archivo de configuración es un json con el siguiente formato:
 	"grid_size": number,
 	"initial_state":number[],
 	"search_method": "DFS" | "BFS" | "DLS" | "IDS" | "LHS" | "GHS" | "A_STAR",
-	"heuristic": "manhattan" | "euclidean" | "misplaced_tiles",
+	"heuristic": "manhattan" | "euclidean" | "misplaced_tiles" | "misplaced_tiles_value" | "visited_tiles_value",
 	"iterative_depth_search_initial_limit": number | null,
 	"depth_limited_search_max_depth": number | null
 
@@ -59,7 +59,7 @@ Cuyas propiedades son:
 * grid_size: Tamaño de un lado de la grilla
 * initial_state: el estado inicial de la grilla (donde el espacio vacio se denota con un 0).
 * search_method: Método con el se realizará la busqueda de la solución. Debe ser un método valido.
-* heuristic: Heurística a utilizar en caso de utilizar un método de busqueda informado.
+* heuristic: Heurística a utilizar en caso de utilizar un método de búsqueda informado (mayúsculas y minúsculas indistinguibles).
 * iterative_depth_search_initial_limit: Limite inicial para la búsqueda de la solución utilizando Iterative Depth Search (IDS).
 * depth_limited_search_max_depth: Profundidad máxima para la búsqueda de la solución utilizando Depth Limited Search (DLS).
 
