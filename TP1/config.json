@@ -1,8 +1,8 @@
 {
 	"grid_size": 3,
-	"initial_state":[8, 6, 7, 2, 5, 4, 3, 0, 1],
-	"search_method": "LHS",
-	"heuristic": "manhattan",
+	"initial_state": [8, 6, 7, 2, 5, 4, 3, 0, 1],
+	"search_method": "DFS",
+	"heuristic": "",
 	"iterative_depth_search_initial_limit": null,
 	"depth_limited_search_max_depth": null
 }

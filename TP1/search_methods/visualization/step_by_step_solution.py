@@ -4,12 +4,6 @@ from search_methods.Action import Action
 import search_methods.constants as constants
 
 
-class Transition:
-    def __init__(self, action, state):
-        self.action = action
-        self.state = state
-
-
 def get_direction_emoji(action):
     if action == Action.UP:
         return '⬆️'
