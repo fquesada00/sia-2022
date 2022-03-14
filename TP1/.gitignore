@@ -73,6 +73,9 @@ docs/_build/
 # PyBuilder
 target/
 
+#Benchmark results
+benchmark_results/*
+
 # pyenv
 .python-version
 
