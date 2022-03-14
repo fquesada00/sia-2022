@@ -86,8 +86,8 @@ def main():
 
         # Generate step-by-step solution html
         generate_html_output(goal_node, 'steps.html')
+        print(f"Search completed in {end - start:0.4f} seconds")
 
-    print(f"Search completed in {end - start:0.4f} seconds")
 
 
 if __name__ == '__main__':

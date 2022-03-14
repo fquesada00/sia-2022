@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import json
 import statistics
 import time
 from search_methods.SearchMethod import SearchMethod
@@ -7,8 +8,10 @@ from search_methods.methods.search import search
 from matplotlib import pyplot as plt
 import numpy as np
 
-best_initial_state = [1, 2, 3, 4, 5, 6, 7, 0, 8]
-medium_initial_state = [0, 1, 2, 4, 5, 3, 7, 8, 6]
+from search_methods.statistics.Statistics import Statistics
+
+best_initial_state = [0, 1, 2, 4, 5, 3, 7, 8, 6]
+medium_initial_state = [2, 7, 1, 3, 0, 8, 6, 5, 4]
 worst_initial_state = [8, 6, 7, 2, 5, 4, 3, 0, 1]
 N = 3
 
@@ -16,13 +19,14 @@ N = 3
 def benchmark(state, search_method, heuristic, heuristic_name, initial_limit=10, max_depth=10, repeats=1):
     print(f"Benchmarking {search_method} {f'with initial limit {initial_limit}' if initial_limit > 0 else ''} {f'with heuristic {heuristic_name}' if heuristic_name != '' else ''} {f'with max depth {max_depth}' if max_depth > 0 else ''}")
     print(f"Initial State: {state}")
-    times = []
+    statistics = []
     for _ in range(0, repeats):
         start_time = time.process_time()
-        search(state, search_method, N, heuristic, initial_limit, max_depth)
+        goal_node, tree = search(state, search_method,
+                                 N, heuristic, initial_limit, max_depth)
         end_time = time.process_time()
-        times.append(end_time-start_time)
-    return times
+        statistics.append(Statistics(tree, goal_node, end_time - start_time))
+    return statistics
 
 
 def benchmark_best(search_method, heuristic, heuristic_name, initial_limit=10, max_depth=10, repeats=1):
@@ -43,39 +47,53 @@ def benchmark_all(search_method, heuristic, heuristic_name, initial_limit=10, ma
 
 def run_benchmark(type, search_method="", heuristic="", heuristic_name="", initial_limit=10, max_depth=10, repeats=1):
     if type == 0:
-        best_times, medium_times, worst_times = benchmark_all(
+        best_case_stats, medium_case_stats, worst_case_stats = benchmark_all(
             search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats)
     elif type == 1:
-        best_times = benchmark_best(
+        best_case_stats = benchmark_best(
             search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats)
     elif type == 2:
-        medium_times = benchmark_medium(
+        medium_case_stats = benchmark_medium(
             search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats)
     elif type == 3:
-        worst_times = benchmark_worst(
+        worst_case_stats = benchmark_worst(
             search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats)
 
-    print(f"Best times: {statistics.mean(best_times) if best_times is not None else ''} {f'standard deviation: {statistics.stdev(best_times)}' if best_times is not None and repeats > 1 else ''}" if best_times is not None else '')
-    print(f"Medium times: {statistics.mean(medium_times) if medium_times is not None else ''} { f'standard deviation: {statistics.stdev(medium_times)}' if medium_times is not None and repeats > 1 else ''}"if medium_times is not None else '')
-    print(f"Worst times: {statistics.mean(worst_times) if worst_times is not None else ''} {f'standard deviation: {statistics.stdev(worst_times)}' if worst_times is not None and repeats > 1 else ''}" if worst_times is not None else '')
-    # labels = ['G1']
-    # x = np.arange(len(labels))
-    # fig, ax = plt.subplots()
-    # width = 0.35
-    # rects1 = ax.bar(x - width, best_times,width, color='b', label='Best Case')
-    # rects2 = ax.bar(x, medium_times,width, color='g', label='Medium Case')
-    # rects3 = ax.bar(x + width, worst_times,width, color='r', label='Worst Case')
-    # ax.set_ylabel('Time (s)')
-    # ax.set_title("Benchmarking " + str(search_method) + " " + heuristic_name)
-    # ax.set_xticks(x)
-    # ax.legend()
+    best_case_mean_stat = {"cost": statistics.mean(
+        [stat.solution_path_cost for stat in best_case_stats]),
+        "depth": statistics.mean([stat.solution_depth for stat in best_case_stats]),
+        "frontier": statistics.mean([stat.frontier_count for stat in best_case_stats]),
+        "expanded": statistics.mean([stat.expanded_count for stat in best_case_stats]),
+        "execution_time": statistics.mean([stat.execution_time for stat in best_case_stats]),
+        "standard_deviation": statistics.stdev([stat.execution_time for stat in best_case_stats])if repeats > 1 else '0.0', }
 
-    # ax.bar_label(rects1, padding=3)
-    # ax.bar_label(rects2, padding=3)
-    # ax.bar_label(rects3, padding=3)
+    medium_case_mean_stat = {"cost": statistics.mean(
+        [stat.solution_path_cost for stat in medium_case_stats]),
+        "depth": statistics.mean([stat.solution_depth for stat in medium_case_stats]),
+        "frontier": statistics.mean([stat.frontier_count for stat in medium_case_stats]),
+        "expanded": statistics.mean([stat.expanded_count for stat in medium_case_stats]),
+        "execution_time": statistics.mean([stat.execution_time for stat in medium_case_stats]),
+        "standard_deviation": statistics.stdev([stat.execution_time for stat in medium_case_stats])if repeats > 1 else '0.0', }
 
-    # fig.tight_layout()
-    # plt.show()
+    worst_case_mean_stat = {"cost": statistics.mean(
+        [stat.solution_path_cost for stat in worst_case_stats]),
+        "depth": statistics.mean([stat.solution_depth for stat in worst_case_stats]),
+        "frontier": statistics.mean([stat.frontier_count for stat in worst_case_stats]),
+        "expanded": statistics.mean([stat.expanded_count for stat in worst_case_stats]),
+        "execution_time": statistics.mean([stat.execution_time for stat in worst_case_stats]),
+        "standard_deviation": statistics.stdev([stat.execution_time for stat in worst_case_stats]) if repeats > 1 else '0.0', }
+
+    stats = {
+        "best_case": best_case_mean_stat,
+        "medium_case": medium_case_mean_stat,
+        "worst_case": worst_case_mean_stat
+    }
+    
+    out_file = open(f"benchmark_results/{search_method}_{heuristic_name}_{initial_limit}_{max_depth}_{repeats}.json", "w")
+
+    json.dump(stats,out_file, indent=4)
+
+
 
 
 def main():
