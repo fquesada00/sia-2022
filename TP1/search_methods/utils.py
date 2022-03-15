@@ -6,8 +6,8 @@ from search_methods.constants import BLANK, GOAL_STATE
 def count_inversions(state, n):
     count = 0
 
-    for i in range(0, n):
-        for j in range(i+1, n):
+    for i in range(0, n*n-1):
+        for j in range(i+1, n*n):
             if state[j] != BLANK and state[i] != BLANK and state[i] > state[j]:
                 count += 1
 
