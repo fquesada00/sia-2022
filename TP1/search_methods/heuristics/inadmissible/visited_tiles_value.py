@@ -69,9 +69,3 @@ def max_sum_tiles_to_visit(tile_index, tile, n):
 
 def visited_tiles_value_heuristic(state, n):
     return sum_over_tiles_heuristic(state, max_sum_tiles_to_visit, n)
-
-# def init():
-#     state = [8, 6, 7, 2, 5, 4, 3, BLANK, 1]
-#     # state = [2,1,3,4,5,6,7,0,8]
-
-#     print(visited_tiles_heuristic(state, 3))

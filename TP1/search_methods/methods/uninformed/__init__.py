@@ -24,13 +24,14 @@ def uninformed_search(initial_state, n, search_method):
     tree.add_node(root.id, label=str(tuple(root.state)), level=root.depth)
 
     frontier_len = len(frontier)
-
+    expanded_nodes = 0
     while frontier_len > 0:
         node = frontier.popleft()
         frontier_len -= 1
 
         if is_goal_state(node.state):
-            return node, tree, frontier_len
+            expanded_nodes = tree.number_of_nodes() - len([node for node in tree if nx.degree(tree, node) == 1])
+            return node, tree, frontier_len, expanded_nodes
         else:
             actions = get_actions(node.state, n)
 
@@ -48,3 +49,4 @@ def uninformed_search(initial_state, n, search_method):
                     visited_states[tuple(new_state)] = True
                     add_to_frontier(new_node)
                     frontier_len += 1
+    return None,tree,frontier_len,expanded_nodes
