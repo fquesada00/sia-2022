@@ -17,9 +17,9 @@ def print_initial_data(n, initial_state, search_method, heuristic, initial_limit
 
     if heuristic:
         print(f"Performing informed method with heuristic: {heuristic}")
-    elif initial_limit:
+    if initial_limit:
         print(f"Initial Limit set as {initial_limit}")
-    elif max_depth:
+    if max_depth:
         print(f"Max depth set as {max_depth}")
 
 
@@ -76,12 +76,12 @@ def main():
 
     # Perform desired search
     start = time.perf_counter()
-    goal_node, tree,frontier_len,expanded_nodes = search(
-        initial_state, SearchMethod[search_method.upper()], N, parsed_heuristic)
+    goal_node, tree, frontier_len, expanded_nodes = search(
+        initial_state, SearchMethod[search_method.upper()], N, parsed_heuristic, max_depth, initial_limit)
     end = time.perf_counter()
     if goal_node is not None:
         print(f"Solution Found!\n{str(goal_node)}")
-        print(Statistics(tree,goal_node,frontier_len,expanded_nodes,end-start))
+        print(Statistics(tree, goal_node, frontier_len, expanded_nodes, end-start))
         # Generate search tree plot html
         plot_tree(tree, goal_node)
 
@@ -90,7 +90,6 @@ def main():
         print(f"Search completed in {end - start:0.4f} seconds")
     else:
         print("No solution found")
-
 
 
 if __name__ == '__main__':
