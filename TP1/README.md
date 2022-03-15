@@ -66,9 +66,36 @@ Cuyas propiedades son:
 - heuristic: Heurística a utilizar en caso de utilizar un método de búsqueda informado (mayúsculas y minúsculas indistinguibles).
 - iterative_depth_search_initial_limit: Limite inicial para la búsqueda de la solución utilizando Iterative Depth Search (IDS).
 - depth_limited_search_max_depth: Profundidad máxima para la búsqueda de la solución utilizando Depth Limited Search (DLS).
-- generate_visualizations: Indica si se generan las gráficas de las soluciones, siendo estas `tree.html` (gráfico del árbol de búsuqeda) y `steps.html` (solución paso a paso con tablero).
+- generate_visualizations: Indica si se generan las gráficas de las soluciones, siendo estas `tree.html` (gráfico del árbol de búsqueda) y `steps.html` (solución paso a paso con tablero 3x3).
+
+
+## Generar benchmarks
+Ejecutar el archivo [benchmarks.py](benchmarks.py)
+
+```bash
+python benchmarks.py [-a, --all || -b, --best || -m,--medium || -w, --worst] [-s,--search search method] [-he, --heuristic heuristic] [-i, --initial_limit initial limit] [-md, --max_depth depth limit] [-r,--repeats number of repeats]
+```
+
+Argumentos opcionales:
+
+Los argumentos obligatorios son:
+```
+Alguno de los siguientes:
+-a, --all    Genera los benchmarks para todos los casos
+-b, --best   Genera los benchmarks para el mejor caso inicial propuesto
+-m, --medium Genera los benchmarks para el caso medio inicial propuesto
+-w, --worst  Genera los benchmarks para el peor caso inicial propuesto
+Y ademas:
+-s, --search Metodo de busqueda elegido (DFS, BFS, DLS, IDS, LHS, GHS, A_STAR)
+```
+
+Luego en caso de elegir un método informado se debe elegir una de las heurísticas:
+```
+-he, --heuristic Heuristica elegida (manhattan, euclidean, misplaced_tiles, misplaced_tiles_value, visited_tiles_value)
+```
 
 ## Proximos pasos
 
 - [x] Implementacion de métodos de búsqueda informados y no informados
 - [ ] Permitir cualquier estado objetivo
+- [ ] Visualizacion paso a paso generico para N
