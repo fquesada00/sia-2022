@@ -1,12 +1,11 @@
 from argparse import ArgumentParser
 import json
+from random import shuffle
 import statistics
 import time
 from search_methods.SearchMethod import SearchMethod
 from search_methods.heuristics.Heuristic import Heuristic
 from search_methods.methods.search import search
-from matplotlib import pyplot as plt
-import numpy as np
 
 from search_methods.statistics.Statistics import Statistics
 
@@ -17,15 +16,17 @@ N = 3
 
 
 def benchmark(state, search_method, heuristic, heuristic_name, initial_limit=10, max_depth=10, repeats=1):
-    print(f"Benchmarking {search_method} {f'with initial limit {initial_limit}' if initial_limit > 0 else ''} {f'with heuristic {heuristic_name}' if heuristic_name != '' else ''} {f'with max depth {max_depth}' if max_depth > 0 else ''}")
+    print(f"Benchmarking {search_method}{f' with initial limit {initial_limit}' if initial_limit > 0 else ''}{f' with heuristic {heuristic_name}' if heuristic_name != '' else ''} {f'with max depth {max_depth}' if max_depth > 0 else ''}")
     print(f"Initial State: {state}")
     statistics = []
     for _ in range(0, repeats):
         start_time = time.process_time()
-        goal_node, tree,frontier_len = search(state, search_method,
-                                 N, heuristic, initial_limit, max_depth)
-        end_time = time.process_time()
-        statistics.append(Statistics(tree, goal_node,frontier_len, end_time - start_time))
+        goal_node, tree, frontier_len, expanded_nodes = search(state, search_method,
+                                                               N, heuristic, initial_limit=initial_limit, max_depth=max_depth)
+        if goal_node is not None:
+            end_time = time.process_time()
+            statistics.append(Statistics(
+                tree, goal_node, frontier_len, expanded_nodes, end_time - start_time))
     return statistics
 
 
@@ -45,7 +46,7 @@ def benchmark_all(search_method, heuristic, heuristic_name, initial_limit=10, ma
     return benchmark_best(search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats), benchmark_medium(search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats), benchmark_worst(search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats)
 
 
-def run_benchmark(type, search_method="", heuristic="", heuristic_name="", initial_limit=10, max_depth=10, repeats=1):
+def run_benchmark(type, search_method="", heuristic="", heuristic_name="", initial_limit=10, max_depth=10, repeats=1,test_state=None):
     if type == 0:
         best_case_stats, medium_case_stats, worst_case_stats = benchmark_all(
             search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats)
@@ -59,41 +60,51 @@ def run_benchmark(type, search_method="", heuristic="", heuristic_name="", initi
         worst_case_stats = benchmark_worst(
             search_method, heuristic, heuristic_name, initial_limit, max_depth, repeats)
 
-    best_case_mean_stat = {"cost": statistics.mean(
-        [stat.solution_path_cost for stat in best_case_stats]),
-        "depth": statistics.mean([stat.solution_depth for stat in best_case_stats]),
-        "frontier": statistics.mean([stat.frontier_count for stat in best_case_stats]),
-        "expanded": statistics.mean([stat.expanded_count for stat in best_case_stats]),
-        "execution_time": statistics.mean([stat.execution_time for stat in best_case_stats]),
-        "standard_deviation": statistics.stdev([stat.execution_time for stat in best_case_stats])if repeats > 1 else '0.0', }
+    if best_case_stats is not None and len(best_case_stats) > 0:
+        best_case_mean_stat = {"cost": statistics.mean(
+            [stat.solution_path_cost for stat in best_case_stats]),
+            "depth": statistics.mean([stat.solution_depth for stat in best_case_stats]),
+            "frontier": statistics.mean([stat.frontier_count for stat in best_case_stats]),
+            "expanded": statistics.mean([stat.expanded_count for stat in best_case_stats]),
+            "execution_time": statistics.mean([stat.execution_time for stat in best_case_stats]),
+            "standard_deviation": statistics.stdev([stat.execution_time for stat in best_case_stats])if repeats > 1 else '0.0', }
+    else:
+        best_case_mean_stat = {"result": "No solution found"}
 
-    medium_case_mean_stat = {"cost": statistics.mean(
-        [stat.solution_path_cost for stat in medium_case_stats]),
-        "depth": statistics.mean([stat.solution_depth for stat in medium_case_stats]),
-        "frontier": statistics.mean([stat.frontier_count for stat in medium_case_stats]),
-        "expanded": statistics.mean([stat.expanded_count for stat in medium_case_stats]),
-        "execution_time": statistics.mean([stat.execution_time for stat in medium_case_stats]),
-        "standard_deviation": statistics.stdev([stat.execution_time for stat in medium_case_stats])if repeats > 1 else '0.0', }
+    if medium_case_stats is not None and len(medium_case_stats) > 0:
+        medium_case_mean_stat = {"cost": statistics.mean(
+            [stat.solution_path_cost for stat in medium_case_stats]),
+            "depth": statistics.mean([stat.solution_depth for stat in medium_case_stats]),
+            "frontier": statistics.mean([stat.frontier_count for stat in medium_case_stats]),
+            "expanded": statistics.mean([stat.expanded_count for stat in medium_case_stats]),
+            "execution_time": statistics.mean([stat.execution_time for stat in medium_case_stats]),
+            "standard_deviation": statistics.stdev([stat.execution_time for stat in medium_case_stats])if repeats > 1 else '0.0', }
+    else:
+        medium_case_mean_stat = {"result": "No solution found"}
 
-    worst_case_mean_stat = {"cost": statistics.mean(
-        [stat.solution_path_cost for stat in worst_case_stats]),
-        "depth": statistics.mean([stat.solution_depth for stat in worst_case_stats]),
-        "frontier": statistics.mean([stat.frontier_count for stat in worst_case_stats]),
-        "expanded": statistics.mean([stat.expanded_count for stat in worst_case_stats]),
-        "execution_time": statistics.mean([stat.execution_time for stat in worst_case_stats]),
-        "standard_deviation": statistics.stdev([stat.execution_time for stat in worst_case_stats]) if repeats > 1 else '0.0', }
+    if worst_case_stats is not None and len(worst_case_stats) > 0:
+        worst_case_mean_stat = {"cost": statistics.mean(
+            [stat.solution_path_cost for stat in worst_case_stats]),
+            "depth": statistics.mean([stat.solution_depth for stat in worst_case_stats]),
+            "frontier": statistics.mean([stat.frontier_count for stat in worst_case_stats]),
+            "expanded": statistics.mean([stat.expanded_count for stat in worst_case_stats]),
+            "execution_time": statistics.mean([stat.execution_time for stat in worst_case_stats]),
+            "standard_deviation": statistics.stdev([stat.execution_time for stat in worst_case_stats]) if repeats > 1 else '0.0', }
+    else:
+        worst_case_mean_stat = {"result": "No solution found"}
 
     stats = {
         "best_case": best_case_mean_stat,
         "medium_case": medium_case_mean_stat,
-        "worst_case": worst_case_mean_stat
+        "worst_case": worst_case_mean_stat,
+        "times": [statistics.mean([stat.execution_time for stat in best_case_stats]), statistics.mean([stat.execution_time for stat in medium_case_stats]), statistics.mean([stat.execution_time for stat in worst_case_stats])],
+        "stdev": [statistics.stdev([stat.execution_time for stat in best_case_stats])if repeats > 1 else '0.0', statistics.stdev([stat.execution_time for stat in medium_case_stats])if repeats > 1 else '0.0', statistics.stdev([stat.execution_time for stat in worst_case_stats]) if repeats > 1 else '0.0'],
     }
-    
-    out_file = open(f"benchmark_results/{search_method}_{heuristic_name}_{initial_limit}_{max_depth}_{repeats}.json", "w")
 
-    json.dump(stats,out_file, indent=4)
+    out_file = open(
+        f"benchmark_results/{search_method}{f'_{heuristic_name}' if heuristic_name != '' else ''}{f'_{initial_limit}' if initial_limit > 0 else ''}{f'_{max_depth}' if max_depth > 0 else ''}_{repeats}.json", "w")
 
-
+    json.dump(stats, out_file, indent=4)
 
 
 def main():
@@ -115,7 +126,7 @@ def main():
                         help="run benchmarks with selected heuristic", default="")
     parser.add_argument("-i", "--initial_limit", dest="initial_limit",
                         help="set initial limit for iterative depth search", default=0)
-    parser.add_argument("-d", "--max_depth", dest="max_depth",
+    parser.add_argument("-md", "--max_depth", dest="max_depth", action="store",
                         help="set max depth for depth limited search", default=0)
     parser.add_argument("-r", "--repeats", dest="repeats",
                         action="store", default=1)
@@ -149,7 +160,6 @@ def main():
             exit()
 
     benchmark_type = args.benchmark_type
-
     if test_all_search_methods:
         for search_method in SearchMethod:
             run_benchmark(benchmark_type, search_method, parsed_heuristic, heuristic_name, int(
