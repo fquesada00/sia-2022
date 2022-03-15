@@ -3,7 +3,7 @@ from search_methods.methods.uninformed.dls import depth_limited_search
 
 def iterative_depth_search(initial_state, n, initial_limit):
     limit = initial_limit
-    result = depth_limited_search(initial_state, n, limit)
+    result,tree,frontier_len = depth_limited_search(initial_state, n, limit)
 
     if result is None:
         while result is None:
@@ -15,11 +15,11 @@ def iterative_depth_search(initial_state, n, initial_limit):
 
         while lower_limit <= upper_limit:
             mid = lower_limit + (upper_limit - lower_limit) // 2
-            result = depth_limited_search(initial_state, n, mid)
+            result,tree,frontier_len = depth_limited_search(initial_state, n, mid)
 
             if result is None:
                 lower_limit = mid + 1
             else:
                 upper_limit = mid - 1
 
-    return result
+    return result,tree,frontier_len

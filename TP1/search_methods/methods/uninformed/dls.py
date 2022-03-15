@@ -23,7 +23,7 @@ def depth_limited_search(initial_state, n, max_depth):
         if node.depth > max_depth:
             continue
         elif is_goal_state(node.state):
-            return node, tree
+            return node, tree, frontier_len
 
         else:
             actions = get_actions(node.state, n)

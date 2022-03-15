@@ -22,10 +22,10 @@ def benchmark(state, search_method, heuristic, heuristic_name, initial_limit=10,
     statistics = []
     for _ in range(0, repeats):
         start_time = time.process_time()
-        goal_node, tree = search(state, search_method,
+        goal_node, tree,frontier_len = search(state, search_method,
                                  N, heuristic, initial_limit, max_depth)
         end_time = time.process_time()
-        statistics.append(Statistics(tree, goal_node, end_time - start_time))
+        statistics.append(Statistics(tree, goal_node,frontier_len, end_time - start_time))
     return statistics
 
 

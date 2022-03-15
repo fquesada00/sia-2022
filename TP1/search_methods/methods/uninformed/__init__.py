@@ -1,8 +1,5 @@
 from collections import deque
-from pickle import TRUE
-import jsonpickle
 
-from matplotlib.font_manager import json_dump
 from search_methods.SearchMethod import SearchMethod
 from search_methods.methods.Node import Node
 from search_methods.utils import get_actions, get_next_state, is_goal_state
@@ -33,7 +30,7 @@ def uninformed_search(initial_state, n, search_method):
         frontier_len -= 1
 
         if is_goal_state(node.state):
-            return node, tree
+            return node, tree, frontier_len
         else:
             actions = get_actions(node.state, n)
 

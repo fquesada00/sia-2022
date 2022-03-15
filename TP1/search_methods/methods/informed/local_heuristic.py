@@ -20,7 +20,7 @@ def local_heuristic_search(initial_state, n, heuristic):
         frontier_len -= 1
 
         if is_goal_state(node.state):
-            return node, tree
+            return node, tree,
         else:
             actions = get_actions(node.state, n)
             successors = []

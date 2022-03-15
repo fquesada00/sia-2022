@@ -4,15 +4,15 @@ from search_methods.statistics.Transition import Transition
 
 
 class Statistics:
-    def __init__(self, tree, goal_node, execution_time):
+    def __init__(self, tree, goal_node,frontier_len, execution_time):
         self.solution_depth = goal_node.depth
         self.solution_path_cost = goal_node.path_cost
-        self.frontier_count = self.__count_frontier_nodes(tree)
-        self.expanded_count = tree.number_of_nodes() - self.frontier_count
+        self.frontier_count = frontier_len
+        self.expanded_count = tree.number_of_nodes() - self.__count_leaf_nodes(tree) + 1
         self.solution_path = self.__get_solution_path(goal_node)
         self.execution_time = execution_time
 
-    def __count_frontier_nodes(self, tree):
+    def __count_leaf_nodes(self, tree):
         count = 0
 
         for node in tree:
