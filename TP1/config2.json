@@ -1,8 +1,8 @@
 {
 	"grid_size": 3,
-	"initial_state": [0, 1, 2, 4, 5, 3, 7, 8, 6],
-	"search_method": "BFS",
-	"heuristic": "",
+	"initial_state": [8, 6, 7, 2, 5, 4, 3, 0, 1],
+	"search_method": "A_STAR",
+	"heuristic": "manhattan",
 	"iterative_depth_search_initial_limit": null,
 	"depth_limited_search_max_depth": null,
 	"generate_visualizations": true
