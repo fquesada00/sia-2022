@@ -48,6 +48,7 @@ def main():
     heuristic = config['heuristic']
     initial_limit = config['iterative_depth_search_initial_limit']
     max_depth = config['depth_limited_search_max_depth']
+    generate_visualizations = config['generate_visualizations']
     parsed_heuristic = None
 
     try:
@@ -82,11 +83,11 @@ def main():
     if goal_node is not None:
         print(f"Solution Found!\n{str(goal_node)}")
         print(Statistics(tree, goal_node, frontier_len, expanded_nodes, end-start))
-        # Generate search tree plot html
-        plot_tree(tree, goal_node)
-
-        # Generate step-by-step solution html
-        generate_html_output(goal_node, 'steps.html')
+        if generate_visualizations:
+            # Generate search tree plot html
+            plot_tree(tree, goal_node)
+            # Generate step-by-step solution html
+            generate_html_output(goal_node, 'steps.html')
         print(f"Search completed in {end - start:0.4f} seconds")
     else:
         print("No solution found")
