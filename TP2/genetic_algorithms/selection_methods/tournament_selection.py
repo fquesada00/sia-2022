@@ -6,25 +6,29 @@ def tournament_selection(population, fitness_function, selection_size):
     selection = []
     threshold = random.random()
     population_length = len(population)
+    number_of_initial_couples = 2
 
     for _ in range(selection_size):
 
+        # TODO: make it generic for n couples
+        # couples = []
+        # for _ in range(number_of_initial_couples):
+        #     random_index = random.randint(0, len(population) - 1)
+        #     couples.append(population[random_index])
+
+
         # Obtain two random couple of individuals from the population and apply tournament algorithm
-        first_individual_index = random.choice(population_length)
+        first_individual_index = random.choice(range(len(population)))
         population.pop(first_individual_index)
-        population_length -= 1
 
-        second_individual_index = random.choice(population_length)
+        second_individual_index = random.choice(range(len(population)))
         population.pop(second_individual_index)
-        population_length -= 1
 
-        third_individual_index = random.choice(population_length)
+        third_individual_index = random.choice(range(len(population)))
         population.pop(third_individual_index)
-        population_length -= 1
 
-        fourth_individual_index = random.choice(population_length)
+        fourth_individual_index = random.choice(range(len(population)))
         population.pop(fourth_individual_index)
-        population_length -= 1
 
         first_couple = [population[first_individual_index], population[second_individual_index]]
         first_couple_winner_index, first_couple_loser_index = tournament(first_couple, fitness_function, threshold)
@@ -41,7 +45,6 @@ def tournament_selection(population, fitness_function, selection_size):
 
         # Add the losers of all couples to the population
         population.extend([first_couple[first_couple_loser_index], second_couple[second_couple_loser_index], third_couple[third_couple_loser_index]])
-        population_length += 3
 
     return selection
 
