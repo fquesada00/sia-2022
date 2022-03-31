@@ -6,5 +6,7 @@ class Chromosome:
     def __str__(self):
         return str(self.genes)
 
-    def get_genes(self):
-        return self.genes
+    def __getitem__(self,items):
+        return self.genes[items]
+    def __len__(self):
+        return len(self.genes)
