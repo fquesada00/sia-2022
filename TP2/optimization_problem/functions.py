@@ -10,7 +10,7 @@ def formula(W, w, w0, reactive_values):
 
     for j in range(2):
         for k in range(3):
-            inner_g_input += w[j + (k * 3)] * reactive_values[k] + w0[j]
+            inner_g_input += w[j + (k * 3)] * reactive_values[k] - w0[j]
         outer_g_input += W[j] * g(inner_g_input)
     return g(outer_g_input - W[0])
 
