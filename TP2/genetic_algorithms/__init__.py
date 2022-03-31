@@ -3,6 +3,8 @@ import random
 from TP2.constants import MAX_REAL, MIN_REAL
 from TP2.models.Chromosome import Chromosome
 
+number_of_generations = 0
+
 
 def generate_random_individual(min, max):
     W = [random.uniform(min, max) for _ in range(3)]
@@ -24,18 +26,20 @@ def generate_initial_population(size, min, max):
 def evolve(population, fitness_function, select, crossover):
     new_population = []
 
-    for _ in range(len(population)):
-        parent1, parent2 = select(population, fitness_function, 2)
+    while len(new_population) < len(population):
+        parent1, parent2 = select(
+            population, fitness_function, 2)
         child1, child2 = crossover(parent1, parent2)
         new_population.append(child1, child2)
 
-    return new_population
+    return select(new_population + population, fitness_function, len(population))
 
 
-def optimize(population_size, fitness_function, select, crossover, cut_condition, min, max):
+def optimize(population_size, fitness_function, select, crossover, cut_condition, min, max, with_replacement):
     population = generate_initial_population(population_size, min, max)
 
     while not cut_condition(population):
         population = evolve(population, fitness_function, select, crossover)
+        number_of_generations += 1
 
     return population
