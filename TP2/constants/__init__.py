@@ -1,7 +1,10 @@
 MIN_REAL = -500
 MAX_REAL = 500
 
-SAMPLE_SIZE = 3
+DATASET_INPUT = [(4.4793, -4.0765, -4.0765), (-4.1793, -
+                                              4.9218, 1.7664), (-3.9429, -0.7689, 4.8830)]
+
+DATASET_OUTPUT = [0, 1, 1]
 
 MUTATION_RATE = 0.1
 

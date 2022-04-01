@@ -17,3 +17,18 @@ class Chromosome:
 
     def __repr__(self):
         return str(self.genes)
+
+    @property
+    def W(self):
+        return self.genes[:3]
+
+    @property
+    def w(self):
+        return self.genes[3:9]
+
+    @property
+    def w_0(self):
+        return self.genes[9:11]
+
+    def mutate(self, mutation_method, mutation_rate):
+        self.genes = mutation_method(self.genes, mutation_rate)
