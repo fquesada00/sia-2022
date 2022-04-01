@@ -51,7 +51,7 @@ def optimize(population_size, fitness_function, select, crossover, mutation_meth
     population = generate_initial_population(population_size, min, max)
 
     start_time = time.time()
-    while not cut_condition(population, time.time() - start_time):
+    while not cut_condition(population, time.time() - start_time, fitness_function):
         best_individual = sorted(
             population, key=fitness_function, reverse=True)[0]
         global number_of_generations
