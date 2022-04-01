@@ -1,3 +1,3 @@
-from .multiple_crossover import multiple_crossover
-from .simple_crossover import simple_crossover
+from .multiple_point_crossover import multiple_point_crossover
+from .single_point_crossover import single_point_crossover
 from .uniform_crossover import uniform_crossover

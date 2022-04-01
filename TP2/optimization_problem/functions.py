@@ -1,6 +1,6 @@
 import math
 
-from TP2.constants import DATA_SET_INPUT, DATASET_INPUT, DATASET_OUTPUT
+from constants import DATASET_INPUT, DATASET_INPUT, DATASET_OUTPUT
 
 
 # W 3 element vector
@@ -13,7 +13,7 @@ def function_to_approximate(W, w, w_0, reactive_values):
 
     for j in range(2):
         for k in range(3):
-            inner_g_input += w[j + (k * 3)] * reactive_values[k] - w_0[j]
+            inner_g_input += w[k + (j * 3)] * reactive_values[k] - w_0[j]
         outer_g_input += W[j] * g(inner_g_input)
     return g(outer_g_input - W[0])
 

@@ -3,13 +3,14 @@ import random
 
 def roulette_selection(population, fitness_function, selection_size):
     selection = []
+    population_copy = population.copy()
 
     for _ in range(selection_size):
         # Calculate the total fitness of the population
-        total_fitness = sum(fitness_function(x) for x in population)
+        total_fitness = sum(fitness_function(x) for x in population_copy)
 
         # Calculate the fitness of each individual
-        fitness_list = [fitness_function(x) for x in population]
+        fitness_list = [fitness_function(x) for x in population_copy]
 
         # Calculate the probability of each individual
         probability_list = [
@@ -25,8 +26,7 @@ def roulette_selection(population, fitness_function, selection_size):
         # Find the index of the individual with the corresponding probability
         for i in range(len(cumulative_probability_list)):
             if cumulative_probability_list[i] > random_number:
-                selection.append(population[i])
-                population.pop(i)
+                selection.append(population_copy.pop(i))
 
                 break
 

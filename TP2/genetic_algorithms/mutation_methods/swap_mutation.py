@@ -1,7 +1,7 @@
 import random
 
 
-def uniform_mutation(genes, mutation_rate):
+def swap_mutation(genes, mutation_rate):
     """
     Mutate an individual by swapping pairs of genes randomly.
     """

@@ -1,7 +1,7 @@
 from cmath import log
 import unittest
 from unittest import mock
-from genetic_algorithms.crossover_methods import simple_crossover, multiple_crossover, uniform_crossover
+from genetic_algorithms.crossover_methods import single_point_crossover, multiple_point_crossover, uniform_crossover
 
 from models.Chromosome import Chromosome
 
@@ -22,7 +22,7 @@ class TestCrossoverMethods(unittest.TestCase):
     @mock.patch('random.randint')
     def test_simple(self, randint_mock):
         randint_mock.return_value = 4
-        first_child, second_child = simple_crossover(
+        first_child, second_child = single_point_crossover(
             self.first_parent, self.second_parent, self.genes_length)
         self.assertEqual(first_child, [-1, -2, -3, -4, 5, 6, 7, 8, 9, 10])
         self.assertEqual(second_child, [1, 2, 3, 4, -5, -6, -7, -8, -9, -10])
@@ -31,7 +31,7 @@ class TestCrossoverMethods(unittest.TestCase):
     def test_multiple(self, sample_mock):
         number_of_points = 3
         sample_mock.return_value = [2, 8, 5]
-        first_child, second_child = multiple_crossover(
+        first_child, second_child = multiple_point_crossover(
             self.first_parent, self.second_parent, self.genes_length, number_of_points)
         self.assertEqual(first_child, [1, 2, -3, -4, -5, 6, 7, 8, -9, - 10])
         self.assertEqual(second_child, [-1, -2, 3, 4, 5, -6, -7, -8, 9, 10])

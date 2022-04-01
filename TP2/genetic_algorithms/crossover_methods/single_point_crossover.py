@@ -3,7 +3,7 @@ import random
 from models.Chromosome import Chromosome
 
 
-def simple_crossover(first_parent, second_parent, genes_length):
+def single_point_crossover(first_parent, second_parent, genes_length):
 
     random_index = random.randint(1, genes_length - 2)
 

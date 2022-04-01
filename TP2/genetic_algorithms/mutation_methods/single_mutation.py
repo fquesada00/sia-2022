@@ -1,6 +1,6 @@
 import random
 
-from TP2.constants import MAX_REAL, MIN_REAL
+from constants import MAX_REAL, MIN_REAL
 
 
 def single_mutation(genes, mutation_rate):

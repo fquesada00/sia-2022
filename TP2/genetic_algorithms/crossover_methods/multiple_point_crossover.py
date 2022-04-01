@@ -1,12 +1,13 @@
 import random
+from constants import MULTIPLE_POINT_CROSSOVER_POINTS
 
 from models.Chromosome import Chromosome
 
 
-def multiple_crossover(first_parent, second_parent, genes_length, number_of_points):
+def multiple_point_crossover(first_parent, second_parent, genes_length):
 
     random_indexes = sorted(random.sample(
-        range(1, genes_length - 2), number_of_points))
+        range(1, genes_length - 2), MULTIPLE_POINT_CROSSOVER_POINTS))
 
     last_index = 0
     first_child_genes = []
