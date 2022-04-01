@@ -11,7 +11,7 @@ def generate_random_individual(min, max):
     w = [random.uniform(min, max) for _ in range(6)]
     w_0 = [random.uniform(min, max) for _ in range(2)]
 
-    return Chromosome((*W, *w, *w_0))
+    return Chromosome([*W, *w, *w_0])
 
 
 def generate_initial_population(size, min, max):
