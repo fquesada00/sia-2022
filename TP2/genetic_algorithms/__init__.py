@@ -44,11 +44,12 @@ def evolve(population, fitness_function, select, crossover, mutation_method, mut
     return select(new_population + population, fitness_function, len(population))
 
 
-def optimize(population_size, fitness_function, select, crossover, cut_condition, min, max, with_replacement):
+def optimize(population_size, fitness_function, select, crossover, mutation_method, mutation_rate, cut_condition, min, max):
     population = generate_initial_population(population_size, min, max)
 
     while not cut_condition(population):
-        population = evolve(population, fitness_function, select, crossover)
+        population = evolve(population, fitness_function,
+                            select, crossover, mutation_method, mutation_rate)
         number_of_generations += 1
 
     return population
