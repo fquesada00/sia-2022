@@ -23,13 +23,22 @@ def generate_initial_population(size, min, max):
     return population
 
 
-def evolve(population, fitness_function, select, crossover):
+def evolve(population, fitness_function, select, crossover, mutation_method, mutation_rate):
     new_population = []
 
     while len(new_population) < len(population):
+        # Select parents
         parent1, parent2 = select(
             population, fitness_function, 2)
+
+        # Reproduce
         child1, child2 = crossover(parent1, parent2)
+
+        # Mutate
+        child1.mutate(mutation_method, mutation_rate)
+        child2.mutate(mutation_method, mutation_rate)
+
+        # Add to new population
         new_population.append(child1, child2)
 
     return select(new_population + population, fitness_function, len(population))
