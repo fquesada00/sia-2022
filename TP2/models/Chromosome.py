@@ -18,6 +18,9 @@ class Chromosome:
     def __repr__(self):
         return str(self.genes)
 
+    def __radd__(self, other):
+        return self.genes + other
+
     @property
     def W(self):
         return self.genes[:3]
