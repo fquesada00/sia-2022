@@ -1,6 +1,6 @@
 class Chromosome:
 
-    def __init__(self, genes):
+    def __init__(self, genes: list):
         self.genes = genes
 
     def __str__(self):
@@ -15,5 +15,5 @@ class Chromosome:
     def __eq__(self, __o: object):
         return self.genes == __o
 
-    def __str__(self):
+    def __repr__(self):
         return str(self.genes)

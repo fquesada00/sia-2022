@@ -43,7 +43,6 @@ class TestCrossoverMethods(unittest.TestCase):
         first_child, second_child = uniform_crossover(
             self.first_parent, self.second_parent, self.genes_length)
 
-        print("a", first_child)
         self.assertEqual(first_child, [-1, 2, -3, 4, -5, 6, -7, 8, -9, -10])
         self.assertEqual(second_child, [1, -2, 3, -4, 5, -6, 7, -8, 9, 10])
 

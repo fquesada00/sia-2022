@@ -1,7 +1,7 @@
 import math
-from TP2.constants import EXP_RATE, FINAL_TEMPERATURE, INITIAL_TEMPERATURE
-from TP2.genetic_algorithms.selection_methods.roulette_selection import roulette_selection
-from TP2.genetic_algorithms import number_of_generations
+from constants import EXP_RATE, FINAL_TEMPERATURE, INITIAL_TEMPERATURE
+from genetic_algorithms.selection_methods.roulette_selection import roulette_selection
+from genetic_algorithms import number_of_generations
 
 
 def temperature_function(number_of_generations, initial_temperature, final_temperature, exp_rate):
