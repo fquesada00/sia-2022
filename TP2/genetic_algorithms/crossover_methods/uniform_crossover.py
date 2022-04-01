@@ -1,6 +1,7 @@
 import random
 
-from TP2.models.Chromosome import Chromosome
+from models.Chromosome import Chromosome
+
 
 def uniform_crossover(first_parent, second_parent, genes_length):
 
@@ -14,5 +15,4 @@ def uniform_crossover(first_parent, second_parent, genes_length):
         else:
             first_child_genes.append(first_parent[i])
             second_child_genes.append(second_parent[i])
-
-    return Chromosome(first_child_genes), Chromosome(second_child_genes)   
+    return Chromosome(first_child_genes), Chromosome(second_child_genes)

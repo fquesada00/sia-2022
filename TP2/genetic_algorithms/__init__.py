@@ -1,7 +1,7 @@
 import random
 
-from TP2.constants import MAX_REAL, MIN_REAL
-from TP2.models.Chromosome import Chromosome
+from constants import MAX_REAL, MIN_REAL
+from models.Chromosome import Chromosome
 
 number_of_generations = 0
 
