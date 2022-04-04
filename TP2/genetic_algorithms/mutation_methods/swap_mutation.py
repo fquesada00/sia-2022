@@ -7,7 +7,9 @@ def swap_mutation(genes, mutation_rate):
     """
     for i in range(len(genes)):
         if random.random() < mutation_rate:
-            j = random.randint(0, len(genes) - 1)
+            j = i
+            while j == i:
+                j = random.randint(0, len(genes))
             genes[i], genes[j] = genes[j], genes[i]
 
     return genes
