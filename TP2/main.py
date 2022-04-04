@@ -16,7 +16,7 @@ if __name__ == '__main__':
     crossover_parameters = CrossoverParameters()
     mutation_parameters = MutationParameters()
     cut_condition_parameters = CutConditionParameters(
-        cut_condition_method=CutCondition.MAX_TIME)
+        cut_condition_method=CutCondition.MAX_GENERATIONS)
 
     # parameters = Parameters(selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)
 

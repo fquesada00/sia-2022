@@ -2,10 +2,9 @@
 import random
 
 
-def tournament_selection(population: list, fitness_function, selection_size: int,selection_parameter):
+def tournament_selection(population: list, fitness_function, selection_size: int,selection_parameters):
 
     selection = []
-    threshold = random.random()
     population_copy = population.copy()
     number_of_initial_couples = 2
 
@@ -33,18 +32,18 @@ def tournament_selection(population: list, fitness_function, selection_size: int
         first_couple = [first_individual,
                         second_individual]
         first_couple_winner_index, first_couple_loser_index = tournament(
-            first_couple, fitness_function, threshold)
+            first_couple, fitness_function, selection_parameters.threshold)
 
         second_couple = [third_individual,
                          fourth_individual]
         second_couple_winner_index, second_couple_loser_index = tournament(
-            second_couple, fitness_function, threshold)
+            second_couple, fitness_function, selection_parameters.threshold)
 
         # Make another couple from the winners of both tournaments
         third_couple = [first_couple[first_couple_winner_index],
                         second_couple[second_couple_winner_index]]
         third_couple_winner_index, third_couple_loser_index = tournament(
-            third_couple, fitness_function, threshold)
+            third_couple, fitness_function, selection_parameters.threshold)
 
         # Add the winner of the third couple to the selection
         selection.append(third_couple[third_couple_winner_index])

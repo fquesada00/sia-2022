@@ -2,7 +2,7 @@ import random
 
 
 def pseudo_fitness_function(i, population_size, rank):
-    return (population_size - rank(i)) / population_size
+    return (population_size - rank[tuple(i)]) / population_size
 
 
 def calculate_rank_dict(population, fitness_function):
@@ -12,14 +12,14 @@ def calculate_rank_dict(population, fitness_function):
 
     # we rank from 0 to p-1
     for index, i in enumerate(sorted_population):
-        rank_dict[i] = index
+        rank_dict[tuple(i)] = index
 
     return rank_dict
 
 
 def rank_selection(population, fitness_function, selection_size,selection_parameter):
     selection = []
-
+    population_copy = population.copy()
     for _ in range(selection_size):
         # Create rank structure
         rank = calculate_rank_dict(population, fitness_function)
@@ -29,7 +29,8 @@ def rank_selection(population, fitness_function, selection_size,selection_parame
             x, len(population), rank) for x in population)
 
         # Calculate the fitness of each individual
-        fitness_list = [pseudo_fitness_function(x) for x in population]
+        fitness_list = [pseudo_fitness_function(
+            x, len(population), rank) for x in population]
 
         # Calculate the probability of each individual
         probability_list = [
@@ -45,9 +46,7 @@ def rank_selection(population, fitness_function, selection_size,selection_parame
         # Find the index of the individual with the corresponding probability
         for i in range(len(cumulative_probability_list)):
             if cumulative_probability_list[i] > random_number:
-                selection.append(population[i])
-                population.pop(i)
-
+                selection.append(population_copy.pop(i))
                 break
 
     return selection

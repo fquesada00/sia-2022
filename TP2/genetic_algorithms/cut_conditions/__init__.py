@@ -4,6 +4,7 @@ from .max_generations_cut_condition import max_generations_cut_condition
 from .fitness_value_cut_condition import fitness_value_cut_condition
 from .fitness_variation_cut_condition import fitness_variation_cut_condition
 from .max_time_cut_condition import max_time_cut_condition
+from .max_generations_cut_condition import max_generations_cut_condition
 
 from enum import Enum
 
