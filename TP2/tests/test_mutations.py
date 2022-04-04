@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from genetic_algorithms.mutation_methods import normal_mutation, single_mutation, swap_mutation, uniform_mutation
+from genetic_algorithms.mutation_methods import normal_mutation, swap_mutation, uniform_mutation
 
 
 class TestSelectionMethods(unittest.TestCase):
@@ -32,18 +32,6 @@ class TestSelectionMethods(unittest.TestCase):
         self.assertEqual(normal_mutation(
             self.genes, self.mutation_rate), genes_copy)
 
-    @mock.patch('random.random')
-    @mock.patch('random.uniform')
-    @mock.patch('random.randint', lambda x, y: 7)
-    def test_single_mutation(self, uniform_mock, random_mock):
-        uniform_mock.return_value = 5
-        random_mock.return_value = 0.01
-        # mutate gen 7
-        genes_copy = self.genes.copy()
-        genes_copy[7] = 5
-        self.assertEqual(single_mutation(
-            self.genes, self.mutation_rate), genes_copy
-        )
 
     @mock.patch('random.random')
     @mock.patch('random.randint')

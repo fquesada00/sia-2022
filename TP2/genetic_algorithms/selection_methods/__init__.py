@@ -18,11 +18,46 @@ class SelectionMethod(Enum):
     RANK = 5
     TRUNCATE = 6
 
+    @staticmethod
+    def from_str(label):
+        if label in ("uniform", "UNIFORM"):
+            return SelectionMethod.UNIFORM
+        elif label in ("roulette", "ROULETTE"):
+            return SelectionMethod.ROULETTE
+        elif label in ("tournament", "TOURNAMENT"):
+            return SelectionMethod.TOURNAMENT
+        elif label in ("elite", "ELITE"):
+            return SelectionMethod.ELITE
+        elif label in ("boltzmann", "BOLTZMANN"):
+            return SelectionMethod.BOLTZMANN
+        elif label in ("rank", "RANK"):
+            return SelectionMethod.RANK
+        elif label in ("truncate", "TRUNCATE"):
+            return SelectionMethod.TRUNCATE        
+        else:
+            raise ValueError(label+ " has no value matching")
+
+    def __str__(self):
+        if self == SelectionMethod.UNIFORM:
+            return "Uniform"
+        elif self == SelectionMethod.ROULETTE:
+            return "Roulette"
+        elif self == SelectionMethod.TOURNAMENT:
+            return "Tournament"
+        elif self == SelectionMethod.ELITE:
+            return "Elite"
+        elif self == SelectionMethod.BOLTZMANN:
+            return "Boltzmann"
+        elif self == SelectionMethod.RANK:
+            return "Rank"
+        elif self == SelectionMethod.TRUNCATE:
+            return "Truncate"
+
 class SelectionParameters():
 
-    def __init__(self, selection_method = SelectionMethod.ROULETTE, initial_temparature=INITIAL_TEMPERATURE, final_temperature=FINAL_TEMPERATURE,exp_rate = EXP_RATE,k=K,threshold=TOURNAMENT_THRESHOLD):
+    def __init__(self, selection_method = SelectionMethod.ROULETTE, initial_temperature=INITIAL_TEMPERATURE, final_temperature=FINAL_TEMPERATURE,exp_rate = EXP_RATE,k=K,threshold=TOURNAMENT_THRESHOLD):
         self._selection_method = selection_method
-        self._initial_temperature = initial_temparature
+        self._initial_temperature = initial_temperature
         self._final_temperature = final_temperature
         self._exp_rate = exp_rate
         self._k = k
@@ -68,6 +103,11 @@ class SelectionParameters():
     @threshold.setter
     def threshold(self,value):
         self._threshold = value
+    
+    @property
+    def selection_method_name(self):        
+        return self._selection_method
+
 
     @property
     def selection_method(self):
@@ -87,6 +127,10 @@ class SelectionParameters():
             return truncate_selection
         else:
             raise ValueError("Invalid selection method")
+
+    @selection_method.setter
+    def selection_method(self, value):
+        self._selection_method = value
 
     def __str__(self):
         return "Selection method: {}, Initial temperature: {}, Final temperature: {}, Exp rate: {}, K: {}".format(self._selection_method, self._initial_temperature, self._final_temperature, self._exp_rate, self._k)

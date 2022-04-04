@@ -15,7 +15,7 @@ def fitness_variation_cut_condition(population, fitness_function, elapsed_time,c
         prev_best_fitness = best_fitness
         return False
 
-    if abs(prev_best_fitness - best_fitness) > cut_condition_parameters.fitness_distance:
+    if abs(prev_best_fitness - best_fitness) > cut_condition_parameters.fitness_threshold:
         prev_best_fitness = best_fitness
         repeated_generations = 0
         return False

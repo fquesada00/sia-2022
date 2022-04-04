@@ -4,6 +4,7 @@ from genetic_algorithms.crossover_methods import CrossoverParameters
 from genetic_algorithms.mutation_methods import MutationParameters
 from models.Summary import Summary
 from models.Chromosome import Chromosome
+from models.GenerationsPrinter import GenerationsPrinter
 
 number_of_generations = 0
 
@@ -48,14 +49,26 @@ def evolve(population, fitness_function, selection_parameters, crossover_paramet
     return selection_parameters.selection_method(new_population + population, fitness_function, len(population), selection_parameters)
 
 
-def optimize(population_size, fitness_function, selection_parameters, crossover_parameters: CrossoverParameters, mutation_parameters: MutationParameters, cut_condition_parameters, min, max):
-    population = generate_initial_population(population_size, min, max)
+def optimize(output_filename, initial_population, fitness_function, selection_parameters, crossover_parameters: CrossoverParameters, mutation_parameters: MutationParameters, cut_condition_parameters):
+
+    global number_of_generations
+    number_of_generations = 0
+
+    generations_printer = GenerationsPrinter(
+        output_filename, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)
+
+    generations_printer.open_file()
+    generations_printer.print_initial_parameters()
+
+    population = initial_population
 
     start_time = time.time()
     while not cut_condition_parameters.cut_condition_method(population, fitness_function, time.time() - start_time, cut_condition_parameters):
         best_individual = sorted(
             population, key=fitness_function, reverse=True)[0]
-        global number_of_generations
+
+        generations_printer.print_generation(fitness_function(best_individual))
+
         print(
             f'Generation N°{number_of_generations}: {best_individual} - Fitness: {fitness_function(best_individual)}\n')
 
@@ -63,6 +76,8 @@ def optimize(population_size, fitness_function, selection_parameters, crossover_
         population = evolve(population, fitness_function,
                             selection_parameters, crossover_parameters, mutation_parameters, mutation_parameters)
         number_of_generations += 1
+
+    generations_printer.close_file()
 
     end_time = time.time()
 

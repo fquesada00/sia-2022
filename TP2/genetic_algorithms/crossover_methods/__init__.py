@@ -10,10 +10,30 @@ class CrossoverMethod(Enum):
     SINGLE_POINT = 1
     UNIFORM = 2
 
+    @staticmethod
+    def from_str(label):
+        if label in ("multiple_point", "MULTIPLE_POINT"):
+            return CrossoverMethod.MULTIPLE_POINT
+        elif label in ("single_point", "SINGLE_POINT"):
+            return CrossoverMethod.SINGLE_POINT
+        elif label in ("uniform", "UNIFORM"):
+            return CrossoverMethod.UNIFORM
+        else:
+            raise ValueError(label+ " has no value matching")
+
+    def __str__(self):
+        if self == CrossoverMethod.MULTIPLE_POINT:
+            return "Multiple point"
+        elif self == CrossoverMethod.SINGLE_POINT:
+            return "Single point"
+        elif self == CrossoverMethod.UNIFORM:
+            return "Uniform"
+        else:
+            return "Unknown"
 
 class CrossoverParameters():
 
-    def __init__(self,crossover_method=CrossoverMethod.SINGLE_POINT,multiple_point_crossover_points=MULTIPLE_POINT_CROSSOVER_POINTS,):
+    def __init__(self,crossover_method=CrossoverMethod.SINGLE_POINT,multiple_point_crossover_points=MULTIPLE_POINT_CROSSOVER_POINTS):
         self._crossover_method = crossover_method
         self._multiple_point_crossover_points = multiple_point_crossover_points
 
@@ -21,6 +41,9 @@ class CrossoverParameters():
     def multiple_point_crossover_points(self):
         return self._multiple_point_crossover_points
         
+    @property
+    def crossover_method_name(self):
+        return self._crossover_method
 
     @property
     def crossover_method(self):
@@ -33,5 +56,9 @@ class CrossoverParameters():
         else:
             return None
 
+    @crossover_method.setter
+    def crossover_method(self,value):
+        self._crossover_method = value
+
     def __str__(self):
-        return "CrossoverMethod {}, MultiplePointCrossoverPoints {}".format(self._crossover_method,self._multiple_point_crossover_points) 
+        return "Crossover method {}, MultiplePointCrossoverPoints {}".format(self._crossover_method,self._multiple_point_crossover_points) 

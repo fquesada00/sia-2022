@@ -11,12 +11,12 @@ def get_pseudo_fitness_function(fitness_function, temperature, total_pseudo_fitn
     return lambda i: math.exp(fitness_function(i) / temperature) / total_pseudo_fitness
 
 
-def boltzmann_selection(population, fitness_function, selection_size, selection_parameter):
+def boltzmann_selection(population, fitness_function, selection_size, selection_parameters):
     # Calculate the total pseudo fitness of the population
     temperature = temperature_function(
-        genetic_algorithms.number_of_generations, selection_parameter.initial_temperature, selection_parameter.final_temperature, selection_parameter.exp_rate)
+        genetic_algorithms.number_of_generations, selection_parameters.initial_temperature, selection_parameters.final_temperature, selection_parameters.exp_rate)
 
     total_fitness = sum(math.exp(fitness_function(j) / temperature)
                         for j in population)
 
-    return roulette_selection(population, get_pseudo_fitness_function(fitness_function, temperature, total_fitness), selection_size)
+    return roulette_selection(population, get_pseudo_fitness_function(fitness_function, temperature, total_fitness), selection_size, selection_parameters)

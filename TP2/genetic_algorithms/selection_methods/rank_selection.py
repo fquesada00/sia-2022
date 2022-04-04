@@ -22,15 +22,15 @@ def rank_selection(population, fitness_function, selection_size,selection_parame
     population_copy = population.copy()
     for _ in range(selection_size):
         # Create rank structure
-        rank = calculate_rank_dict(population, fitness_function)
+        rank = calculate_rank_dict(population_copy, fitness_function)
 
         # Calculate the total fitness of the population
         total_fitness = sum(pseudo_fitness_function(
-            x, len(population), rank) for x in population)
+            x, len(population_copy), rank) for x in population_copy)
 
         # Calculate the fitness of each individual
         fitness_list = [pseudo_fitness_function(
-            x, len(population), rank) for x in population]
+            x, len(population_copy), rank) for x in population_copy]
 
         # Calculate the probability of each individual
         probability_list = [
