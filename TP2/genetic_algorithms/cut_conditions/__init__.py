@@ -2,4 +2,3 @@ from .max_generations_cut_condition import max_generations_cut_condition
 from .fitness_value_cut_condition import fitness_value_cut_condition
 from .fitness_variation_cut_condition import fitness_variation_cut_condition
 from .max_generations_cut_condition import max_generations_cut_condition
-from .population_variation_cut_condition import population_variation_cut_condition
