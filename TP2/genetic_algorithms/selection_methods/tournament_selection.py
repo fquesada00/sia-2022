@@ -19,24 +19,24 @@ def tournament_selection(population: list, fitness_function, selection_size: int
 
         # Obtain two random couple of individuals from the population and apply tournament algorithm
         first_individual_index = random.choice(range(len(population_copy)))
-        population_copy.pop(first_individual_index)
+        first_individual = population_copy.pop(first_individual_index)
 
         second_individual_index = random.choice(range(len(population_copy)))
-        population_copy.pop(second_individual_index)
+        second_individual = population_copy.pop(second_individual_index)
 
         third_individual_index = random.choice(range(len(population_copy)))
-        population_copy.pop(third_individual_index)
+        third_individual = population_copy.pop(third_individual_index)
 
         fourth_individual_index = random.choice(range(len(population_copy)))
-        population_copy.pop(fourth_individual_index)
+        fourth_individual = population_copy.pop(fourth_individual_index)
 
-        first_couple = [population_copy[first_individual_index],
-                        population_copy[second_individual_index]]
+        first_couple = [first_individual,
+                        second_individual]
         first_couple_winner_index, first_couple_loser_index = tournament(
             first_couple, fitness_function, threshold)
 
-        second_couple = [population_copy[third_individual_index],
-                         population_copy[fourth_individual_index]]
+        second_couple = [third_individual,
+                         fourth_individual]
         second_couple_winner_index, second_couple_loser_index = tournament(
             second_couple, fitness_function, threshold)
 
