@@ -2,10 +2,9 @@
 import random
 
 
-def tournament_selection(population: list, fitness_function, selection_size: int):
+def tournament_selection(population: list, fitness_function, selection_size: int, threshold: float):
 
     selection = []
-    threshold = random.random()
     population_copy = population.copy()
     number_of_initial_couples = 2
 
