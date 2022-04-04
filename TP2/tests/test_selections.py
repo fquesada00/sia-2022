@@ -1,7 +1,9 @@
 from cmath import log
+import math
+import random
 import unittest
 from unittest import mock
-from genetic_algorithms.crossover_methods import simple_crossover, multiple_crossover, uniform_crossover
+from genetic_algorithms.selection_methods import uniform_selection, truncate_selection, tournament_selection
 
 from models.Chromosome import Chromosome
 
@@ -9,10 +11,21 @@ from models.Chromosome import Chromosome
 class TestSelectionMethods(unittest.TestCase):
 
     def setUp(self):
-        self.first_parent = Chromosome(genes=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        self.second_parent = Chromosome(
-            genes=[-1, -2, -3, -4, -5, -6, -7, -8, -9, -10])
-        self.genes_length = len(self.first_parent)
+        population = [
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  # 0
+            [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],  # 1
+            [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],  # 2
+            [4, 5, 6, 7, 8, 9, 10, 11, 12, 13],  # 3
+            [5, 6, 7, 8, 9, 10, 11, 12, 13, 14],  # 4
+            [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],  # 5
+            [7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+            [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+            [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+            [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        ]
+        self.population = population
+        self.fitness_function = lambda x: sum(x)
+        self.selection_size = 3
 
     def tearDown(self):
         self.first_parent = None
@@ -20,31 +33,38 @@ class TestSelectionMethods(unittest.TestCase):
         self.genes_length = None
 
     @mock.patch('random.randint')
-    def test_simple(self, randint_mock):
-        randint_mock.return_value = 4
-        first_child, second_child = simple_crossover(
-            self.first_parent, self.second_parent, self.genes_length)
-        self.assertEqual(first_child, [-1, -2, -3, -4, 5, 6, 7, 8, 9, 10])
-        self.assertEqual(second_child, [1, 2, 3, 4, -5, -6, -7, -8, -9, -10])
+    def test_uniform(self, randint_mock):
+        randint_mock.side_effect = [8, 5, 1]
+        selection = uniform_selection(
+            self.population, self.fitness_function, self.selection_size)
+        self.assertEqual(
+            selection, [self.population[8], self.population[5], self.population[1]])
 
-    @mock.patch('random.sample')
-    def test_multiple(self, sample_mock):
-        number_of_points = 3
-        sample_mock.return_value = [2, 8, 5]
-        first_child, second_child = multiple_crossover(
-            self.first_parent, self.second_parent, self.genes_length, number_of_points)
-        self.assertEqual(first_child, [1, 2, -3, -4, -5, 6, 7, 8, -9, - 10])
-        self.assertEqual(second_child, [-1, -2, 3, 4, 5, -6, -7, -8, 9, 10])
+    @mock.patch('random.randint')
+    def test_truncate(self, randint_mock):
+        randint_mock.side_effect = [2, 3, 0]
+        k = 5
+        selection = truncate_selection(
+            self.population, self.fitness_function, self.selection_size, k)
+        sorted_populations = sorted(self.population, key=self.fitness_function)
+        self.assertEqual(
+            selection, [sorted_populations[k+2], sorted_populations[k+4], sorted_populations[k+0]])
 
+    @mock.patch('random.choice')
     @mock.patch('random.random')
-    def test_uniform(self, random_mock):
-        random_mock.side_effect = [0.1, 0.9, 0.2,
-                                   0.8, 0.3, 0.7, 0.4, 0.6, 0.5, 0.5]
-        first_child, second_child = uniform_crossover(
-            self.first_parent, self.second_parent, self.genes_length)
+    def test_tournament(self, random_choice, choice_mock):
+        choice_mock.side_effect = [0, 3, 1, 2]
+        randoms = [0.7]
+        randoms.append(0.8)
+        randoms.append(0.5)
+        randoms.append(0.9)
 
-        self.assertEqual(first_child, [-1, 2, -3, 4, -5, 6, -7, 8, -9, -10])
-        self.assertEqual(second_child, [1, -2, 3, -4, 5, -6, 7, -8, 9, 10])
+        random_choice.side_effect = randoms
+
+        selection = tournament_selection(
+            self.population, self.fitness_function, 1)
+        self.assertEqual(
+            selection, [self.population[0]])
 
 
 if __name__ == '__main__':
