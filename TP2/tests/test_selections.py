@@ -1,8 +1,7 @@
 from cmath import log
 import unittest
 from unittest import mock
-from genetic_algorithms.selection_methods import uniform_selection, truncate_selection, tournament_selection, roulette_selection, rank_selection, elite_selection
-
+from genetic_algorithms.selection_methods import uniform_selection, truncate_selection, tournament_selection, roulette_selection, rank_selection, elite_selection, boltzmann_selection
 from models.Chromosome import Chromosome
 
 
@@ -85,6 +84,22 @@ class TestSelectionMethods(unittest.TestCase):
         population_copy = self.population.copy()
         population_copy.reverse()
         self.assertEqual(selection, population_copy[:self.selection_size])
+
+    @mock.patch("genetic_algorithms.number_of_generations", 1)
+    @mock.patch("random.random")
+    def test_boltzmann_selection(self, mock_random):
+        mock_random.side_effect = [0.35]
+        selection = boltzmann_selection(
+            self.population, self.fitness_function, 1)
+        self.assertEqual(selection, [self.population[4]])
+
+    @mock.patch("genetic_algorithms.number_of_generations", 1)
+    @mock.patch("random.random")
+    def test_boltzmann_selection_fail(self, mock_random):
+        mock_random.side_effect = [0.38]
+        selection = boltzmann_selection(
+            self.population, self.fitness_function, 1)
+        self.assertNotEqual(selection, [self.population[4]])
 
 
 if __name__ == '__main__':
