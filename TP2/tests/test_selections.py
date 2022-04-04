@@ -1,7 +1,7 @@
 from cmath import log
 import unittest
 from unittest import mock
-from genetic_algorithms.selection_methods import uniform_selection, truncate_selection, tournament_selection, roulette_selection, rank_selection
+from genetic_algorithms.selection_methods import uniform_selection, truncate_selection, tournament_selection, roulette_selection, rank_selection, elite_selection
 
 from models.Chromosome import Chromosome
 
@@ -78,6 +78,13 @@ class TestSelectionMethods(unittest.TestCase):
         selection = rank_selection(
             self.population, self.fitness_function, 1)
         self.assertEqual(selection, [self.population[1]])
+
+    def test_elite_selection(self):
+        selection = elite_selection(
+            self.population, self.fitness_function, self.selection_size)
+        population_copy = self.population.copy()
+        population_copy.reverse()
+        self.assertEqual(selection, population_copy[:self.selection_size])
 
 
 if __name__ == '__main__':
