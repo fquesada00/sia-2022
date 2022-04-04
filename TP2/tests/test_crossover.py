@@ -32,7 +32,7 @@ class TestCrossoverMethods(unittest.TestCase):
         number_of_points = 3
         sample_mock.return_value = [2, 8, 5]
         first_child, second_child = multiple_point_crossover(
-            self.first_parent, self.second_parent, self.genes_length, number_of_points)
+            self.first_parent, self.second_parent, self.genes_length)
         self.assertEqual(first_child, [1, 2, -3, -4, -5, 6, 7, 8, -9, - 10])
         self.assertEqual(second_child, [-1, -2, 3, 4, 5, -6, -7, -8, 9, 10])
 
