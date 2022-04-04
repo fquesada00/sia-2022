@@ -1,6 +1,5 @@
-from constants import MIN_FITNESS
 
 
-def fitness_value_cut_condition(population, elapsed_time, fitness_function):
+def fitness_value_cut_condition(population, fitness_function, elapsed_time, cut_condition_parameters):
     fitnesses = sorted([fitness_function(x) for x in population], reverse=True)
-    return fitnesses[0] >= MIN_FITNESS
+    return fitnesses[0] >= cut_condition_parameters.min_fitness_value

@@ -1,13 +1,11 @@
 
-from constants import FITNESS_DISTANCE, REQUIRED_GENERATION_REPEATS
-
 
 prev_best_fitness = None
 
 repeated_generations = 0
 
 
-def fitness_variation_cut_condition(population, elapsed_time, fitness_function):
+def fitness_variation_cut_condition(population, fitness_function, elapsed_time,cut_condition_parameters):
     best_fitness = sorted([fitness_function(x)
                           for x in population], reverse=True)[0]
 
@@ -17,11 +15,11 @@ def fitness_variation_cut_condition(population, elapsed_time, fitness_function):
         prev_best_fitness = best_fitness
         return False
 
-    if abs(prev_best_fitness - best_fitness) > FITNESS_DISTANCE:
+    if abs(prev_best_fitness - best_fitness) > cut_condition_parameters.fitness_distance:
         prev_best_fitness = best_fitness
         repeated_generations = 0
         return False
 
     prev_best_fitness = best_fitness
     repeated_generations += 1
-    return repeated_generations >= REQUIRED_GENERATION_REPEATS
+    return repeated_generations >= cut_condition_parameters.fitness_required_generations_repeats

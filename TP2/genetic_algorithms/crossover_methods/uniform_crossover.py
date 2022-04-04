@@ -1,9 +1,8 @@
 import random
-
 from models.Chromosome import Chromosome
 
 
-def uniform_crossover(first_parent, second_parent, genes_length):
+def uniform_crossover(first_parent, second_parent, genes_length,crossover_parameters):
 
     first_child_genes = []
     second_child_genes = []

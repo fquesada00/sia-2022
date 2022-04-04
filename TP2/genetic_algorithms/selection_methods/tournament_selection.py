@@ -2,7 +2,7 @@
 import random
 
 
-def tournament_selection(population: list, fitness_function, selection_size: int):
+def tournament_selection(population: list, fitness_function, selection_size: int,selection_parameter):
 
     selection = []
     threshold = random.random()

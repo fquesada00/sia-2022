@@ -1,8 +1,8 @@
-from audioop import reverse
 import random
 import time
-from constants import MAX_GENERATIONS, MAX_TIME
-
+from genetic_algorithms.crossover_methods import CrossoverParameters
+from genetic_algorithms.mutation_methods import MutationParameters
+from models.Summary import Summary
 from models.Chromosome import Chromosome
 
 number_of_generations = 0
@@ -25,33 +25,34 @@ def generate_initial_population(size, min, max):
     return population
 
 
-def evolve(population, fitness_function, select, crossover, mutation_method, mutation_rate):
+def evolve(population, fitness_function, selection_parameters, crossover_parameters: CrossoverParameters, mutation_parameters: MutationParameters, cut_condition_parameters):
     new_population = []
 
     while len(new_population) < len(population):
         # Select parents
-        parent1, parent2 = select(
-            population, fitness_function, 2)
+        parent1, parent2 = selection_parameters.selection_method(
+            population, fitness_function, 2, selection_parameters)
 
         # Reproduce
-        child1, child2 = crossover(parent1, parent2, len(parent1))
+        child1, child2 = crossover_parameters.crossover_method(
+            parent1, parent2, len(parent1), crossover_parameters)
 
         # Mutate
-        child1.mutate(mutation_method, mutation_rate)
-        child2.mutate(mutation_method, mutation_rate)
+        child1.mutate(mutation_parameters)
+        child2.mutate(mutation_parameters)
 
         # Add to new population
         new_population.append(child1)
         new_population.append(child2)
 
-    return select(new_population + population, fitness_function, len(population))
+    return selection_parameters.selection_method(new_population + population, fitness_function, len(population), selection_parameters)
 
 
-def optimize(population_size, fitness_function, select, crossover, mutation_method, mutation_rate, cut_condition, min, max):
+def optimize(population_size, fitness_function, selection_parameters, crossover_parameters: CrossoverParameters, mutation_parameters: MutationParameters, cut_condition_parameters, min, max):
     population = generate_initial_population(population_size, min, max)
 
     start_time = time.time()
-    while not cut_condition(population, time.time() - start_time, fitness_function):
+    while not cut_condition_parameters.cut_condition_method(population, fitness_function, time.time() - start_time, cut_condition_parameters):
         best_individual = sorted(
             population, key=fitness_function, reverse=True)[0]
         global number_of_generations
@@ -60,16 +61,12 @@ def optimize(population_size, fitness_function, select, crossover, mutation_meth
 
         # measure execution time for evolve
         population = evolve(population, fitness_function,
-                            select, crossover, mutation_method, mutation_rate)
+                            selection_parameters, crossover_parameters, mutation_parameters, mutation_parameters)
         number_of_generations += 1
 
     end_time = time.time()
 
     best_individual = sorted(population, key=fitness_function, reverse=True)[0]
-    print(
-        f'\nBest individual: {best_individual}, Fitness: {fitness_function(best_individual)}\n')
-    print(f'')
+    best_individual_fitness = fitness_function(best_individual)
 
-    print(f'Total time elapsed: {end_time - start_time}')
-
-    return population
+    return Summary(best_individual, best_individual_fitness, end_time - start_time)

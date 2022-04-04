@@ -1,13 +1,13 @@
 import random
-from constants import NORMAL_MUTATION_STD
 
 
-def normal_mutation(genes, mutation_rate):
+
+def normal_mutation(genes, mutation_parameters):
     """
     Mutate an individual by modifying each one of its genes at random
     """
     for i in range(len(genes)):
-        if random.random() < mutation_rate:
-            genes[i] += random.normalvariate(0, NORMAL_MUTATION_STD)
+        if random.random() < mutation_parameters.mutation_rate:
+            genes[i] += random.normalvariate(0, mutation_parameters.normal_mutation_std)
 
     return genes

@@ -1,3 +1,6 @@
+from genetic_algorithms.mutation_methods import MutationParameters
+
+
 class Chromosome:
 
     def __init__(self, genes: list):
@@ -33,5 +36,5 @@ class Chromosome:
     def w_0(self):
         return self.genes[9:11]
 
-    def mutate(self, mutation_method, mutation_rate):
-        self.genes = mutation_method(self.genes, mutation_rate)
+    def mutate(self, mutation_parameters: MutationParameters):
+        self.genes = mutation_parameters.mutation_method(self.genes, mutation_parameters)

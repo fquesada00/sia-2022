@@ -1,11 +1,27 @@
-from constants import MAX_REAL, MIN_REAL, MUTATION_RATE
-from genetic_algorithms.cut_conditions import max_generations_cut_condition, population_variation_cut_condition, fitness_variation_cut_condition
-from genetic_algorithms import optimize
-from genetic_algorithms.mutation_methods import uniform_mutation
+# from models import Parameters
+from genetic_algorithms.cut_conditions import CutCondition
+from genetic_algorithms.selection_methods import SelectionMethod
 from optimization_problem.functions import fitness_function
-from genetic_algorithms.selection_methods import roulette_selection
-from genetic_algorithms.crossover_methods import multiple_point_crossover
+from genetic_algorithms import optimize
+from genetic_algorithms.crossover_methods import CrossoverParameters
+from genetic_algorithms.cut_conditions import CutConditionParameters
+from genetic_algorithms.mutation_methods import MutationParameters
+from genetic_algorithms.selection_methods import SelectionParameters
+from constants import MAX_REAL, MIN_REAL
 
 if __name__ == '__main__':
-    optimize(10,
-             fitness_function, roulette_selection, multiple_point_crossover, uniform_mutation, MUTATION_RATE, fitness_variation_cut_condition, MIN_REAL, MAX_REAL)
+
+    selection_parameters = SelectionParameters(
+        selection_method=SelectionMethod.ELITE)
+    crossover_parameters = CrossoverParameters()
+    mutation_parameters = MutationParameters()
+    cut_condition_parameters = CutConditionParameters(
+        cut_condition_method=CutCondition.MAX_TIME)
+
+    # parameters = Parameters(selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)
+
+    summary = optimize(10,
+                       fitness_function, selection_parameters=selection_parameters, crossover_parameters=crossover_parameters, mutation_parameters=mutation_parameters, cut_condition_parameters=cut_condition_parameters, min=MIN_REAL, max=MAX_REAL)
+    # print(parameters)
+    print(summary)
+

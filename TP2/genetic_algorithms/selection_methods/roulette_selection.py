@@ -1,7 +1,7 @@
 import random
 
 
-def roulette_selection(population, fitness_function, selection_size):
+def roulette_selection(population, fitness_function, selection_size,selection_parameter):
     selection = []
     population_copy = population.copy()
 

@@ -17,7 +17,7 @@ def calculate_rank_dict(population, fitness_function):
     return rank_dict
 
 
-def rank_selection(population, fitness_function, selection_size):
+def rank_selection(population, fitness_function, selection_size,selection_parameter):
     selection = []
 
     for _ in range(selection_size):

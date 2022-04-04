@@ -1,5 +1,2 @@
-from constants import MAX_TIME
-
-
-def max_time_cut_condition(population, elapsed_time, fitness_function):
-    return elapsed_time > MAX_TIME
+def max_time_cut_condition(population, fitness_function, elapsed_time, cut_condition_parameters):
+    return elapsed_time > cut_condition_parameters.max_time
