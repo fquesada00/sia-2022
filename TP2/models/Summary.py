@@ -29,7 +29,7 @@ class Summary:
             \n- F(W,w,w_p,xi_3): {self.F_3}\n'
 
     def to_csv(self):
-        return f'{self.execution_time},{self.fitness},{self.W[0]},{self.W[1]},{self.W[2]},{self.w[0]},{self.w[1]},{self.w[2]},{self.w[3]},{self.w[4]},{self.w[5]},{self.w_0[0]},{self.w_0[1]},{self.error},{self.F_1},{self.F_2},{self.F_3}\n'
+        return f'{round(self.execution_time, 3)},{self.fitness},{self.W[0]},{self.W[1]},{self.W[2]},{self.w[0]},{self.w[1]},{self.w[2]},{self.w[3]},{self.w[4]},{self.w[5]},{self.w_0[0]},{self.w_0[1]},{self.error},{self.F_1},{self.F_2},{self.F_3}\n'
 
     @staticmethod
     def csv_header():
