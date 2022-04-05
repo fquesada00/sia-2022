@@ -40,6 +40,10 @@ class CrossoverParameters():
     @property
     def multiple_point_crossover_points(self):
         return self._multiple_point_crossover_points
+
+    @multiple_point_crossover_points.setter
+    def multiple_point_crossover_points(self, value):
+        self._multiple_point_crossover_points = value
         
     @property
     def crossover_method_name(self):

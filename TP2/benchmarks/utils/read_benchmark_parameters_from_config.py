@@ -71,4 +71,5 @@ def read_benchmark_parameters_from_config():
                                initial_bounds_output_filename=bounds_config["benchmark_output_filename"],
                                mutation_rate_output_filename=mutation_rates_config[
                                    "benchmark_output_filename"],
-                               mutation_rates=mutation_rates_config["input"],)
+                               mutation_rates=mutation_rates_config["input"],
+                               multiple_points=crossover_config["multiple_points"])
