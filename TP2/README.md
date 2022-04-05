@@ -46,10 +46,11 @@ python -m TP2.main --config_file=<path_to_config_file>
 	"min_real": float,
 	"max_real": float,
 	"population_size": int,
-	"output_filename":string,
+	"output_filename": string,
 	"crossover": {
 		"method": "single_point" | "multiple_point" | "uniform",
-		"multiple_point_number": int
+		"multiple_point_number": int,
+		"multiple_points": array
 	},
 	"selection": {
 		"method": "roulette" | "tournament" | "boltzmann" | "truncation" | "elite" | "rank",
@@ -82,6 +83,7 @@ python -m TP2.main --config_file=<path_to_config_file>
 - `output_filename`: Name of the file to save the results.
 - `crossover.method`: Crossover method.
 - `crossover.multiple_point_number`: Number of points to use in the multiple point crossover.
+- `crossover.multiple_points`: Array with the number of points to use in the multiple point crossover.
 - `selection.method`: Selection method.
 - `selection.boltzmann_initial_temperature`: Initial temperature for the boltzmann selection method.
 - `selection.boltzmann_final_temperature`: Final temperature for the boltzmann selection method.
