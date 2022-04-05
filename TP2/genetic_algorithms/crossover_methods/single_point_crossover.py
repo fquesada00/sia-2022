@@ -1,5 +1,5 @@
 import random
-from models.Chromosome import Chromosome
+from ...models.Chromosome import Chromosome
 
 
 def single_point_crossover(first_parent, second_parent, genes_length,crossover_parameters):

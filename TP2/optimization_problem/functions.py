@@ -1,6 +1,6 @@
 import math
 
-from constants import DATASET_INPUT, DATASET_INPUT, DATASET_OUTPUT
+from ..constants import DATASET_INPUT, DATASET_INPUT, DATASET_OUTPUT
 
 
 # W 3 element vector

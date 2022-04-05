@@ -1,31 +1,84 @@
 {
-    "min_real": -500,
-    "max_real": 500,
-    "population_size": 10,
-    "crossover": {
-        "method": "single_point",
-        "multiple_point_number": 3
-    },
-    "selection": {
-        "method": "roulette",
-        "boltzmann_initial_temperature": 100,
-        "boltzmann_final_temperature": 0,
-        "boltzmann_decay_rate": 0.01,
-        "tournament_threshold": 0.6,
-        "truncate_size": 5
-    },
-    "mutation": {
-      "method": "normal",
-      "mutation_rate": 0.1,
-      "uniform_mutation_bound": 0.1,
-      "normal_mutation_standard_deviation":0.1 
-    },
-    "cut_condition": {
-        "method": "max_generations",
-        "max_generations": 1000,
-        "min_fitness": 2.99999,
-        "fitness_threshold": 0.00005,
-        "fitness_required_generations_repeats": 10,
-        "max_time": 60
-    }
+	"min_real": -10,
+	"max_real": 10,
+	"population_size": 10,
+	"crossover": {
+		"method": "single_point",
+		"multiple_point_number": 3,
+		"benchmark_output_filename": "crossover"
+	},
+	"selection": {
+		"method": "roulette",
+		"boltzmann_initial_temperature": 100,
+		"boltzmann_final_temperature": 0,
+		"boltzmann_decay_rate": 0.01,
+		"tournament_threshold": 0.6,
+		"truncate_size": 5,
+		"benchmark_output_filename": "selection"
+	},
+	"mutation": {
+		"method": "normal",
+		"mutation_rate": 0.05,
+		"uniform_mutation_bound": 1,
+		"normal_mutation_standard_deviation": 0.5,
+		"benchmark_output_filename": "mutation"
+	},
+	"cut_condition": {
+		"method": "max_generations",
+		"max_generations": 1000,
+		"min_fitness": 2.99999,
+		"fitness_threshold": 0.00005,
+		"fitness_required_generations_repeats": 10,
+		"max_time": 10,
+		"benchmark_output_filename": "cut_condition"
+	},
+	"initial_bounds": {
+		"benchmark_output_filename": "initial_bounds",
+		"input": [
+			{
+				"from": -50,
+				"to": 50
+			},
+			{
+				"from": -20,
+				"to": 20
+			},
+			{
+				"from": -10,
+				"to": 10
+			},
+			{
+				"from": -5,
+				"to": 5
+			},
+			{
+				"from": -1,
+				"to": 1
+			},
+			{
+				"from": 0,
+				"to": 10
+			},
+			{
+				"from": 0,
+				"to": 30
+			},
+			{
+				"from": 0,
+				"to": 50
+			},
+			{
+				"from": -10,
+				"to": 0
+			},
+			{
+				"from": -30,
+				"to": 0
+			},
+			{
+				"from": -50,
+				"to": 0
+			}
+		]
+	}
 }

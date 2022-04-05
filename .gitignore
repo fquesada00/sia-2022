@@ -126,3 +126,7 @@ ui-tests/playwright-report
 
 # VSCode
 .vscode
+
+# Output files
+*.csv
+*.png

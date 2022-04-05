@@ -1,6 +1,6 @@
 import math
-from genetic_algorithms.selection_methods.roulette_selection import roulette_selection
-import genetic_algorithms
+from ...genetic_algorithms.selection_methods.roulette_selection import roulette_selection
+from ... import genetic_algorithms
 
 
 def temperature_function(number_of_generations, initial_temperature, final_temperature, exp_rate):

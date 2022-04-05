@@ -1,4 +1,4 @@
-import genetic_algorithms
+from .. import genetic_algorithms
 class GenerationsPrinter():
     def __init__(self, output_filename, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters):
         self.output_filename = output_filename

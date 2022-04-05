@@ -1,4 +1,4 @@
-import genetic_algorithms
+from ... import genetic_algorithms
 
 
 def max_generations_cut_condition(population, fitness_function, elapsed_time, cut_condition_parameters):

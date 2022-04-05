@@ -1,4 +1,4 @@
-from constants import MULTIPLE_POINT_CROSSOVER_POINTS;
+from ...constants import MULTIPLE_POINT_CROSSOVER_POINTS;
 from .multiple_point_crossover import multiple_point_crossover
 from .single_point_crossover import single_point_crossover
 from .uniform_crossover import uniform_crossover

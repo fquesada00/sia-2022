@@ -1,10 +1,12 @@
 import random
 import time
-from genetic_algorithms.crossover_methods import CrossoverParameters
-from genetic_algorithms.mutation_methods import MutationParameters
-from models.Summary import Summary
-from models.Chromosome import Chromosome
-from models.GenerationsPrinter import GenerationsPrinter
+from ..genetic_algorithms.crossover_methods import CrossoverParameters
+from ..genetic_algorithms.mutation_methods import MutationParameters
+from ..models.Summary import Summary
+from ..models.Chromosome import Chromosome
+from ..models.GenerationsPrinter import GenerationsPrinter
+
+from ..genetic_algorithms import cut_conditions
 
 number_of_generations = 0
 
@@ -53,6 +55,9 @@ def optimize(output_filename, initial_population, fitness_function, selection_pa
 
     global number_of_generations
     number_of_generations = 0
+
+    cut_conditions.prev_best_fitness = None
+    cut_conditions.repeated_generations = 0
 
     generations_printer = GenerationsPrinter(
         output_filename, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)

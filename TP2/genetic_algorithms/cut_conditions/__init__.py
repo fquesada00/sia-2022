@@ -1,10 +1,11 @@
-from constants import FITNESS_THRESHOLD, MAX_TIME, MIN_FITNESS, REQUIRED_GENERATION_REPEATS
-from constants import MAX_GENERATIONS
+from ...constants import FITNESS_THRESHOLD, MAX_TIME, MIN_FITNESS, REQUIRED_GENERATION_REPEATS, MAX_GENERATIONS
 from .max_generations_cut_condition import max_generations_cut_condition
 from .fitness_value_cut_condition import fitness_value_cut_condition
 from .fitness_variation_cut_condition import fitness_variation_cut_condition
 from .max_time_cut_condition import max_time_cut_condition
 from .max_generations_cut_condition import max_generations_cut_condition
+from .fitness_variation_cut_condition import repeated_generations
+from .fitness_variation_cut_condition import prev_best_fitness
 
 from enum import Enum
 

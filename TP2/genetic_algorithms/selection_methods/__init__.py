@@ -1,4 +1,4 @@
-from constants import INITIAL_TEMPERATURE, FINAL_TEMPERATURE, EXP_RATE, K, TOURNAMENT_THRESHOLD
+from ...constants import INITIAL_TEMPERATURE, FINAL_TEMPERATURE, EXP_RATE, K, TOURNAMENT_THRESHOLD
 from .roulette_selection import roulette_selection
 from .tournament_selection import tournament_selection
 from .elite_selection import elite_selection

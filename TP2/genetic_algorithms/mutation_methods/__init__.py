@@ -1,4 +1,4 @@
-from constants import MUTATION_RATE, NORMAL_MUTATION_STD, UNIFORM_MUTATION_BOUND
+from ...constants import MUTATION_RATE, NORMAL_MUTATION_STD, UNIFORM_MUTATION_BOUND
 from .uniform_mutation import uniform_mutation
 from .swap_mutation import swap_mutation
 from .normal_mutation import normal_mutation
