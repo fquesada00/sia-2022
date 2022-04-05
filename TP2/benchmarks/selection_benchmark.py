@@ -38,7 +38,7 @@ def run_selection_benchmark(selection_parameters, cut_condition_parameters, cros
         line.set_label(f"{selection_method} - {round(summary.fitness, 3)}")
 
     plt.legend()
-    plt.savefig('.TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
+    plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
 
 
 if __name__ == '__main__':
