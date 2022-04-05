@@ -19,7 +19,7 @@ def run_selection_benchmark(selection_parameters, cut_condition_parameters, cros
         population_size, min_real, max_real)
     tmp_results_filename = 'benchmark_tmp.csv'
 
-    plt.figure(figsize=(10,5))
+    plt.figure(figsize=(10, 5))
 
     for selection_method in SelectionMethod:
         selection_parameters.selection_method = selection_method

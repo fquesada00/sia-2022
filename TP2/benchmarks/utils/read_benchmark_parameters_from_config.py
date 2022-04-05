@@ -32,7 +32,7 @@ def read_benchmark_parameters_from_config():
                                                       min_fitness_value=cut_condition_config["min_fitness"],
                                                       fitness_required_generations_repeats=cut_condition_config[
                                                           "fitness_required_generations_repeats"]
-                                                   )
+                                                      )
 
     crossover_parameters = CrossoverParameters(crossover_method=CrossoverMethod.from_str(crossover_config["method"]),
                                                multiple_point_crossover_points=config[
@@ -53,18 +53,22 @@ def read_benchmark_parameters_from_config():
                                                )
 
     bounds_config = config["initial_bounds"]
+    mutation_rates_config = config["mutation_rates"]
 
     return BenchmarkParameters(selection_parameters=selection_parameters,
-                      crossover_parameters=crossover_parameters,
-                      mutation_parameters=mutation_parameters,
-                      cut_condition_parameters=cut_condition_parameters,
-                        population_size=population_size,
-                        min_real=min_real,
-                        max_real=max_real,
-                        bounds= bounds_config["input"],
-                        selection_output_filename=selection_config["benchmark_output_filename"],
-                        crossover_output_filename=crossover_config["benchmark_output_filename"],
-                        mutation_output_filename=mutation_config["benchmark_output_filename"],
-                        cut_condition_output_filename=cut_condition_config["benchmark_output_filename"],
-                        initial_bounds_output_filename=bounds_config["benchmark_output_filename"])
-                        
+                               crossover_parameters=crossover_parameters,
+                               mutation_parameters=mutation_parameters,
+                               cut_condition_parameters=cut_condition_parameters,
+                               population_size=population_size,
+                               min_real=min_real,
+                               max_real=max_real,
+                               bounds=bounds_config["input"],
+                               selection_output_filename=selection_config["benchmark_output_filename"],
+                               crossover_output_filename=crossover_config["benchmark_output_filename"],
+                               mutation_output_filename=mutation_config["benchmark_output_filename"],
+                               cut_condition_output_filename=cut_condition_config[
+                                   "benchmark_output_filename"],
+                               initial_bounds_output_filename=bounds_config["benchmark_output_filename"],
+                               mutation_rate_output_filename=mutation_rates_config[
+                                   "benchmark_output_filename"],
+                               mutation_rates=mutation_rates_config["input"],)

@@ -59,9 +59,9 @@ def optimize(initial_population, fitness_function, selection_parameters, crossov
 
     cut_conditions.prev_best_fitness = None
     cut_conditions.repeated_generations = 0
-    
+
     generations_printer = None
-    
+
     if output_filename is not None:
         generations_printer = GenerationsPrinter(
             output_filename, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)
@@ -77,7 +77,8 @@ def optimize(initial_population, fitness_function, selection_parameters, crossov
             population, key=fitness_function, reverse=True)[0]
 
         if output_filename is not None:
-            generations_printer.print_generation(fitness_function(best_individual))
+            generations_printer.print_generation(
+                fitness_function(best_individual))
 
         print(
             f'Generation N°{number_of_generations}: {best_individual} - Fitness: {fitness_function(best_individual)}\n')

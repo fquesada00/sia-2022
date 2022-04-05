@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_file", type=argparse.FileType('r'), default="TP2/main_config.json",
-                            help="Main program configuration in JSON format", dest="input_file", required=False)
+                        help="Main program configuration in JSON format", dest="input_file", required=False)
 
     args = parser.parse_args()
 
@@ -33,14 +33,13 @@ if __name__ == '__main__':
     mutation_config = config["mutation"]
     selection_config = config["selection"]
 
-
     cut_condition_parameters = CutConditionParameters(cut_condition_method=CutCondition.from_str(cut_condition_config["method"]),
                                                       max_generations=cut_condition_config["max_generations"],
                                                       max_time=cut_condition_config["max_time"],
                                                       min_fitness_value=cut_condition_config["min_fitness"],
                                                       fitness_required_generations_repeats=cut_condition_config[
                                                           "fitness_required_generations_repeats"]
-                                                   )
+                                                      )
 
     crossover_parameters = CrossoverParameters(crossover_method=CrossoverMethod.from_str(crossover_config["method"]),
                                                multiple_point_crossover_points=config[
@@ -60,10 +59,11 @@ if __name__ == '__main__':
                                                threshold=selection_config["tournament_threshold"],
                                                )
 
+    parameters = Parameters(selection_parameters, crossover_parameters,
+                            mutation_parameters, cut_condition_parameters)
 
-    parameters = Parameters(selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)
-    
-    initial_population = generate_initial_population(config['population_size'], config['min_real'], config['max_real'])
+    initial_population = generate_initial_population(
+        config['population_size'], config['min_real'], config['max_real'])
 
     summary = optimize(initial_population,
                        fitness_function, selection_parameters=selection_parameters, crossover_parameters=crossover_parameters, mutation_parameters=mutation_parameters, cut_condition_parameters=cut_condition_parameters)
@@ -71,6 +71,6 @@ if __name__ == '__main__':
     print(summary)
 
     with open('./TP2/' + output_filename + '.csv', 'w') as f:
-        f.write('execution_time,fitness,W_1,W_2,W_3,w_1,w_2,w_3,w_4,w_5,w_6,w_0_1,w_0_2,error,F_1,F_2,F_3\n')
+        f.write(
+            'execution_time,fitness,W_1,W_2,W_3,w_1,w_2,w_3,w_4,w_5,w_6,w_0_1,w_0_2,error,F_1,F_2,F_3\n')
         f.write(summary.to_csv())
-

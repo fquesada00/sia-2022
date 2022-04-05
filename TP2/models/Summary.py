@@ -1,5 +1,7 @@
-from ..optimization_problem import error,function_to_approximate
+from ..optimization_problem import error, function_to_approximate
 from ..constants import DATASET_INPUT, DATASET_OUTPUT
+
+
 class Summary:
 
     def __init__(self, best_individual, fitness, execution_time):
@@ -9,10 +11,14 @@ class Summary:
         self.w_0 = best_individual.w_0
         self.fitness = fitness
         self.execution_time = execution_time
-        self.error = error(self.W,self.w,self.w_0,DATASET_INPUT,DATASET_OUTPUT)
-        self.F_1 = function_to_approximate(self.W,self.w,self.w_0,DATASET_INPUT[0])
-        self.F_2 = function_to_approximate(self.W,self.w,self.w_0,DATASET_INPUT[1])
-        self.F_3 = function_to_approximate(self.W,self.w,self.w_0,DATASET_INPUT[2])  
+        self.error = error(self.W, self.w, self.w_0,
+                           DATASET_INPUT, DATASET_OUTPUT)
+        self.F_1 = function_to_approximate(
+            self.W, self.w, self.w_0, DATASET_INPUT[0])
+        self.F_2 = function_to_approximate(
+            self.W, self.w, self.w_0, DATASET_INPUT[1])
+        self.F_3 = function_to_approximate(
+            self.W, self.w, self.w_0, DATASET_INPUT[2])
 
     def __str__(self):
         return f'- Execution time: {self.execution_time} s \n- Best individual: {self.best_individual} \

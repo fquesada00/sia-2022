@@ -11,8 +11,8 @@ def run_crossover_benchmark(selection_parameters, cut_condition_parameters, cros
     initial_population = generate_initial_population(
         population_size, min_real, max_real)
     tmp_results_filename = './TP2/benchmarks/benchmark_tmp.csv'
-    plt.figure(figsize=(10,5))
-    
+    plt.figure(figsize=(10, 5))
+
     for crossover_method in CrossoverMethod:
         crossover_parameters.crossover_method = crossover_method
 
@@ -32,8 +32,8 @@ def run_crossover_benchmark(selection_parameters, cut_condition_parameters, cros
     plt.legend()
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 
     parameters = read_benchmark_parameters_from_config()
 

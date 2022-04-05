@@ -1,7 +1,7 @@
 import random
 
 
-def uniform_selection(population: list, fitness_function, selection_size: int,selection_parameter):
+def uniform_selection(population: list, fitness_function, selection_size: int, selection_parameter):
 
     new_population = population.copy()
 

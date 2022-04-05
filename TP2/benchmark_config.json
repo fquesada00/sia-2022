@@ -1,14 +1,14 @@
 {
-	"min_real": -10,
-	"max_real": 10,
-	"population_size": 10,
+	"min_real": -25,
+	"max_real": 25,
+	"population_size": 100,
 	"crossover": {
 		"method": "single_point",
 		"multiple_point_number": 3,
 		"benchmark_output_filename": "crossover"
 	},
 	"selection": {
-		"method": "roulette",
+		"method": "rank",
 		"boltzmann_initial_temperature": 100,
 		"boltzmann_final_temperature": 0,
 		"boltzmann_decay_rate": 0.01,
@@ -25,7 +25,7 @@
 	},
 	"cut_condition": {
 		"method": "max_generations",
-		"max_generations": 1000,
+		"max_generations": 2000,
 		"min_fitness": 2.99999,
 		"fitness_threshold": 0.00005,
 		"fitness_required_generations_repeats": 10,
