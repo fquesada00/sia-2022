@@ -1,7 +1,7 @@
 from cmath import log
 import unittest
 from unittest import mock
-from genetic_algorithms.selection_methods import uniform_selection, truncate_selection, tournament_selection, roulette_selection, rank_selection, elite_selection, boltzmann_selection
+from genetic_algorithms.selection_methods import truncate_selection, tournament_selection, roulette_selection, rank_selection, elite_selection, boltzmann_selection
 from models.Chromosome import Chromosome
 
 
@@ -29,14 +29,6 @@ class TestSelectionMethods(unittest.TestCase):
         self.first_parent = None
         self.second_parent = None
         self.genes_length = None
-
-    @mock.patch('random.randint')
-    def test_uniform(self, randint_mock):
-        randint_mock.side_effect = [8, 5, 1]
-        selection = uniform_selection(
-            self.population, self.fitness_function, self.selection_size)
-        self.assertEqual(
-            selection, [self.population[8], self.population[5], self.population[1]])
 
     @mock.patch('random.randint')
     def test_truncate(self, randint_mock):
