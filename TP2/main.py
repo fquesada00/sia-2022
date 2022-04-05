@@ -1,7 +1,8 @@
 import random
 import argparse
 import json
-from .models import Parameters
+
+from .models import Parameters, Summary
 from .genetic_algorithms.cut_conditions import CutCondition
 from .genetic_algorithms.selection_methods import SelectionMethod
 from .optimization_problem.functions import fitness_function
@@ -71,6 +72,5 @@ if __name__ == '__main__':
     print(summary)
 
     with open('./TP2/' + output_filename + '.csv', 'w') as f:
-        f.write(
-            'execution_time,fitness,W_1,W_2,W_3,w_1,w_2,w_3,w_4,w_5,w_6,w_0_1,w_0_2,error,F_1,F_2,F_3\n')
+        f.write(Summary.csv_header())
         f.write(summary.to_csv())

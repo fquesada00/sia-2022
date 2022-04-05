@@ -1,3 +1,4 @@
+from ..models import Summary
 from ..genetic_algorithms.mutation_methods import MutationMethod
 from ..genetic_algorithms import generate_initial_population, optimize
 from ..benchmarks.utils.get_results_data import get_results_data
@@ -10,6 +11,10 @@ def run_mutation_rate_benchmark(selection_parameters, cut_condition_parameters, 
     tmp_results_filename = 'benchmark_tmp.csv'
     plt.figure(figsize=(13, 5))
 
+    summary_file = open('./TP2/benchmarks/output/' +
+                        output_filename + '.csv', 'w')
+    summary_file.write(f"mutation_rate,{Summary.csv_header()}\n")
+
     for mutation_rate in mutation_rates:
         mutation_parameters.mutation_rate = mutation_rate
         initial_population = generate_initial_population(population_size,
@@ -19,7 +24,8 @@ def run_mutation_rate_benchmark(selection_parameters, cut_condition_parameters, 
         summary = optimize(initial_population, fitness_function, selection_parameters,
                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
-        print(summary)
+        summary_file.write(
+            f"{mutation_rate},{summary.to_csv()}\n")
 
         generation_numbers, fitness_values = get_results_data(
             tmp_results_filename)
@@ -29,6 +35,8 @@ def run_mutation_rate_benchmark(selection_parameters, cut_condition_parameters, 
 
     plt.legend()
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
+
+    summary_file.close()
 
 
 if __name__ == '__main__':
