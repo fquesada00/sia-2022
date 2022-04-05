@@ -1,3 +1,4 @@
+from ..models.Summary import Summary
 from ..genetic_algorithms.cut_conditions import CutCondition
 from ..genetic_algorithms import generate_initial_population, optimize
 from ..benchmarks.utils.get_results_data import get_results_data
@@ -11,7 +12,7 @@ def run_cut_condition_benchmark(selection_parameters, cut_condition_parameters, 
     tmp_results_filename = 'benchmark_tmp.csv'
 
     with open('./TP2/benchmarks/output/' + output_filename + '.csv', 'w') as f:
-        f.write("cut_condition,fitness\n")
+        f.write(f"cut_condition,{Summary.csv_header()}\n")
 
         for cut_condition in CutCondition:
             cut_condition_parameters.cut_condition_method = cut_condition
@@ -23,7 +24,7 @@ def run_cut_condition_benchmark(selection_parameters, cut_condition_parameters, 
 
             print(summary)
 
-            f.write(f"{cut_condition},{round(summary.fitness, 4)}\n")
+            f.write(f"{cut_condition},{summary.to_csv()}\n")
 
             # print method - fitness value to csv file
 

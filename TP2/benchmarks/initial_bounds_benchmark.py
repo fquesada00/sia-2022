@@ -1,3 +1,4 @@
+from ..models import Summary
 from ..genetic_algorithms.mutation_methods import MutationMethod
 from ..genetic_algorithms import generate_initial_population, optimize
 from ..benchmarks.utils.get_results_data import get_results_data
@@ -10,16 +11,20 @@ def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters,
     tmp_results_filename = 'benchmark_tmp.csv'
     plt.figure(figsize=(13, 5))
 
+    summary_file = open('./TP2/benchmarks/output/' +
+                        output_filename + '.csv', 'w')
+    summary_file.write(f"initial_bounds,{Summary.csv_header()}\n")
+
     for bound in bounds:
 
         initial_population = generate_initial_population(
             population_size, bound['from'], bound['to'])
-        print("Bounds: {} - {}".format(bound['from'], bound['to']))
 
         summary = optimize(initial_population, fitness_function, selection_parameters,
                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
-        print(summary)
+        summary_file.write(
+            f"{bound['from']}:{bound['to']},{summary.to_csv()}\n")
 
         generation_numbers, fitness_values = get_results_data(
             tmp_results_filename)
@@ -30,6 +35,8 @@ def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters,
 
     plt.legend()
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
+
+    summary_file.close()
 
 
 if __name__ == '__main__':

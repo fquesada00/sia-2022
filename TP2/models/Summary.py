@@ -30,3 +30,7 @@ class Summary:
 
     def to_csv(self):
         return f'{self.execution_time},{self.fitness},{self.W[0]},{self.W[1]},{self.W[2]},{self.w[0]},{self.w[1]},{self.w[2]},{self.w[3]},{self.w[4]},{self.w[5]},{self.w_0[0]},{self.w_0[1]},{self.error},{self.F_1},{self.F_2},{self.F_3}\n'
+
+    @staticmethod
+    def csv_header():
+        return 'execution_time,fitness,W_1,W_2,W_3,w_1,w_2,w_3,w_4,w_5,w_6,w_0_1,w_0_2,error,F_1,F_2,F_3\n'

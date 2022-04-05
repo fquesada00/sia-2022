@@ -1,3 +1,4 @@
+from ..models import Summary
 from ..benchmarks.utils.read_benchmark_parameters_from_config import read_benchmark_parameters_from_config
 from ..benchmarks.utils.get_results_data import get_results_data
 from ..genetic_algorithms.crossover_methods import CrossoverMethod
@@ -21,6 +22,10 @@ def run_selection_benchmark(selection_parameters, cut_condition_parameters, cros
 
     plt.figure(figsize=(10, 5))
 
+    summary_file = open('./TP2/benchmarks/output/' +
+                        output_filename + '.csv', 'w')
+    summary_file.write(f"selection_method,{Summary.csv_header()}\n")
+
     for selection_method in SelectionMethod:
         selection_parameters.selection_method = selection_method
 
@@ -29,7 +34,8 @@ def run_selection_benchmark(selection_parameters, cut_condition_parameters, cros
         summary = optimize(initial_population, fitness_function, selection_parameters,
                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
-        print(summary)
+        summary_file.write(
+            f"{selection_method},{summary.to_csv()}\n")
 
         generation_numbers, fitness_values = get_results_data(
             tmp_results_filename)
@@ -39,6 +45,8 @@ def run_selection_benchmark(selection_parameters, cut_condition_parameters, cros
 
     plt.legend()
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
+
+    summary_file.close()
 
 
 if __name__ == '__main__':
