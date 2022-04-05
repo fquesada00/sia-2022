@@ -18,8 +18,8 @@ def run_crossover_benchmark(selection_parameters, cut_condition_parameters, cros
 
         print("Crossover method: {}".format(crossover_method))
 
-        summary = optimize(tmp_results_filename, initial_population, fitness_function, selection_parameters,
-                           crossover_parameters, mutation_parameters, cut_condition_parameters)
+        summary = optimize(initial_population, fitness_function, selection_parameters,
+                           crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
         print(summary)
 
@@ -33,6 +33,8 @@ def run_crossover_benchmark(selection_parameters, cut_condition_parameters, cros
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
 
 if __name__ == '__main__':
+
+
     parameters = read_benchmark_parameters_from_config()
 
     run_crossover_benchmark(parameters.selection_parameters, parameters.cut_condition_parameters, parameters.crossover_parameters,

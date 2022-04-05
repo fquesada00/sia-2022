@@ -1,3 +1,32 @@
 {
-  "mimir":true
+	"min_real": -10,
+	"max_real": 10,
+	"population_size": 10,
+	"output_filename": "summary",
+	"crossover": {
+		"method": "single_point",
+		"multiple_point_number": 3
+	},
+	"selection": {
+		"method": "roulette",
+		"boltzmann_initial_temperature": 100,
+		"boltzmann_final_temperature": 0,
+		"boltzmann_decay_rate": 0.01,
+		"tournament_threshold": 0.6,
+		"truncate_size": 5
+	},
+	"mutation": {
+		"method": "normal",
+		"mutation_rate": 0.05,
+		"uniform_mutation_bound": 1,
+		"normal_mutation_standard_deviation": 0.5
+	},
+	"cut_condition": {
+		"method": "max_generations",
+		"max_generations": 1000,
+		"min_fitness": 2.99999,
+		"fitness_threshold": 0.00005,
+		"fitness_required_generations_repeats": 10,
+		"max_time": 10
+	}
 }

@@ -5,15 +5,15 @@ from ..benchmarks.utils.read_benchmark_parameters_from_config import read_benchm
 from ..optimization_problem.functions import fitness_function
 from matplotlib import pyplot as plt
 
-def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters, crossover_parameters, mutation_parameters, population_size, bounds, output_filename):
+def run_mutation_rate_benchmark(selection_parameters, cut_condition_parameters, crossover_parameters, mutation_parameters, population_size, min_real, max_real,mutation_rates, output_filename):
     tmp_results_filename = 'benchmark_tmp.csv'
     plt.figure(figsize=(13,5))
 
-    for bound in bounds:
-
+    for mutation_rate in mutation_rates:
+        mutation_parameters.mutation_rate = mutation_rate
         initial_population = generate_initial_population(
-            population_size,bound['from'],bound['to'])
-        print("Bounds: {} - {}".format(bound['from'],bound['to']))
+            min_real,max_real)
+        print("Mutation rate: {}".format(mutation_rate))
 
         summary = optimize(initial_population, fitness_function, selection_parameters,
                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
@@ -24,7 +24,7 @@ def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters,
             tmp_results_filename)
 
         line, = plt.plot(generation_numbers, fitness_values)
-        line.set_label(f"[{bound['from']}, {bound['to']}] - {round(summary.fitness,2)}")
+        line.set_label(f"{mutation_rate} - {round(summary.fitness,2)}")
 
     plt.legend()
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
@@ -32,5 +32,5 @@ def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters,
 if __name__ == '__main__':
     parameters = read_benchmark_parameters_from_config()
 
-    run_initial_bounds_benchmark(parameters.selection_parameters, parameters.cut_condition_parameters, parameters.crossover_parameters,
-                            parameters.mutation_parameters, parameters.population_size, parameters.bounds, parameters.initial_bounds_benchmark_output_filename)
+    run_mutation_rate_benchmark(parameters.selection_parameters, parameters.cut_condition_parameters, parameters.crossover_parameters,
+                            parameters.mutation_parameters, parameters.population_size, parameters.bounds, parameters.min_real, parameters.max_real, parameters.mutation_rates, parameters.output_filename)

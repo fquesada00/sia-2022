@@ -1,5 +1,6 @@
 import random
 import time
+from ..genetic_algorithms.selection_methods import uniform_selection
 from ..genetic_algorithms.crossover_methods import CrossoverParameters
 from ..genetic_algorithms.mutation_methods import MutationParameters
 from ..models.Summary import Summary
@@ -33,7 +34,7 @@ def evolve(population, fitness_function, selection_parameters, crossover_paramet
 
     while len(new_population) < len(population):
         # Select parents
-        parent1, parent2 = selection_parameters.selection_method(
+        parent1, parent2 = uniform_selection(
             population, fitness_function, 2, selection_parameters)
 
         # Reproduce
@@ -51,19 +52,22 @@ def evolve(population, fitness_function, selection_parameters, crossover_paramet
     return selection_parameters.selection_method(new_population + population, fitness_function, len(population), selection_parameters)
 
 
-def optimize(output_filename, initial_population, fitness_function, selection_parameters, crossover_parameters: CrossoverParameters, mutation_parameters: MutationParameters, cut_condition_parameters):
+def optimize(initial_population, fitness_function, selection_parameters, crossover_parameters: CrossoverParameters, mutation_parameters: MutationParameters, cut_condition_parameters, output_filename=None):
 
     global number_of_generations
     number_of_generations = 0
 
     cut_conditions.prev_best_fitness = None
     cut_conditions.repeated_generations = 0
+    
+    generations_printer = None
+    
+    if output_filename is not None:
+        generations_printer = GenerationsPrinter(
+            output_filename, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)
 
-    generations_printer = GenerationsPrinter(
-        output_filename, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters)
-
-    generations_printer.open_file()
-    generations_printer.print_initial_parameters()
+        generations_printer.open_file()
+        generations_printer.print_initial_parameters()
 
     population = initial_population
 
@@ -72,7 +76,8 @@ def optimize(output_filename, initial_population, fitness_function, selection_pa
         best_individual = sorted(
             population, key=fitness_function, reverse=True)[0]
 
-        generations_printer.print_generation(fitness_function(best_individual))
+        if output_filename is not None:
+            generations_printer.print_generation(fitness_function(best_individual))
 
         print(
             f'Generation N°{number_of_generations}: {best_individual} - Fitness: {fitness_function(best_individual)}\n')
@@ -82,7 +87,8 @@ def optimize(output_filename, initial_population, fitness_function, selection_pa
                             selection_parameters, crossover_parameters, mutation_parameters, mutation_parameters)
         number_of_generations += 1
 
-    generations_printer.close_file()
+    if output_filename is not None:
+        generations_printer.close_file()
 
     end_time = time.time()
 

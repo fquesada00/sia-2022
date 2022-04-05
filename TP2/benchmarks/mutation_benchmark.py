@@ -17,8 +17,8 @@ def run_mutation_benchmark(selection_parameters, cut_condition_parameters, cross
 
         print("Mutation method: {}".format(mutation_method))
 
-        summary = optimize(tmp_results_filename, initial_population, fitness_function, selection_parameters,
-                           crossover_parameters, mutation_parameters, cut_condition_parameters)
+        summary = optimize(initial_population, fitness_function, selection_parameters,
+                           crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
         print(summary)
 

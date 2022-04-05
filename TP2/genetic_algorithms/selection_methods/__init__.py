@@ -5,7 +5,7 @@ from .elite_selection import elite_selection
 from .boltzmann_selection import boltzmann_selection
 from .rank_selection import rank_selection
 from .truncate_selection import truncate_selection
-
+from .uniform_selection import uniform_selection
 from enum import Enum
 
 

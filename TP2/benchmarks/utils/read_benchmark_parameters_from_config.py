@@ -10,7 +10,7 @@ from ...genetic_algorithms.selection_methods import SelectionMethod, SelectionPa
 
 def read_benchmark_parameters_from_config():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", type=argparse.FileType('r'), default="TP2/benchmark_config.json",
+    parser.add_argument("--config_file", type=argparse.FileType('r'), default="TP2/benchmark_config.json",
                         help="Benchmark configuration in JSON format", dest="input_file", required=False)
 
     args = parser.parse_args()

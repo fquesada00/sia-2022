@@ -17,8 +17,8 @@ def run_cut_condition_benchmark(selection_parameters, cut_condition_parameters, 
 
             print("Cut condition: {}".format(cut_condition))
 
-            summary = optimize(tmp_results_filename, initial_population, fitness_function, selection_parameters,
-                            crossover_parameters, mutation_parameters, cut_condition_parameters)
+            summary = optimize(initial_population, fitness_function, selection_parameters,
+                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
             print(summary)
 
