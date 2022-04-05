@@ -22,8 +22,6 @@ def run_cut_condition_benchmark(selection_parameters, cut_condition_parameters, 
             summary = optimize(initial_population, fitness_function, selection_parameters,
                                crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
-            print(summary)
-
             f.write(f"{cut_condition},{summary.to_csv()}")
 
             # print method - fitness value to csv file

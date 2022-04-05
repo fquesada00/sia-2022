@@ -1,4 +1,5 @@
 
+from ..models import Summary
 from ..genetic_algorithms.crossover_methods import CrossoverMethod
 from ..genetic_algorithms import generate_initial_population, optimize
 from ..benchmarks.utils.get_results_data import get_results_data
@@ -13,6 +14,10 @@ def run_crossover_benchmark(selection_parameters, cut_condition_parameters, cros
     tmp_results_filename = './TP2/benchmarks/benchmark_tmp.csv'
     plt.figure(figsize=(10, 5))
 
+    summary_file = open('./TP2/benchmarks/output/' +
+                        output_filename + '.csv', 'w')
+    summary_file.write(f"crossover_method,{Summary.csv_header()}")
+
     for crossover_method in CrossoverMethod:
         crossover_parameters.crossover_method = crossover_method
 
@@ -22,16 +27,21 @@ def run_crossover_benchmark(selection_parameters, cut_condition_parameters, cros
             for n_points in multiple_points:
                 print("Multiple points: {}".format(n_points))
                 crossover_parameters.multiple_point_crossover_points = n_points
-                summary= optimize(initial_population, fitness_function, selection_parameters,
-                           crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
-                generation_numbers, fitness_values = get_results_data(tmp_results_filename)
+                summary = optimize(initial_population, fitness_function, selection_parameters,
+                                   crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
+                generation_numbers, fitness_values = get_results_data(
+                    tmp_results_filename)
                 line, = plt.plot(generation_numbers, fitness_values)
-                line.set_label(f"{crossover_method} {n_points} - {round(summary.fitness,3)}")
-                print(summary)
+                line.set_label(
+                    f"{crossover_method} {n_points} - {round(summary.fitness,3)}")
+                summary_file.write(
+                    f"{crossover_method},{summary.to_csv()}")
         else:
-            summary= optimize(initial_population, fitness_function, selection_parameters,
-                           crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
-            print(summary)
+            summary = optimize(initial_population, fitness_function, selection_parameters,
+                               crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
+
+            summary_file.write(
+                f"{crossover_method},{summary.to_csv()}")
 
             generation_numbers, fitness_values = get_results_data(
                 tmp_results_filename)
@@ -41,6 +51,8 @@ def run_crossover_benchmark(selection_parameters, cut_condition_parameters, cros
 
     plt.legend()
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
+
+    summary_file.close()
 
 
 if __name__ == '__main__':
