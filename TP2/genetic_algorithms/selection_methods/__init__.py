@@ -1,3 +1,4 @@
+from argparse import ArgumentError
 from ...constants import INITIAL_TEMPERATURE, FINAL_TEMPERATURE, EXP_RATE, K, TOURNAMENT_THRESHOLD
 from .roulette_selection import roulette_selection
 from .tournament_selection import tournament_selection
@@ -52,6 +53,10 @@ class SelectionMethod(Enum):
 class SelectionParameters():
 
     def __init__(self, selection_method=SelectionMethod.ROULETTE, initial_temperature=INITIAL_TEMPERATURE, final_temperature=FINAL_TEMPERATURE, exp_rate=EXP_RATE, k=K, threshold=TOURNAMENT_THRESHOLD):
+        if final_temperature < initial_temperature:
+            raise ArgumentError("Final temperature must be greater than initial temperature")
+        if final_temperature <= 0:
+            raise ArgumentError("Final temperature must be greater than 0")
         self._selection_method = selection_method
         self._initial_temperature = initial_temperature
         self._final_temperature = final_temperature
