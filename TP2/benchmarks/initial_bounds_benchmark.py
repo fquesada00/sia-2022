@@ -34,6 +34,8 @@ def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters,
             f"[{bound['from']}, {bound['to']}] - {round(summary.fitness,2)}")
 
     plt.legend()
+    plt.xlabel('Número de generación')
+    plt.ylabel('Fitness máximo de generación')
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
 
     summary_file.close()
@@ -43,4 +45,4 @@ if __name__ == '__main__':
     parameters = read_benchmark_parameters_from_config()
 
     run_initial_bounds_benchmark(parameters.selection_parameters, parameters.cut_condition_parameters, parameters.crossover_parameters,
-                                 parameters.mutation_parameters, parameters.population_size, parameters.bounds, parameters.initial_bounds_benchmark_output_filename)
+                                 parameters.mutation_parameters, parameters.population_size, parameters.bounds, parameters.initial_bounds_output_filename)

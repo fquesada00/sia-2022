@@ -34,6 +34,8 @@ def run_mutation_rate_benchmark(selection_parameters, cut_condition_parameters, 
         line.set_label(f"{mutation_rate} - {round(summary.fitness,2)}")
 
     plt.legend()
+    plt.xlabel('Número de generación')
+    plt.ylabel('Fitness máximo de generación')
     plt.savefig('./TP2/benchmarks/output/' + output_filename + '.png', dpi=300)
 
     summary_file.close()
