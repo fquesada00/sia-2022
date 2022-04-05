@@ -24,7 +24,7 @@ def run_selection_benchmark(selection_parameters, cut_condition_parameters, cros
 
     summary_file = open('./TP2/benchmarks/output/' +
                         output_filename + '.csv', 'w')
-    summary_file.write(f"selection_method,{Summary.csv_header()}\n")
+    summary_file.write(f"selection_method,{Summary.csv_header()}")
 
     for selection_method in SelectionMethod:
         selection_parameters.selection_method = selection_method
@@ -35,7 +35,7 @@ def run_selection_benchmark(selection_parameters, cut_condition_parameters, cros
                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
         summary_file.write(
-            f"{selection_method},{summary.to_csv()}\n")
+            f"{selection_method},{summary.to_csv()}")
 
         generation_numbers, fitness_values = get_results_data(
             tmp_results_filename)

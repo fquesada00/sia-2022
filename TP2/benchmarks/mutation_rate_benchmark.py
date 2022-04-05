@@ -13,7 +13,7 @@ def run_mutation_rate_benchmark(selection_parameters, cut_condition_parameters, 
 
     summary_file = open('./TP2/benchmarks/output/' +
                         output_filename + '.csv', 'w')
-    summary_file.write(f"mutation_rate,{Summary.csv_header()}\n")
+    summary_file.write(f"mutation_rate,{Summary.csv_header()}")
 
     for mutation_rate in mutation_rates:
         mutation_parameters.mutation_rate = mutation_rate
@@ -25,7 +25,7 @@ def run_mutation_rate_benchmark(selection_parameters, cut_condition_parameters, 
                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
         summary_file.write(
-            f"{mutation_rate},{summary.to_csv()}\n")
+            f"{mutation_rate},{summary.to_csv()}")
 
         generation_numbers, fitness_values = get_results_data(
             tmp_results_filename)

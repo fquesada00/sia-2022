@@ -13,7 +13,7 @@ def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters,
 
     summary_file = open('./TP2/benchmarks/output/' +
                         output_filename + '.csv', 'w')
-    summary_file.write(f"initial_bounds,{Summary.csv_header()}\n")
+    summary_file.write(f"initial_bounds,{Summary.csv_header()}")
 
     for bound in bounds:
 
@@ -24,7 +24,7 @@ def run_initial_bounds_benchmark(selection_parameters, cut_condition_parameters,
                            crossover_parameters, mutation_parameters, cut_condition_parameters, output_filename=tmp_results_filename)
 
         summary_file.write(
-            f"{bound['from']}:{bound['to']},{summary.to_csv()}\n")
+            f"{bound['from']}:{bound['to']},{summary.to_csv()}")
 
         generation_numbers, fitness_values = get_results_data(
             tmp_results_filename)

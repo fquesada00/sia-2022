@@ -12,7 +12,7 @@ def run_cut_condition_benchmark(selection_parameters, cut_condition_parameters, 
     tmp_results_filename = 'benchmark_tmp.csv'
 
     with open('./TP2/benchmarks/output/' + output_filename + '.csv', 'w') as f:
-        f.write(f"cut_condition,{Summary.csv_header()}\n")
+        f.write(f"cut_condition,{Summary.csv_header()}")
 
         for cut_condition in CutCondition:
             cut_condition_parameters.cut_condition_method = cut_condition
@@ -24,7 +24,7 @@ def run_cut_condition_benchmark(selection_parameters, cut_condition_parameters, 
 
             print(summary)
 
-            f.write(f"{cut_condition},{summary.to_csv()}\n")
+            f.write(f"{cut_condition},{summary.to_csv()}")
 
             # print method - fitness value to csv file
 
