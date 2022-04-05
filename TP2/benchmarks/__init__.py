@@ -1,7 +1,7 @@
 
 class BenchmarkParameters():
 
-    def __init__(self, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters, population_size, min_real, max_real, bounds, mutation_rates, crossover_output_filename, mutation_output_filename, cut_condition_output_filename, selection_output_filename, initial_bounds_output_filename, mutation_rate_output_filename):
+    def __init__(self, selection_parameters, crossover_parameters, mutation_parameters, cut_condition_parameters, population_size, min_real, max_real, bounds, mutation_rates, multiple_points, crossover_output_filename, mutation_output_filename, cut_condition_output_filename, selection_output_filename, initial_bounds_output_filename, mutation_rate_output_filename):
         self._selection_parameters = selection_parameters
         self._crossover_parameters = crossover_parameters
         self._mutation_parameters = mutation_parameters
@@ -11,6 +11,7 @@ class BenchmarkParameters():
         self._max_real = max_real
         self._bounds = bounds
         self._mutation_rates = mutation_rates
+        self._multiple_points = multiple_points
         self._crossover_benchmark_output_filename = crossover_output_filename
         self._mutation_benchmark_output_filename = mutation_output_filename
         self._cut_condition_benchmark_output_filename = cut_condition_output_filename
@@ -49,6 +50,14 @@ class BenchmarkParameters():
     @cut_condition_parameters.setter
     def cut_condition_parameters(self, value):
         self._cut_condition_parameters = value
+
+    @property
+    def multiple_points(self):
+        return self._multiple_points
+    
+    @multiple_points.setter
+    def multiple_points(self, value):
+        self._multiple_points = value
 
     @property
     def population_size(self):
