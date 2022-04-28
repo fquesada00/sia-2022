@@ -1,5 +1,5 @@
-import numpy as np
 from __future__ import annotations
+import numpy as np
 from .ActivationFunction import ActivationFunction
 
 
@@ -11,15 +11,15 @@ class Layer:
     def connect_to(self, lower_layer: Layer):
         self.accum_adjustment = np.zeros(
             (self.size, lower_layer.size))
-
         self.weights = np.random.rand(
             self.size, lower_layer.size)
+        print(self.weights)
 
     def propagate_forward(self, inputs, biases):
         self.excitations = np.dot(self.weights, inputs) + biases
-        self.activations = self.activation_function(self.excitation)
+        self.activations = self.activation_function(self.excitations)
 
-        return self.activation
+        return self.activations
 
     def propagate_backward(self, upper_weights: np.ndarray, upper_errors: np.ndarray):
         self.errors = self.df_activation_function(

@@ -11,8 +11,9 @@ class ActivationFunction():
     # SOFTMAX = "softmax"
 
     def __init__(self, name):
-        self.function = self.__get_function__(name)
-        self._derivative = self.__get_df_function__(name)
+        self.name=name
+        self.function = self.__get_function__()
+        self._derivative = self.__get_df_function__()
 
     def __str__(self):
         return self.name
@@ -51,6 +52,35 @@ class ActivationFunction():
             # return lambda x: x * (1 - x)
         else:
             raise Exception("Unknown activation function")
+
+    def min(self):
+        if self.name == ActivationFunction.RELU:
+            return 0
+        elif self.name == ActivationFunction.STEP:
+            return -1
+        elif self.name == ActivationFunction.IDENTITY:
+            return -1
+        elif self.name == ActivationFunction.TANH:
+            return -1
+        elif self.name == ActivationFunction.LOGISTIC:
+            return 0
+        elif self.name == ActivationFunction.SOFTMAX:
+            return 0
+
+    def max(self):
+        if self.name == ActivationFunction.RELU:
+            return 1
+        elif self.name == ActivationFunction.STEP:
+            return 1
+        elif self.name == ActivationFunction.IDENTITY:
+            return 1
+        elif self.name == ActivationFunction.TANH:
+            return 1
+        elif self.name == ActivationFunction.LOGISTIC:
+            return 1
+        elif self.name == ActivationFunction.SOFTMAX:
+            return 1
+
 
     def __call__(self, x):
         return self.function(x)
