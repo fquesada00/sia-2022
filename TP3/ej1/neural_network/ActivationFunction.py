@@ -6,6 +6,8 @@ class ActivationFunction():
     LOGISTIC = "logistic"
     TANH = "tanh"
     RELU = "relu"
+    STEP = "step"
+    IDENTITY = "identity"
     # SOFTMAX = "softmax"
 
     def __init__(self, name):
@@ -22,6 +24,10 @@ class ActivationFunction():
             return lambda x: np.tanh(x)
         elif self.name == ActivationFunction.RELU:
             return lambda x: np.maximum(0, x)
+        elif self.name == ActivationFunction.STEP:
+            return lambda x: 1 if x > 0 else -1
+        elif self.name == ActivationFunction.IDENTITY:
+            return lambda x: x
         # elif self.name == ActivationFunction.SOFTMAX:
         #     return lambda x: np.exp(x) / np.sum(np.exp(x))
         else:
@@ -34,6 +40,10 @@ class ActivationFunction():
             return lambda x: 1 - self.function(x) ** 2
         elif self.name == ActivationFunction.RELU:
             return lambda x: 1 if x > 0 else 0
+        elif self.name == ActivationFunction.STEP:
+            return lambda x: 1
+        elif self.name == ActivationFunction.IDENTITY:
+            return lambda x: 1
         # elif self.name == ActivationFunction.SOFTMAX:
             # define jacobi matrix
             # @link https://towardsdatascience.com/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1
