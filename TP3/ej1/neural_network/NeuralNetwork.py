@@ -67,7 +67,7 @@ class NeuralNetwork:
         for layer in self.layers[1:]:
             layer.update_weights()
 
-    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray):
+    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, epochs: int = 1, error: float = 1e-5):
         if (self.output_file_name is not None):
             output_file = open(self.output_file_name, "w")
             self.save_output_weights_shape(output_file)
@@ -84,17 +84,17 @@ class NeuralNetwork:
         to_max = output_layer.activation_function.max()
 
         # Iterate over the input data (the data set)
-        epochs = 0
-        while epochs < 5:
-            epochs += 1
+        current_epoch = 0
+        output_error = 1
+        while current_epoch < epochs and output_error > error:
+            current_epoch += 1
             for index, input_data in enumerate(input_dataset):
                 output = self.predict(input_data)
 
                 # Normalize the output
                 normalized_output = self.normalize(
                     output, from_min, from_max, to_min, to_max)
-                print(
-                    f"normalized output - expected output {normalized_output} - {expected_output[index]} = {normalized_output - expected_output[index]}")
+
                 output_error = output_layer.activation_function.derivative(
                     output_layer.excitations) * (expected_output[index] - normalized_output)
                 self.propagate_backward(output_error)
@@ -109,7 +109,7 @@ class NeuralNetwork:
                     self.update_weights()
                     batch_iteration = 0
 
-            self.save_output_weights(output_file)
+                self.save_output_weights(output_file)
 
     def predict(self, input_data: np.ndarray):
         input_data_with_bias = np.insert(input_data, 0, BIAS_NEURON_ACTIVATION)

@@ -2,30 +2,46 @@ import matplotlib.pyplot as plt
 import argparse
 
 import numpy as np
-import matplotlib
+from matplotlib import animation
 
 
 def plot_linear_separation(input_dataset, expected_output, weights):
-    plt.figure(figsize=[10, 5])
+    fig = plt.figure(figsize=[10, 5])
+    ax = plt.axes(xlim=(-3, 3), ylim=(-3, 3))
+    line, = ax.plot([], [], lw=2)
+
+    def init():
+        line.set_data([], [])
+        return line,
+
+    def animate(i):
+        x = np.linspace(-2, 2, 1000)
+        y = (-x * weights[i][:, 1] + weights[i][:, 0]) / weights[i][:, 2]
+        line.set_data(x, y)
+        return line,
+
+    anim = animation.FuncAnimation(fig, animate, init_func=init,
+                                   frames=len(weights), interval=5, blit=True)
+
     # Load dataset values
 
     legends = []
 
     # Having x*w1 + y*w2 - w0 = 0
     # y = (x*w1 + w0) / w2
-    for index, weight in enumerate(weights):
-        x = np.linspace(-2, 2, 100)
-        y = (-x * weight[1] + weight[0]) / weight[2]
-        legends.append(f"Iteration {index}")
-        plt.plot(x, y)
+    # for index, weight in enumerate(weights):
+    #     x = np.linspace(-2, 2, 100)
+    #     y = (-x * weight[:, 1] + weight[:, 0]) / weight[:, 2]
+    #     plt.plot(x, y)
 
     for data_number, data in enumerate(input_dataset):
         plt.plot(data[0], data[1], marker='o',
                  color=f'{ "blue" if expected_output[data_number][0] == 1 else "red" }')
-    plt.xlim(left=-3, right=3)
-    plt.ylim(bottom=-3, top=3)
-    plt.legend(legends)
+    # plt.xlim(left=-3, right=3)
+    # plt.ylim(bottom=-3, top=3)
     plt.grid()
+    # anim.save('learning.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+
     plt.show()
 
 
@@ -39,9 +55,8 @@ def parse_weights(weights_file_name):
                 continue
 
             output_weights_iterations.append(list(map(float, line.split())))
-
-    # return [np.ndarray(weights, shape=(weights_rows, weights_cols)) for weights in output_weights_iterations]
-    return output_weights_iterations
+    return [np.array(weights).reshape((weights_rows, weights_cols)) for weights in output_weights_iterations]
+    # return output_weights_iterations
 
 
 if __name__ == '__main__':

@@ -17,7 +17,6 @@ class Layer:
 
         self.weights = np.append(np.full((self.size, 1), bias), np.random.uniform(
             low=-1, high=1, size=(self.size, lower_layer.size)), axis=1)
-        print(f"CONNNECT TO {self.weights}")
 
     def propagate_forward(self, inputs, is_last_layer: bool = False):
         self.excitations = np.dot(self.weights, inputs)
@@ -42,8 +41,6 @@ class Layer:
         matrix_lower_activations = np.array([lower_activations])
         accum = learning_rate * \
             np.dot(self.errors, matrix_lower_activations)
-        if accum[1] < 0:
-            print("negative accum: ", accum)
         self.accum_adjustment += accum
 
     def update_weights(self):
