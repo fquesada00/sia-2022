@@ -110,6 +110,11 @@ class NeuralNetwork:
                 
                 batch_iteration += 1
                     
+                error = self.error(input_dataset, expected_output)
+
+                if error < tol:
+                    break
+
                 if batch_iteration == self.batch_size:
                     # Print weights to file
                     if (self.output_file_name is not None):
@@ -121,10 +126,6 @@ class NeuralNetwork:
 
                 self.save_output_weights(output_file)
 
-                error = self.error(input_dataset, expected_output)
-
-                if error < tol:
-                    break
                 
                 print(f'error: {error}')
         
@@ -136,7 +137,11 @@ class NeuralNetwork:
             predictions = []
         for input_data in input_dataset:
             predictions.append(self.predict(input_data))
-        print(f'predictions: {len(predictions)}')
+        accumulated_sum = 0
+        print(predictions)
+        for i in range(len(predictions)):
+            accumulated_sum += (expected_output.T[0][i] - predictions[i]) ** 2
+        return accumulated_sum / 2
         return 0.5 * np.sum(np.square(expected_output.T - np.array([prediction for prediction in predictions])))
 
     def predict(self, input_data: np.ndarray):

@@ -41,7 +41,7 @@ if __name__ == "__main__":
     training_method = args.training_method
     k = int(args.k)
     training_ratio = float(args.ratio)
-    neural_network = NeuralNetwork(hidden_sizes=[], input_size=3, output_size=1, learning_rate=1,
+    neural_network = NeuralNetwork(hidden_sizes=[], input_size=1, output_size=1, learning_rate=1,
                                    bias=0.5, activation_function=activation_function, batch_size=1)
     if training_method == 'all':
         neural_network.train(input_dataset, expected_output, epochs=10)
