@@ -1,9 +1,10 @@
 from io import FileIO
+import random
 import numpy as np
 
 from typing import List
 
-from neural_network.Layer import Layer
+from .Layer import Layer
 from .constants import BIAS_NEURON_ACTIVATION
 
 
@@ -40,13 +41,13 @@ class NeuralNetwork:
         return self.layers[-1].propagate_forward(
             lower_activation, True)
 
-    def propagate_backward(self, output_error: np.ndarray):
+    def propagate_backward(self, output_delta: np.ndarray):
         # Start from the output layer
         upper_weights = self.layers[-1].weights
-        upper_errors = output_error
+        upper_delta = output_delta
 
-        # Set error for output layer
-        self.layers[-1].errors = upper_errors
+        # Set delta for output layer
+        self.layers[-1].delta = upper_delta
 
         # Update weights for output layer
         self.layers[-1].update_accum_adjustment(
@@ -54,24 +55,26 @@ class NeuralNetwork:
 
         # Iterate over the hidden layers in reverse order
         for index in reversed(range(1, len(self.layers) - 1)):
-            layer_errors = self.layers[index].propagate_backward(
-                upper_weights, upper_errors)
+            layer_delta = self.layers[index].propagate_backward(
+                upper_weights, upper_delta)
 
             self.layers[index].update_accum_adjustment(
                 self.layers[index - 1].activations, self.learning_rate)
 
-            upper_errors = layer_errors
+            upper_delta = layer_delta
             upper_weights = self.layers[index].weights
 
     def update_weights(self):
         for layer in self.layers[1:]:
             layer.update_weights()
 
-    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, epochs: int = 1, error: float = 1e-5):
+    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, epochs: int = 1, tol: float = 1e-5):
+        output_file = None
         if (self.output_file_name is not None):
             output_file = open(self.output_file_name, "w")
             self.save_output_weights_shape(output_file)
 
+        dataset_length = len(input_dataset)
         batch_iteration = 0
 
         # Calculate min and max values of the expected output for normalization
@@ -85,42 +88,69 @@ class NeuralNetwork:
 
         # Iterate over the input data (the data set)
         current_epoch = 0
-        output_error = 1
-        while current_epoch < epochs and output_error > error:
+        output_delta = 1
+        error = self.error(input_dataset, expected_output)
+        
+        while current_epoch < epochs and error > tol:
+
             current_epoch += 1
-            for index, input_data in enumerate(input_dataset):
-                output = self.predict(input_data)
+            random_indexes = random.sample(range(0, dataset_length), dataset_length)
+            for index in random_indexes:
+                output = self.predict(input_dataset[index])
 
                 # Normalize the output
                 normalized_output = self.normalize(
                     output, from_min, from_max, to_min, to_max)
 
-                output_error = output_layer.activation_function.derivative(
+                output_delta = output_layer.activation_function.derivative(
                     output_layer.excitations) * (expected_output[index] - normalized_output)
-                self.propagate_backward(output_error)
 
+                self.propagate_backward(output_delta)
+
+                
                 batch_iteration += 1
-
+                    
                 if batch_iteration == self.batch_size:
                     # Print weights to file
                     if (self.output_file_name is not None):
                         self.save_output_weights(output_file)
 
                     self.update_weights()
+                    
                     batch_iteration = 0
 
                 self.save_output_weights(output_file)
+
+                error = self.error(input_dataset, expected_output)
+
+                if error < tol:
+                    break
+                
+                print(f'error: {error}')
+        
+        print(f'error: {error}')
+
+                    
+    def error(self, input_dataset, expected_output, predictions=None):
+        if predictions is None:
+            predictions = []
+        for input_data in input_dataset:
+            predictions.append(self.predict(input_data))
+        print(f'predictions: {len(predictions)}')
+        return 0.5 * np.sum(np.square(expected_output.T - np.array([prediction for prediction in predictions])))
 
     def predict(self, input_data: np.ndarray):
         input_data_with_bias = np.insert(input_data, 0, BIAS_NEURON_ACTIVATION)
         return self.propagate_forward(input_data_with_bias)
 
     def test(self, input_dataset, expected_output):
-        for input_data in input_dataset:
-            prediction = self.predict(input_data)
-            print(f'{input_data} -> {prediction}')
+        predictions = []
+        return self.error(input_dataset,expected_output, predictions), predictions
+        
 
     def normalize(self, x: np.ndarray, from_min: float, from_max: float, to_min: float, to_max: float):
+        if to_min is None or to_max is None:
+            return x
         return (x - from_min) / (from_max - from_min) * (to_max - to_min) + to_min
 
     def print_weights(self):
@@ -128,6 +158,8 @@ class NeuralNetwork:
             print(f'Layer #{index + 1}: {layer.weights}')
 
     def save_output_weights(self, file: FileIO):
+        if file is None:
+            return
         newline = '\n'
         output_weights = self.layers[-1].weights
         file.write(

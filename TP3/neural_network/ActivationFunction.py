@@ -59,7 +59,7 @@ class ActivationFunction():
         elif self.name == ActivationFunction.STEP:
             return -1
         elif self.name == ActivationFunction.IDENTITY:
-            return -1
+            return None
         elif self.name == ActivationFunction.TANH:
             return -1
         elif self.name == ActivationFunction.LOGISTIC:
@@ -73,7 +73,7 @@ class ActivationFunction():
         elif self.name == ActivationFunction.STEP:
             return 1
         elif self.name == ActivationFunction.IDENTITY:
-            return 1
+            return None
         elif self.name == ActivationFunction.TANH:
             return 1
         elif self.name == ActivationFunction.LOGISTIC:
