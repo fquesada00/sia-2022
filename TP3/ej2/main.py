@@ -25,6 +25,12 @@ def parse_dataset(dataset_file_name):
 
 
 if __name__ == "__main__":
+        # numbers from 1 to 100
+    input_dataset = np.array([i for i in range(1,101)])
+    print(input_dataset)
+    for i in range(1,101):
+        print(i)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--function", type=str,
                         default="linear", help="Activation function to use with perceptron.\n Value may be 'linear' or 'non-linear'", dest="activation_function", required=False)
@@ -41,11 +47,13 @@ if __name__ == "__main__":
     training_method = args.training_method
     k = int(args.k)
     training_ratio = float(args.ratio)
-    neural_network = NeuralNetwork(hidden_sizes=[], input_size=1, output_size=1, learning_rate=1,
+    neural_network = NeuralNetwork(hidden_sizes=[], input_size=1, output_size=1, learning_rate=0.0001,
                                    bias=0.5, activation_function=activation_function, batch_size=1)
     if training_method == 'all':
-        neural_network.train(input_dataset, expected_output, epochs=10)
+        neural_network.train(input_dataset, expected_output, epochs=100)
         error, predictions = neural_network.test(input_dataset,expected_output)
+        print(f"Error: {error}")
+        print(f"Predictions: {predictions}")
         confusion_matrix = generate_confusion_matrix(expected_output, predictions)
         print_metrics(confusion_matrix)
     elif training_method == 'holdout':
@@ -54,5 +62,8 @@ if __name__ == "__main__":
         k_fold_cross_validation_eval(input_dataset, expected_output, neural_network, k=k, activation_function=activation_function)
     else:
         print("Invalid training method")
+
+
+
 
 

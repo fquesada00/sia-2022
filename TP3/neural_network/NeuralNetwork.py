@@ -138,7 +138,6 @@ class NeuralNetwork:
         for input_data in input_dataset:
             predictions.append(self.predict(input_data))
         accumulated_sum = 0
-        print(predictions)
         for i in range(len(predictions)):
             accumulated_sum += (expected_output.T[0][i] - predictions[i]) ** 2
         return accumulated_sum / 2
