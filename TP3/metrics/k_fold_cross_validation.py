@@ -19,9 +19,12 @@ def k_fold_cross_validation_eval(input_dataset, expected_output, model: NeuralNe
         # Get the test data
         test_set = shuffled_input[i * fold_size: (i + 1) * fold_size]
 
+        expected_output_test_set = expected_output[i * fold_size: (i + 1) * fold_size]
+
         # Get the training data
         training_set = np.concatenate((shuffled_input[:i * fold_size], shuffled_input[(i + 1) * fold_size:]))
-
+        
+        expected_output_training_set = np.concatenate((expected_output[:i * fold_size], expected_output[(i + 1) * fold_size:]))
 
 
         model.train(training_set, expected_output, epochs=100, tol=1e-8)
@@ -30,7 +33,7 @@ def k_fold_cross_validation_eval(input_dataset, expected_output, model: NeuralNe
         if current_error < min_error:
             print(f"New min error: {current_error}")
             min_error = current_error
-            min_error_sets = {'test_set':test_set,'training_set':training_set}
+            min_error_sets = {'test_set': [test_set,expected_output_test_set], 'training_set': [training_set,expected_output_training_set]}
 
         error += current_error
 

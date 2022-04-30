@@ -10,8 +10,9 @@ class ActivationFunction():
     IDENTITY = "identity"
     # SOFTMAX = "softmax"
 
-    def __init__(self, name):
+    def __init__(self, name, beta = 1):
         self.name=name
+        self.beta = beta
         self.function = self.__get_function__()
         self._derivative = self.__get_df_function__()
 
@@ -19,10 +20,11 @@ class ActivationFunction():
         return self.name
 
     def __get_function__(self):
+        print(f"beta: {self.beta}")
         if self.name == ActivationFunction.LOGISTIC:
-            return lambda x: 1 / (1 + np.exp(-x))
+            return lambda x: 1 / (1 + np.exp(-2 * self.beta * x))
         elif self.name == ActivationFunction.TANH:
-            return lambda x: np.tanh(x)
+            return lambda x: np.tanh(self.beta * x)
         elif self.name == ActivationFunction.RELU:
             return lambda x: np.maximum(0, x)
         elif self.name == ActivationFunction.STEP:
@@ -36,9 +38,9 @@ class ActivationFunction():
 
     def __get_df_function__(self):
         if self.name == ActivationFunction.LOGISTIC:
-            return lambda x: self.function(x) * (1 - self.function(x))
+            return lambda x: 2 * self.beta * self.function(x) * (1 - self.function(x))
         elif self.name == ActivationFunction.TANH:
-            return lambda x: 1 - self.function(x) ** 2
+            return lambda x: self.beta * (1 - self.function(x) ** 2)
         elif self.name == ActivationFunction.RELU:
             return lambda x: 1 if x > 0 else 0
         elif self.name == ActivationFunction.STEP:

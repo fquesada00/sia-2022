@@ -6,10 +6,10 @@ from .ActivationFunction import ActivationFunction
 
 
 class Layer:
-
-    def __init__(self, size: int, activation_function: str):
+    
+    def __init__(self, size: int, activation_function: str, beta: float = 1):
         self.size = size
-        self.activation_function = ActivationFunction(activation_function)
+        self.activation_function = ActivationFunction(activation_function, beta)
 
     def connect_to(self, lower_layer: Layer, bias: float):
         self.accum_adjustment = np.zeros(

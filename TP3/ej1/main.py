@@ -21,8 +21,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     input_dataset, expected_output = get_dataset(args.dataset)
-    neural_network = NeuralNetwork(hidden_sizes=[], input_size=2, output_size=1, learning_rate=0.1,
-                                   bias=0.5, activation_function="step", batch_size=1, output_file_name='output_layer_weights.txt')
-    neural_network.train(input_dataset, expected_output, epochs=100, tol=1e-8)
+    neural_network = NeuralNetwork(hidden_sizes=[], input_size=2, output_size=1, learning_rate=0.8,
+                                   bias=0.5, activation_function_str="step", batch_size=1, output_file_name='output_layer_weights.txt')
+    neural_network.train(input_dataset, expected_output, epochs=1000, tol=1e-8)
 
-    neural_network.test(input_dataset, expected_output)
+    error,predictions = neural_network.test(input_dataset, expected_output)
+    print("Error: ", error)
+    print("Predictions: ", predictions)
