@@ -108,12 +108,8 @@ class NeuralNetwork:
                 output = self.predict(input_dataset[index])
                 scaled_expected_output = self.scale(expected_output[index],self.train_set_min,self.train_set_max,self.activation_min,self.activation_max)
 
-                print(f"output: {output}, scaled_expected_output: {scaled_expected_output}, expected_output: {expected_output[index]}")
-                print(f"output excitation: {output_layer.excitations}")
-
                 output_delta = output_layer.activation_function.derivative(
                     output_layer.excitations) * (scaled_expected_output - output)
-
                 self.propagate_backward(output_delta)
                 
                 batch_iteration += 1
@@ -136,7 +132,7 @@ class NeuralNetwork:
                         break
 
                     self.update_weights()
-                    self.print_weights()
+                    # self.print_weights()
                     
                     batch_iteration = 0
                     
@@ -155,10 +151,10 @@ class NeuralNetwork:
         
         for i in range(len(predictions)):
             expected = expected_output[i,:]
-            accumulated_sum += np.square(expected - predictions[i])
+            error = expected - predictions[i]
+            accumulated_sum += np.dot(error,error)
         
         accumulated_sum *= 0.5
-        
         return accumulated_sum
         # return 0.5 * np.sum(np.square(expected_output.T - np.array([prediction for prediction in predictions])))
 

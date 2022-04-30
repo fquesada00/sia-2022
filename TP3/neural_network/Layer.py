@@ -42,7 +42,7 @@ class Layer:
     def update_accum_adjustment(self, lower_activations: np.ndarray, learning_rate: float):
         matrix_lower_activations = np.array([lower_activations])
         accum = learning_rate * \
-            np.dot(self.delta, matrix_lower_activations)
+            np.dot(np.asmatrix(self.delta).T, matrix_lower_activations)
         self.accum_adjustment += accum
 
     def update_weights(self):
