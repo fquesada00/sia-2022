@@ -1,12 +1,27 @@
 import numpy as np
 
+def get_parity_class(value):
+    return 1 if (1 - value[0]) < 0.5 else 0
 
-def get_class(value):
+def get_numbers_class(value):
     return np.where(value == np.max(value))[0][0]
 
-    
-# classes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-def generate_confusion_matrix(expected_output, predicted_output, classes):
+def get_xor_class(value):
+    return 1 if value[0] != value[1] else 0
+
+def generate_confusion_matrix(expected_output, predicted_output, dataset):
+    if dataset == 'parity':
+        classes = [0, 1]
+        get_class = get_parity_class
+    elif dataset == 'numbers':
+        classes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        get_class = get_numbers_class
+    elif dataset == 'xor':
+        classes = [-1, 1]
+        get_class = get_xor_class
+    else:
+        raise Exception('Dataset not found')
+
     confusion_matrix = np.zeros(shape=(len(classes), len(classes)))
 
     for i in range(len(expected_output)):

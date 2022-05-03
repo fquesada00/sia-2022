@@ -14,24 +14,28 @@ def get_activation_function(activation_function):
         return "identity"
 
 def get_dataset(dataset="xor", input_dataset_file_name=None, expected_output_dataset_file_name=None):
-    input_dataset = expected_output = []
+    input_dataset = expected_output = noise_input = []
     if (dataset == "parity" or dataset == "numbers") and input_dataset_file_name is not None and expected_output_dataset_file_name is not None:
         input_dataset = parse_input_dataset(input_dataset_file_name) 
         expected_output = parse_output_dataset(expected_output_dataset_file_name, 1 if dataset == "parity" else 10)
+        noise_input = parse_input_dataset(input_dataset_file_name,noise=True)
     elif dataset == "xor":
         input_dataset = np.array([[-1, 1], [1, -1], [-1, -1], [1, 1]])
         expected_output = np.array([[1], [1], [-1], [-1]])
-    return input_dataset, expected_output
+
+    return input_dataset, expected_output, noise_input
 
 def parse_output_dataset(output_dataset_file_name, dataset_size):
     dataset = np.zeros((10,dataset_size),dtype=int)
     with open(output_dataset_file_name) as f:
         for i, line in enumerate(f):
+            print(line)
+            print(np.array(line.split()))
             dataset[i] = np.array(line.split())
     return dataset
             
 
-def parse_input_dataset(dataset_file_name):
+def parse_input_dataset(dataset_file_name,noise=False):
     dataset = np.zeros((10,5 * 7),dtype=int)
     
     with open(dataset_file_name, 'r') as dataset_file:
@@ -46,11 +50,21 @@ def parse_input_dataset(dataset_file_name):
                 data = []
                 
             line = line.split()
+
+
+            if noise:
+                # Add noise to line
+                for i,element in enumerate(line):
+                    if np.random.rand() > 0.9:
+                        line[i] = '1' if element == '0' else '0'
+
+
+            
             data.append(line)
 
     data = np.array(data).reshape(5*7)
     dataset[data_index] = data
-    
+    print(dataset)    
     return dataset
 
 
@@ -70,14 +84,15 @@ if __name__ == "__main__":
 
     activation_function = get_activation_function(args.activation_function)
     
-    input_dataset, expected_output = get_dataset(args.dataset,"TP3/ej3/datasets/input.txt","TP3/ej3/datasets/numbers_expected_output.txt")
+    input_dataset, expected_output,noise_input = get_dataset(args.dataset,"TP3/ej3/datasets/input.txt","TP3/ej3/datasets/parity_expected_output.txt" if args.dataset == "parity" else "TP3/ej3/datasets/numbers_expected_output.txt")
+
 
     neural_network = NeuralNetwork(hidden_sizes=[30,20], input_size=35, output_size=10, learning_rate=1,
                                    bias=0.5, activation_function_str=activation_function, batch_size=1, beta=1)
-    test_set_input = input_dataset
-    test_set_expected_output = expected_output
-    
-    neural_network.train(input_dataset, expected_output, epochs=1)
+    test_set_input = input_dataset if args.dataset == "xor" else noise_input
+    test_set_expected_output = expected_output 
+    neural_network.train(input_dataset, expected_output, epochs=50)
+
     error, predictions = neural_network.test(test_set_input,test_set_expected_output)
     # expected_output = parse_dataset('./TP3/ej2/dataset/expected_output.txt')
     
@@ -111,9 +126,8 @@ if __name__ == "__main__":
     # print(f"Predictions: {predictions}")
     # print(f"Expected output: {test_set_expected_output}")
     # # [0 0.3 0.5 1]
-    classes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    confusion_matrix = generate_confusion_matrix(test_set_expected_output, predictions, classes)
+    confusion_matrix = generate_confusion_matrix(test_set_expected_output, predictions, args.dataset)
 
     print_metrics(confusion_matrix)
     
