@@ -41,8 +41,8 @@ if __name__ == "__main__":
    
     args = parser.parse_args()
 
-    input_dataset = parse_dataset('./TP3/ej2/dataset/input.txt')
-    expected_output = parse_dataset('./TP3/ej2/dataset/expected_output.txt')
+    input_dataset = parse_dataset('./TP3/ej2/datasets/input.txt')
+    expected_output = parse_dataset('./TP3/ej2/datasets/expected_output.txt')
     
     activation_function = get_activation_function(args.activation_function)
     training_method = args.training_method
