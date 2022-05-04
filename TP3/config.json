@@ -1,5 +1,5 @@
 {
-	"problem": "number",
+	"problem": "ej_2_linear",
 	"use_optimal_parameters": true,
 	"input_dataset_path": "",
 	"output_dataset_path": "",
@@ -18,6 +18,10 @@
 		"training": {
 			"epochs": 100,
 			"tol": 1e-8
+		},
+		"other": {
+			"add_noise_to_number_dataset": false,
+			"noise_level": 0.1
 		}
 	},
 	"optimal_parameters": {
@@ -35,6 +39,10 @@
 			"training": {
 				"epochs": 100,
 				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": false,
+				"noise_level": 0.1
 			}
 		},
 		"and": {
@@ -51,6 +59,10 @@
 			"training": {
 				"epochs": 100,
 				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": false,
+				"noise_level": 0.1
 			}
 		},
 		"xor_multilayer": {
@@ -67,6 +79,10 @@
 			"training": {
 				"epochs": 100,
 				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": false,
+				"noise_level": 0.1
 			}
 		},
 		"ej_2_linear": {
@@ -83,6 +99,10 @@
 			"training": {
 				"epochs": 100,
 				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": false,
+				"noise_level": 0.1
 			}
 		},
 		"ej_2_non_linear": {
@@ -99,6 +119,10 @@
 			"training": {
 				"epochs": 100,
 				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": false,
+				"noise_level": 0.1
 			}
 		},
 		"parity": {
@@ -115,6 +139,30 @@
 			"training": {
 				"epochs": 100,
 				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": false,
+				"noise_level": 0.1
+			}
+		},
+		"parity_noise": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 35,
+				"output_size": 1,
+				"hidden_sizes": [30, 20],
+				"activation_function": "tanh"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": true,
+				"noise_level": 0.1
 			}
 		},
 		"number": {
@@ -131,6 +179,30 @@
 			"training": {
 				"epochs": 100,
 				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": false,
+				"noise_level": 0.1
+			}
+		},
+		"number_noise": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 35,
+				"output_size": 10,
+				"hidden_sizes": [30, 20],
+				"activation_function": "tanh"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			},
+			"other": {
+				"add_noise_to_number_dataset": true,
+				"noise_level": 0.1
 			}
 		}
 	}

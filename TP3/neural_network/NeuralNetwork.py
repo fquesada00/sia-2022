@@ -140,7 +140,7 @@ class NeuralNetwork:
                 print(f'error: {error}')
 
             # Counting epochs as full batches
-            self.get_epoch_metrics()
+            self.get_epoch_metrics(input_dataset, expected_output)
         print(f'error: {error}')
 
     def error(self, expected_output, predictions):
@@ -156,17 +156,16 @@ class NeuralNetwork:
         return accumulated_sum
         # return 0.5 * np.sum(np.square(expected_output.T - np.array([prediction for prediction in predictions])))
 
-
     def get_epoch_metrics(self, input_dataset: np.ndarray, expected_output: np.ndarray):
         # Calculate error scaling expected outputs to be in range of activation function image
-        scaled_expected_output = self.scale(expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
+        scaled_expected_output = self.scale(
+            expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
         predictions = []
-        
+
         for input_data in input_dataset:
             predictions.append(self.predict(input_data))
 
         error = self.error(scaled_expected_output, predictions)
-        
 
     def predict(self, input_data: np.ndarray):
         input_data_with_bias = np.insert(input_data, 0, BIAS_NEURON_ACTIVATION)
