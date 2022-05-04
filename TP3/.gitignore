@@ -127,4 +127,4 @@ ui-tests/playwright-report
 # VSCode
 .vscode
 *.txt
-!ej*/datasets/*.txt
+!datasets/ej*/*.txt

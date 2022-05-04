@@ -1,0 +1,137 @@
+{
+	"problem": "number",
+	"use_optimal_parameters": true,
+	"input_dataset_path": "",
+	"output_dataset_path": "",
+	"prediction_output_path": "",
+	"custom_parameters": {
+		"network": {
+			"learning_rate": 0.1,
+			"bias": 0.5,
+			"beta": 0.5,
+			"batch_size": 1,
+			"input_size": 2,
+			"output_size": 1,
+			"hidden_sizes": [3],
+			"activation_function": "sigmoid"
+		},
+		"training": {
+			"epochs": 100,
+			"tol": 1e-8
+		}
+	},
+	"optimal_parameters": {
+		"xor_simple": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 2,
+				"output_size": 1,
+				"hidden_sizes": [],
+				"activation_function": "step"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			}
+		},
+		"and": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 2,
+				"output_size": 1,
+				"hidden_sizes": [],
+				"activation_function": "step"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			}
+		},
+		"xor_multilayer": {
+			"network": {
+				"learning_rate": 0.01,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 2,
+				"output_size": 1,
+				"hidden_sizes": [3],
+				"activation_function": "tanh"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			}
+		},
+		"ej_2_linear": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 3,
+				"output_size": 1,
+				"hidden_sizes": [],
+				"activation_function": "identity"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			}
+		},
+		"ej_2_non_linear": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 3,
+				"output_size": 1,
+				"hidden_sizes": [],
+				"activation_function": "tanh"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			}
+		},
+		"parity": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 35,
+				"output_size": 1,
+				"hidden_sizes": [30, 20],
+				"activation_function": "tanh"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			}
+		},
+		"number": {
+			"network": {
+				"learning_rate": 0.1,
+				"bias": 0.5,
+				"beta": 0.5,
+				"batch_size": 1,
+				"input_size": 35,
+				"output_size": 10,
+				"hidden_sizes": [30, 20],
+				"activation_function": "tanh"
+			},
+			"training": {
+				"epochs": 100,
+				"tol": 1e-8
+			}
+		}
+	}
+}
