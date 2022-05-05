@@ -56,7 +56,7 @@ class NeuralNetwork:
 
         # Update weights for output layer
         self.layers[-1].update_accum_adjustment(
-            self.layers[-2].activations, self.learning_rate, self.momentum)
+            self.layers[-2].activations, self.learning_rate)
 
         # Iterate over the hidden layers in reverse order
         for index in reversed(range(1, len(self.layers) - 1)):
@@ -64,20 +64,18 @@ class NeuralNetwork:
                 upper_weights, upper_delta)
 
             self.layers[index].update_accum_adjustment(
-                self.layers[index - 1].activations, self.learning_rate, self.momentum)
+                self.layers[index - 1].activations, self.learning_rate)
 
             upper_delta = layer_delta
             upper_weights = self.layers[index].weights
 
-    def update_weights(self):
+    def update_weights(self,momentum):
         for layer in self.layers[1:]:
-            layer.update_weights()
+            layer.update_weights(momentum)
 
     def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, learning_rate: float, batch_size: int, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
-        self.momentum = momentum
-
         output_file = None
         if (self.prediction_output_path is not None):
             output_file = open(self.prediction_output_path, "w")
@@ -134,8 +132,8 @@ class NeuralNetwork:
                     if error < tol:
                         break
 
-                    self.update_weights()
-                    # self.print_weights()
+                    self.update_weights(momentum)
+                    # self.print_weights() 
 
                     batch_iteration = 0
 

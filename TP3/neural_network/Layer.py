@@ -15,7 +15,8 @@ class Layer:
     def connect_to(self, lower_layer: Layer, bias: float):
         self.accum_adjustment = np.zeros(
             (self.size, lower_layer.size + 1))
-
+        self.accum_adjustment_prev = np.zeros(
+            (self.size, lower_layer.size + 1))
         self.weights = np.append(np.full((self.size, 1), bias), np.random.uniform(
             low=-1, high=1, size=(self.size, lower_layer.size)), axis=1)
 
@@ -40,15 +41,15 @@ class Layer:
 
         return self.delta
 
-    def update_accum_adjustment(self, lower_activations: np.ndarray, learning_rate: float, momentum: float):
+    def update_accum_adjustment(self, lower_activations: np.ndarray, learning_rate: float):
         matrix_lower_activations = np.array([lower_activations])
 
         accum = learning_rate * \
-            np.dot(np.asmatrix(self.delta).T, matrix_lower_activations) + \
-            momentum * self.accum_adjustment
+            np.dot(np.asmatrix(self.delta).T, matrix_lower_activations)
 
         self.accum_adjustment += accum
 
-    def update_weights(self):
-        self.weights += self.accum_adjustment
+    def update_weights(self,momentum: float):
+        self.weights += self.accum_adjustment + momentum * self.accum_adjustment_prev
+        self.accum_adjustment_prev = self.accum_adjustment
         self.accum_adjustment = np.zeros(self.weights.shape)
