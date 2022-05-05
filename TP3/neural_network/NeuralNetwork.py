@@ -10,10 +10,8 @@ from .ActivationFunction import ActivationFunction
 
 
 class NeuralNetwork:
-    def __init__(self, hidden_sizes: list, input_size: int, output_size: int, learning_rate: float, bias: float, activation_function_str: str, batch_size=1, prediction_output_path: str = None, beta: float = 1):
+    def __init__(self, hidden_sizes: list, input_size: int, output_size: int, bias: float, activation_function_str: str, prediction_output_path: str = None, beta: float = 1):
         self.activation_function = activation_function_str
-        self.learning_rate = learning_rate
-        self.batch_size = batch_size
         self.bias = bias
         self.prediction_output_path = prediction_output_path
         activation_function = ActivationFunction(activation_function_str)
@@ -58,7 +56,7 @@ class NeuralNetwork:
 
         # Update weights for output layer
         self.layers[-1].update_accum_adjustment(
-            self.layers[-2].activations, self.learning_rate)
+            self.layers[-2].activations, self.learning_rate, self.momentum)
 
         # Iterate over the hidden layers in reverse order
         for index in reversed(range(1, len(self.layers) - 1)):
@@ -66,7 +64,7 @@ class NeuralNetwork:
                 upper_weights, upper_delta)
 
             self.layers[index].update_accum_adjustment(
-                self.layers[index - 1].activations, self.learning_rate)
+                self.layers[index - 1].activations, self.learning_rate, self.momentum)
 
             upper_delta = layer_delta
             upper_weights = self.layers[index].weights
@@ -75,7 +73,11 @@ class NeuralNetwork:
         for layer in self.layers[1:]:
             layer.update_weights()
 
-    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, epochs: int = 1, tol: float = 1e-5):
+    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, learning_rate: float, batch_size: int, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False):
+        self.learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.momentum = momentum
+
         output_file = None
         if (self.prediction_output_path is not None):
             output_file = open(self.prediction_output_path, "w")
@@ -95,6 +97,7 @@ class NeuralNetwork:
         output_delta = 1
         error = 1
         metrics_by_epoch = []
+
         while current_epoch < epochs and error > tol:
 
             current_epoch += 1
@@ -108,6 +111,7 @@ class NeuralNetwork:
 
                 output_delta = output_layer.activation_function.derivative(
                     output_layer.excitations) * (scaled_expected_output - output)
+
                 self.propagate_backward(output_delta)
 
                 batch_iteration += 1
