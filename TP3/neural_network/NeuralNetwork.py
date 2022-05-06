@@ -69,11 +69,18 @@ class NeuralNetwork:
             upper_delta = layer_delta
             upper_weights = self.layers[index].weights
 
-    def update_weights(self,momentum):
+    def update_weights(self, momentum):
         for layer in self.layers[1:]:
             layer.update_weights(momentum)
 
-    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, learning_rate: float, batch_size: int, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False):
+    def update_learning_rate(self, delta_error: float, alpha, beta):
+        if(delta_error < 0):
+            self.learning_rate = self.learning_rate + alpha
+        elif delta_error > 0:
+            self.learning_rate = self.learning_rate - beta*self.learning_rate
+
+    def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, learning_rate: float,
+              batch_size: int, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False, alpha: float = 0.05, beta: float = 0.05, k: int = 10):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         output_file = None
@@ -95,7 +102,7 @@ class NeuralNetwork:
         output_delta = 1
         error = 1
         metrics_by_epoch = []
-
+        consistent_error_variation = 0
         while current_epoch < epochs and error > tol:
 
             current_epoch += 1
@@ -126,14 +133,28 @@ class NeuralNetwork:
 
                     for input_data in input_dataset:
                         predictions.append(self.predict(input_data))
-
                     error = self.error(scaled_expected_output, predictions)
 
                     if error < tol:
                         break
 
                     self.update_weights(momentum)
-                    # self.print_weights() 
+
+                    new_error = self.error(scaled_expected_output, predictions)
+
+                    delta_error = new_error - error
+                    delta_error_sign = np.sign(delta_error)
+
+                    if (consistent_error_variation > 0 and delta_error_sign < 0) or consistent_error_variation < 0 and delta_error_sign > 0:
+                        consistent_error_variation = 0
+                    else:
+                        consistent_error_variation += delta_error_sign
+
+                    if abs(consistent_error_variation) == k:
+                        self.update_learning_rate(
+                            delta_error_sign, alpha, beta)
+
+                    # self.print_weights()
 
                     batch_iteration = 0
 

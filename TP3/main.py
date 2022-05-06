@@ -84,7 +84,7 @@ def get_dataset(problem: str, input_dataset_path: str, output_dataset_path: str,
 
 def parse_config_file(config_file_name):
     with open(config_file_name) as config_file:
-        config = json.load(open(config_file_name, 'r'))
+        config = json.load(config_file)
 
         problem = config['problem']
         input_dataset_path = config['input_dataset_path']
