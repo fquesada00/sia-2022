@@ -171,9 +171,9 @@ class NeuralNetwork:
 
                     batch_iteration = 0
 
-            self.save_output_weights(output_file)
+                self.save_output_weights(output_file)
 
-            print(f'error: {error}')
+                print(f'error: {error}')
 
             # Counting epochs as full batches
 
@@ -236,7 +236,7 @@ class NeuralNetwork:
         for input_data in input_dataset:
             prediction = self.predict(input_data)
             predictions = np.append(
-                predictions, prediction).reshape(-1, len(prediction))
+                predictions, prediction).reshape(-1, len(prediction) if type(prediction) == np.ndarray else 1)
 
         print(f"predictions without scaling: {predictions}")
 
