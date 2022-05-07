@@ -17,8 +17,8 @@ def get_activation_function(activation_function):
 
 def parse_number_input_dataset(dataset_file_name, add_noise=False, noise_level=0.1):
     dataset = np.zeros((10, 5 * 7), dtype=int)
-
     with open(dataset_file_name, 'r') as dataset_file:
+        dataset_file.seek(0)
         data_index = 0
         data = []
         for i, line in enumerate(dataset_file):
@@ -26,9 +26,9 @@ def parse_number_input_dataset(dataset_file_name, add_noise=False, noise_level=0
 
             if add_noise:
                 # Add noise to line
-                for i, element in enumerate(line):
+                for j, element in enumerate(line):
                     if np.random.rand() > 1 - noise_level:
-                        line[i] = '1' if element == '0' else '0'
+                        line[j] = '1' if element == '0' else '0'
 
             data.append(line)
 
@@ -38,8 +38,6 @@ def parse_number_input_dataset(dataset_file_name, add_noise=False, noise_level=0
                 dataset[data_index] = data
                 data_index += 1
                 data = []
-
-    print(dataset)
     return dataset
 
 
