@@ -40,10 +40,9 @@ def generate_confusion_matrix(expected_output, predicted_output, dataset):
     confusion_matrix = np.zeros(shape=(len(classes), len(classes)))
 
     for i in range(len(expected_output)):
-        print(predicted_output[i])
         confusion_matrix[get_class(expected_output[i])
                          ][get_class(predicted_output[i])] += 1
 
-    print(confusion_matrix)
+    # print(confusion_matrix)
 
     return confusion_matrix
