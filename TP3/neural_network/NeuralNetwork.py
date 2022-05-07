@@ -14,8 +14,17 @@ class NeuralNetwork:
     def __init__(self, hidden_sizes: list, input_size: int, output_size: int, bias: float, activation_function_str: str, prediction_output_path: str = None, metrics_output_path: str = None, beta: float = 1):
         self.activation_function = activation_function_str
         self.bias = bias
-        self.prediction_output_path = prediction_output_path
-        self.metrics_output_path = metrics_output_path
+
+        if prediction_output_path == '':
+            self.prediction_output_path = None
+        else:
+            self.prediction_output_path = prediction_output_path
+
+        if metrics_output_path == '':
+            self.metrics_output_path = None
+        else:
+            self.metrics_output_path = metrics_output_path
+
         activation_function = ActivationFunction(activation_function_str)
         # Calculate min and max values of the activation function of the output layer
         self.activation_min = activation_function.min()
@@ -142,28 +151,29 @@ class NeuralNetwork:
                         break
 
                     self.update_weights(momentum)
+                    if k != -1:
+                        new_error = self.error(
+                            scaled_expected_output, predictions)
 
-                    new_error = self.error(scaled_expected_output, predictions)
+                        delta_error = new_error - error
+                        delta_error_sign = np.sign(delta_error)
 
-                    delta_error = new_error - error
-                    delta_error_sign = np.sign(delta_error)
+                        if (consistent_error_variation > 0 and delta_error_sign < 0) or consistent_error_variation < 0 and delta_error_sign > 0:
+                            consistent_error_variation = 0
+                        else:
+                            consistent_error_variation += delta_error_sign
 
-                    if (consistent_error_variation > 0 and delta_error_sign < 0) or consistent_error_variation < 0 and delta_error_sign > 0:
-                        consistent_error_variation = 0
-                    else:
-                        consistent_error_variation += delta_error_sign
-
-                    if abs(consistent_error_variation) == k:
-                        self.update_learning_rate(
-                            delta_error_sign, alpha, beta)
+                        if abs(consistent_error_variation) == k:
+                            self.update_learning_rate(
+                                delta_error_sign, alpha, beta)
 
                     # self.print_weights()
 
                     batch_iteration = 0
 
-                self.save_output_weights(output_file)
+            self.save_output_weights(output_file)
 
-                print(f'error: {error}')
+            print(f'error: {error}')
 
             # Counting epochs as full batches
 
