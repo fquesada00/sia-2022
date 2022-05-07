@@ -53,36 +53,45 @@ def get_dataset(problem: str, input_dataset_path: str, output_dataset_path: str,
         output_dataset_path = get_default_dataset_paths(problem)[1]
 
     if problem == "parity" or problem == "parity_noise":
-        input_dataset = parse_number_input_dataset(
+        train_input_dataset = parse_number_input_dataset(
+            input_dataset_path, add_noise=False)
+        test_input_dataset = parse_number_input_dataset(
             input_dataset_path, add_noise=add_noise_to_number_dataset, noise_level=noise_level)
         expected_output = parse_number_array_file(
             output_dataset_path, 1, dtype=int)
 
     elif problem == "number" or problem == "number_noise":
-        input_dataset = parse_number_input_dataset(
+        train_input_dataset = parse_number_input_dataset(
+            input_dataset_path, add_noise=False)
+        test_input_dataset = parse_number_input_dataset(
             input_dataset_path, add_noise=add_noise_to_number_dataset, noise_level=noise_level)
         expected_output = parse_number_array_file(
             output_dataset_path, 10, dtype=int)
 
     elif problem == "xor_simple" or problem == "xor_multilayer" or problem == "and":
-        input_dataset = parse_number_array_file(
+        train_input_dataset = parse_number_array_file(
             input_dataset_path, 2, dtype=int)
+        test_input_dataset = train_input_dataset
         expected_output = parse_number_array_file(
             output_dataset_path, 1, dtype=int)
 
     elif problem == "ej_2_linear" or problem == "ej_2_non_linear":
-        input_dataset = parse_number_array_file(
+        train_input_dataset = parse_number_array_file(
             input_dataset_path, 3, dtype=float)
+        test_input_dataset = train_input_dataset
         expected_output = parse_number_array_file(
             output_dataset_path, 1, dtype=float)
 
-    print("Input dataset:")
-    print(input_dataset)
+    print("Train input dataset:")
+    print(train_input_dataset)
+
+    print("Test input dataset:")
+    print(test_input_dataset)
 
     print("Output dataset:")
     print(expected_output)
 
-    return input_dataset, expected_output
+    return train_input_dataset, test_input_dataset, expected_output
 
 
 def get_epoch_metrics(predictions: np.ndarray, expected_output: np.ndarray, problem: str):
@@ -134,13 +143,14 @@ if __name__ == '__main__':
     neural_network = NeuralNetwork(
         **network_parameters, metrics_output_path=metrics_output_path, prediction_output_path=prediction_output_path)
 
-    input_dataset, expected_output = get_dataset(
+    train_input_dataset, test_input_dataset, expected_output = get_dataset(
         problem, input_dataset_path, output_dataset_path, **other_parameters)
 
     neural_network.train(
-        input_dataset, expected_output, cb=get_epoch_metrics_by_problem(problem), **training_parameters)
+        train_input_dataset, expected_output, cb=get_epoch_metrics_by_problem(problem), **training_parameters)
 
-    error, predictions = neural_network.test(input_dataset, expected_output)
+    error, predictions = neural_network.test(
+        test_input_dataset, expected_output)
 
     print("Error: ", error)
     print("Predictions: ", predictions)
