@@ -4,16 +4,18 @@ import numpy as np
 
 from typing import List
 
+from ..metrics.Metrics import Metrics
 from .Layer import Layer
 from .constants import BIAS_NEURON_ACTIVATION
 from .ActivationFunction import ActivationFunction
 
 
 class NeuralNetwork:
-    def __init__(self, hidden_sizes: list, input_size: int, output_size: int, bias: float, activation_function_str: str, prediction_output_path: str = None, beta: float = 1):
+    def __init__(self, hidden_sizes: list, input_size: int, output_size: int, bias: float, activation_function_str: str, prediction_output_path: str = None, metrics_output_path: str = None, beta: float = 1):
         self.activation_function = activation_function_str
         self.bias = bias
         self.prediction_output_path = prediction_output_path
+        self.metrics_output_path = metrics_output_path
         activation_function = ActivationFunction(activation_function_str)
         # Calculate min and max values of the activation function of the output layer
         self.activation_min = activation_function.min()
@@ -80,13 +82,15 @@ class NeuralNetwork:
             self.learning_rate = self.learning_rate - beta*self.learning_rate
 
     def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, learning_rate: float,
-              batch_size: int, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False, alpha: float = 0.05, beta: float = 0.05, k: int = 10):
+              batch_size: int, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False, alpha: float = 0.05, beta: float = 0.05, k: int = 10, cb=None):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         output_file = None
         if (self.prediction_output_path is not None):
             output_file = open(self.prediction_output_path, "w")
             self.save_output_weights_shape(output_file)
+        if (self.metrics_output_path is not None):
+            metrics_file = open(self.metrics_output_path, "w")
 
         dataset_length = len(input_dataset)
         batch_iteration = 0
@@ -101,7 +105,6 @@ class NeuralNetwork:
         current_epoch = 0
         output_delta = 1
         error = 1
-        metrics_by_epoch = []
         consistent_error_variation = 0
         while current_epoch < epochs and error > tol:
 
@@ -163,7 +166,30 @@ class NeuralNetwork:
                 print(f'error: {error}')
 
             # Counting epochs as full batches
-            self.get_epoch_metrics(input_dataset, expected_output)
+
+            if(self.metrics_output_path is not None and cb is not None):
+                predictions = np.empty((0, output_layer.size))
+
+                for input_data in input_dataset:
+                    predictions = np.append(
+                        predictions, self.predict(input_data)).reshape(-1, output_layer.size)
+
+                scaled_predictions = self.scale(
+                    predictions, self.activation_min, self.activation_max, self.train_set_min, self.train_set_max)
+
+                epoch_metrics = cb(
+                    scaled_predictions, expected_output)
+                epoch_error = self.error(expected_output, scaled_predictions)
+
+                self.save_epoch_metrics(
+                    current_epoch, metrics_file, epoch_metrics, epoch_error)
+
+        if (self.prediction_output_path is not None):
+            output_file.close()
+
+        if (self.metrics_output_path is not None):
+            metrics_file.close()
+
         print(f'error: {error}')
 
     def error(self, expected_output, predictions):
@@ -179,16 +205,16 @@ class NeuralNetwork:
         return accumulated_sum
         # return 0.5 * np.sum(np.square(expected_output.T - np.array([prediction for prediction in predictions])))
 
-    def get_epoch_metrics(self, input_dataset: np.ndarray, expected_output: np.ndarray):
-        # Calculate error scaling expected outputs to be in range of activation function image
-        scaled_expected_output = self.scale(
-            expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
-        predictions = []
-
-        for input_data in input_dataset:
-            predictions.append(self.predict(input_data))
-
-        error = self.error(scaled_expected_output, predictions)
+    def save_epoch_metrics(self, epoch, metrics_file, epoch_metrics: Metrics, epoch_error: float):
+        metrics_file.write(f'{epoch}\n')
+        for metric in epoch_metrics:
+            if(type(metric) == np.ndarray):
+                for value in metric:
+                    metrics_file.write(f'{value:.5f} ')
+                metrics_file.write('\n')
+            else:
+                metrics_file.write(f'{metric:.5f}\n')
+        metrics_file.write(f'{epoch_error:.5f}\n')
 
     def predict(self, input_data: np.ndarray):
         input_data_with_bias = np.insert(input_data, 0, BIAS_NEURON_ACTIVATION)

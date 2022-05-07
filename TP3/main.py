@@ -1,6 +1,9 @@
 import json
 
 import numpy as np
+
+from .metrics.confusion_matrix import generate_confusion_matrix
+from .metrics import generate_metrics
 from .ej3.main import parse_number_input_dataset
 from .neural_network import NeuralNetwork
 
@@ -82,6 +85,18 @@ def get_dataset(problem: str, input_dataset_path: str, output_dataset_path: str,
     return input_dataset, expected_output
 
 
+def get_epoch_metrics(predictions: np.ndarray, expected_output: np.ndarray, problem: str):
+    epoch_confusion_matrix = generate_confusion_matrix(
+        expected_output, predictions, problem)
+    epoch_metrics = generate_metrics(epoch_confusion_matrix)
+
+    return epoch_metrics
+
+
+def get_epoch_metrics_by_problem(problem: str):
+    return lambda predictions, scaled_expected_output: get_epoch_metrics(predictions, scaled_expected_output, problem)
+
+
 def parse_config_file(config_file_name):
     with open(config_file_name) as config_file:
         config = json.load(config_file)
@@ -89,6 +104,7 @@ def parse_config_file(config_file_name):
         problem = config['problem']
         input_dataset_path = config['input_dataset_path']
         output_dataset_path = config['output_dataset_path']
+        metrics_output_path = config['metrics_output_path']
         prediction_output_path = config['prediction_output_path']
         use_optimal_parameters = config['use_optimal_parameters']
 
@@ -106,22 +122,23 @@ def parse_config_file(config_file_name):
             parameters["network"]["activation_function_str"] = parameters["network"]["activation_function"]
             del parameters["network"]["activation_function"]
 
-        return problem, input_dataset_path, output_dataset_path, prediction_output_path, parameters["network"], parameters["training"], parameters["other"]
+        return problem, input_dataset_path, output_dataset_path, metrics_output_path, prediction_output_path, parameters["network"], parameters["training"], parameters["other"]
 
 
 if __name__ == '__main__':
     config_file_name = "./TP3/config.json"
 
-    problem, input_dataset_path, output_dataset_path, prediction_dataset_path, network_parameters, training_parameters, other_parameters = parse_config_file(
+    problem, input_dataset_path, output_dataset_path, metrics_output_path, prediction_output_path, network_parameters, training_parameters, other_parameters = parse_config_file(
         config_file_name)
 
-    neural_network = NeuralNetwork(**network_parameters)
+    neural_network = NeuralNetwork(
+        **network_parameters, metrics_output_path=metrics_output_path, prediction_output_path=prediction_output_path)
 
     input_dataset, expected_output = get_dataset(
         problem, input_dataset_path, output_dataset_path, **other_parameters)
 
     neural_network.train(
-        input_dataset, expected_output, **training_parameters)
+        input_dataset, expected_output, cb=get_epoch_metrics_by_problem(problem), **training_parameters)
 
     error, predictions = neural_network.test(input_dataset, expected_output)
 
