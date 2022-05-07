@@ -21,7 +21,7 @@ def plot_linear_separation(input_dataset, expected_output, weights):
         return line,
 
     anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                   frames=len(weights), interval=5, blit=True)
+                                   frames=len(weights), interval=500, blit=True, repeat=False)
 
     # Load dataset values
 
@@ -59,15 +59,25 @@ def parse_weights(weights_file_name):
     # return output_weights_iterations
 
 
+def parse_files(file):
+    dataset = []
+    for line in file:
+        dataset.append(list(map(float, line.split())))
+    return dataset
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=str,
                         default=None, help="File path of output weights evolution.", dest="input_file_name", required=True)
-
+    parser.add_argument("--expected_output", type=argparse.FileType('r'),
+                        dest="expected_output", required=True)
+    parser.add_argument("--dataset", type=argparse.FileType('r'),
+                        default=None, dest="dataset", required=True)
     args = parser.parse_args()
 
     weights = parse_weights(args.input_file_name)
     # Inputs: [ [x0, y0], [x1, y1] ]
-    dataset = [[-1, 1], [1, -1], [-1, -1], [1, 1]]
-    expected_output = [[1], [1], [1], [-1]]
+    dataset = parse_files(args.dataset)
+    expected_output = parse_files(args.expected_output)
     plot_linear_separation(dataset, expected_output, weights)
