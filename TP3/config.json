@@ -1,27 +1,28 @@
 {
-  "problem": "ej_2_non_linear",
-  "use_optimal_parameters": false,
+  "problem": "number_noise",
+  "use_optimal_parameters": true,
   "input_dataset_path": "",
   "output_dataset_path": "",
-  "prediction_output_path": "",
+  "metrics_output_path": "TP3/metrics.txt",
+  "prediction_output_path": "TP3/weights.txt",
   "custom_parameters": {
     "network": {
-      "bias": 0.5,
-      "beta": 0.3,
-      "input_size": 3,
-      "output_size": 1,
-      "hidden_sizes": [],
-      "activation_function": "tanh"
+      "bias": 1,
+      "beta": 0.8,
+      "input_size": 35,
+      "output_size": 10,
+      "hidden_sizes": [30, 20],
+      "activation_function": "logistic"
     },
     "training": {
       "batch_size": 1,
       "momentum": 0.8,
-      "learning_rate": 0.1,
+      "learning_rate": 0.8,
       "epochs": 100,
       "tol": 1e-8,
       "alpha": 0.05,
       "beta": 0.05,
-      "k": 10
+      "k": 1
     },
     "other": {
       "add_noise_to_number_dataset": false,
@@ -43,7 +44,10 @@
         "momentum": 0,
         "learning_rate": 0.1,
         "epochs": 100,
-        "tol": 1e-8
+        "tol": 1e-8,
+        "alpha": 0,
+        "beta": 0,
+        "k": -1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -64,7 +68,10 @@
         "momentum": 0,
         "learning_rate": 0.1,
         "epochs": 100,
-        "tol": 1e-8
+        "tol": 1e-8,
+        "alpha": 0,
+        "beta": 0,
+        "k": -1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -73,8 +80,8 @@
     },
     "xor_multilayer": {
       "network": {
-        "bias": 0.5,
-        "beta": 0.5,
+        "bias": -1,
+        "beta": 1,
         "input_size": 2,
         "output_size": 1,
         "hidden_sizes": [3],
@@ -83,9 +90,12 @@
       "training": {
         "batch_size": 1,
         "momentum": 0,
-        "learning_rate": 0.01,
-        "epochs": 100,
-        "tol": 1e-8
+        "learning_rate": 0.5,
+        "epochs": 500,
+        "tol": 1e-8,
+        "alpha": 0.1,
+        "beta": 0.1,
+        "k": 5
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -105,8 +115,11 @@
         "batch_size": 1,
         "momentum": 0,
         "learning_rate": 0.1,
-        "epochs": 100,
-        "tol": 1e-8
+        "epochs": 5,
+        "tol": 1e-8,
+        "alpha": 0,
+        "beta": 0,
+        "k": -1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -116,18 +129,21 @@
     "ej_2_non_linear": {
       "network": {
         "bias": 0.5,
-        "beta": 0.5,
+        "beta": 1,
         "input_size": 3,
         "output_size": 1,
         "hidden_sizes": [],
-        "activation_function": "tanh"
+        "activation_function": "logistic"
       },
       "training": {
         "batch_size": 1,
         "momentum": 0,
         "learning_rate": 0.1,
-        "epochs": 100,
-        "tol": 1e-8
+        "epochs": 50,
+        "tol": 1e-8,
+        "alpha": 0,
+        "beta": 0,
+        "k": -1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -136,7 +152,7 @@
     },
     "parity": {
       "network": {
-        "bias": 0.5,
+        "bias": 1,
         "beta": 0.5,
         "input_size": 35,
         "output_size": 1,
@@ -145,10 +161,13 @@
       },
       "training": {
         "batch_size": 1,
-        "momentum": 0,
+        "momentum": 0.8,
         "learning_rate": 0.1,
         "epochs": 100,
-        "tol": 1e-8
+        "tol": 1e-8,
+        "alpha": 0,
+        "beta": 0,
+        "k": -1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -157,8 +176,8 @@
     },
     "parity_noise": {
       "network": {
-        "bias": 0.5,
-        "beta": 0.5,
+        "bias": 1,
+        "beta": 0.4,
         "input_size": 35,
         "output_size": 1,
         "hidden_sizes": [30, 20],
@@ -166,10 +185,13 @@
       },
       "training": {
         "batch_size": 1,
-        "momentum": 0,
-        "learning_rate": 0.1,
-        "epochs": 100,
-        "tol": 1e-8
+        "momentum": 0.8,
+        "learning_rate": 0.5,
+        "epochs": 50,
+        "tol": 1e-8,
+        "alpha": 0,
+        "beta": 0,
+        "k": -1
       },
       "other": {
         "add_noise_to_number_dataset": true,
@@ -178,19 +200,22 @@
     },
     "number": {
       "network": {
-        "bias": 0.5,
-        "beta": 0.5,
+        "bias": 1,
+        "beta": 0.8,
         "input_size": 35,
         "output_size": 10,
         "hidden_sizes": [30, 20],
-        "activation_function": "tanh"
+        "activation_function": "logistic"
       },
       "training": {
         "batch_size": 1,
-        "momentum": 0,
-        "learning_rate": 0.1,
-        "epochs": 100,
-        "tol": 1e-8
+        "momentum": 0.8,
+        "learning_rate": 0.8,
+        "epochs": 50,
+        "tol": 1e-8,
+        "alpha": 0.05,
+        "beta": 0.05,
+        "k": -1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -199,23 +224,26 @@
     },
     "number_noise": {
       "network": {
-        "bias": 0.5,
-        "beta": 0.5,
+        "bias": 1,
+        "beta": 0.8,
         "input_size": 35,
         "output_size": 10,
         "hidden_sizes": [30, 20],
-        "activation_function": "tanh"
+        "activation_function": "logistic"
       },
       "training": {
         "batch_size": 1,
-        "momentum": 0,
-        "learning_rate": 0.1,
-        "epochs": 100,
-        "tol": 1e-8
+        "momentum": 0.8,
+        "learning_rate": 0.8,
+        "epochs": 50,
+        "tol": 1e-8,
+        "alpha": 0.05,
+        "beta": 0.05,
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": true,
-        "noise_level": 0.1
+        "noise_level": 0.0
       }
     }
   }
