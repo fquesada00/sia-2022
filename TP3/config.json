@@ -1,5 +1,5 @@
 {
-  "problem": "ej_2_non_linear",
+  "problem": "parity_noise",
   "use_optimal_parameters": true,
   "input_dataset_path": "",
   "output_dataset_path": "",
@@ -27,7 +27,8 @@
     },
     "other": {
       "add_noise_to_number_dataset": false,
-      "noise_level": 0.1
+      "noise_level": 0.1,
+      "test_set_size": 1
     }
   },
   "optimal_parameters": {
@@ -53,7 +54,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": false,
-        "noise_level": 0.1
+        "noise_level": 0.1,
+        "test_set_size": 1
       }
     },
     "and": {
@@ -78,7 +80,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": false,
-        "noise_level": 0.1
+        "noise_level": 0.1,
+        "test_set_size": 1
       }
     },
     "xor_multilayer": {
@@ -102,7 +105,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": false,
-        "noise_level": 0.1
+        "noise_level": 0.1,
+        "test_set_size": 1
       }
     },
     "ej_2_linear": {
@@ -127,7 +131,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": false,
-        "noise_level": 0.1
+        "noise_level": 0.1,
+        "test_set_size": 1
       }
     },
     "ej_2_non_linear": {
@@ -152,7 +157,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": false,
-        "noise_level": 0.1
+        "noise_level": 0.1,
+        "test_set_size": 200
       }
     },
     "parity": {
@@ -177,7 +183,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": false,
-        "noise_level": 0.1
+        "noise_level": 0.1,
+        "test_set_size": 1
       }
     },
     "parity_noise": {
@@ -202,7 +209,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": true,
-        "noise_level": 0.1
+        "noise_level": 0.2,
+        "test_set_size": 2
       }
     },
     "number": {
@@ -226,7 +234,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": false,
-        "noise_level": 0.1
+        "noise_level": 0.1,
+        "test_set_size": 1
       }
     },
     "number_noise": {
@@ -250,7 +259,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": true,
-        "noise_level": 0.0
+        "noise_level": 0.2,
+        "test_set_size": 3
       }
     }
   }

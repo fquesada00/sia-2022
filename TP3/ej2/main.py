@@ -42,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument("--k", help="Number of folds to use for k-fold cross validation.",
                         dest='k', required=False, default=10)
     parser.add_argument("--ratio", help="Ratio of training data to use for holdout validation.",
-                        dest='ratio', required=False, default=0.9)
+                        dest='ratio', required=False, default=0.99)
 
     args = parser.parse_args()
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     problem, dataset_path, output_dataset_path, metrics_output_path, prediction_output_path, network_parameters, training_parameters, other_parameters = parse_config_file(
         config_file_name)
 
-    train_input_dataset, test_input_dataset, expected_output = get_dataset(
+    train_input_dataset, test_input_dataset, expected_output, test_expected_output_dataset = get_dataset(
         problem, dataset_path, output_dataset_path, **other_parameters)
 
     def neural_network_supplier(): return NeuralNetwork(**network_parameters,
