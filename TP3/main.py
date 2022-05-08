@@ -103,6 +103,8 @@ def get_epoch_metrics(predictions: np.ndarray, expected_output: np.ndarray, prob
 
 
 def get_epoch_metrics_by_problem(problem: str):
+    if problem.startswith("ej_2"):
+        return None
     return lambda predictions, scaled_expected_output: get_epoch_metrics(predictions, scaled_expected_output, problem)
 
 
@@ -147,7 +149,7 @@ if __name__ == '__main__':
         problem, input_dataset_path, output_dataset_path, **other_parameters)
 
     neural_network.train(
-        train_input_dataset, expected_output, cb=get_epoch_metrics_by_problem(problem), **training_parameters)
+        train_input_dataset, expected_output, get_epoch_metrics_fn=get_epoch_metrics_by_problem(problem), **training_parameters)
 
     error, predictions = neural_network.test(
         test_input_dataset, expected_output)

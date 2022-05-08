@@ -1,5 +1,5 @@
 {
-  "problem": "number_noise",
+  "problem": "ej_2_non_linear",
   "use_optimal_parameters": true,
   "input_dataset_path": "",
   "output_dataset_path": "",
@@ -20,6 +20,7 @@
       "learning_rate": 0.8,
       "epochs": 100,
       "tol": 1e-8,
+      "use_adaptive_learning_rate": true,
       "alpha": 0.05,
       "beta": 0.05,
       "k": 1
@@ -45,9 +46,10 @@
         "learning_rate": 0.1,
         "epochs": 100,
         "tol": 1e-8,
+        "use_adaptive_learning_rate": true,
         "alpha": 0,
         "beta": 0,
-        "k": -1
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -69,9 +71,10 @@
         "learning_rate": 0.1,
         "epochs": 100,
         "tol": 1e-8,
+        "use_adaptive_learning_rate": true,
         "alpha": 0,
         "beta": 0,
-        "k": -1
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -117,9 +120,10 @@
         "learning_rate": 0.1,
         "epochs": 5,
         "tol": 1e-8,
+        "use_adaptive_learning_rate": true,
         "alpha": 0,
         "beta": 0,
-        "k": -1
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -136,14 +140,15 @@
         "activation_function": "logistic"
       },
       "training": {
-        "batch_size": 1,
+        "batch_size": 10,
         "momentum": 0,
         "learning_rate": 0.1,
         "epochs": 50,
         "tol": 1e-8,
-        "alpha": 0,
-        "beta": 0,
-        "k": -1
+        "use_adaptive_learning_rate": false,
+        "alpha": 0.05,
+        "beta": 0.05,
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -165,9 +170,10 @@
         "learning_rate": 0.1,
         "epochs": 100,
         "tol": 1e-8,
+        "use_adaptive_learning_rate": true,
         "alpha": 0,
         "beta": 0,
-        "k": -1
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": false,
@@ -189,9 +195,10 @@
         "learning_rate": 0.5,
         "epochs": 50,
         "tol": 1e-8,
+        "use_adaptive_learning_rate": true,
         "alpha": 0,
         "beta": 0,
-        "k": -1
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": true,
@@ -215,7 +222,7 @@
         "tol": 1e-8,
         "alpha": 0.05,
         "beta": 0.05,
-        "k": -1
+        "k": 1
       },
       "other": {
         "add_noise_to_number_dataset": false,

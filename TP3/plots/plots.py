@@ -99,34 +99,40 @@ def parse_metrics_file(filepath):
     precisions = []
     recalls = []
     f1s = []
-    errors = []
+    scaled_predictions_errors = []
+    scaled_expected_output_errors = []
+    number_of_metrics = 7
     with open(filepath, "r") as f:
         for i, line in enumerate(f):
             line_data = line.split()
-            if i % 6 == 0:
+            metric_index = i % number_of_metrics
+            if metric_index == 0:
                 epoch = int(line_data[0])
-            elif i % 6 == 1:
+            elif metric_index == 1:
                 accuracy = float(line_data[0])
                 accuracies.append(accuracy)
-            elif i % 6 == 2:
+            elif metric_index == 2:
                 precision = list(map(float, line_data))
                 precisions.append(precision)
-            elif i % 6 == 3:
+            elif metric_index == 3:
                 recall = list(map(float, line_data))
                 recalls.append(recall)
-            elif i % 6 == 4:
+            elif metric_index == 4:
                 f1 = list(map(float, line_data))
                 f1s.append(f1)
-            elif i % 6 == 5:
+            elif metric_index == 5:
                 error = float(line_data[0])
-                errors.append(error)
-    return accuracies, precisions, recalls, f1s, errors
+                scaled_predictions_errors.append(error)
+            elif metric_index == 6:
+                error = float(line_data[0])
+                scaled_expected_output_errors.append(error)
+    return accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors
 
 
 if __name__ == "__main__":
     filepath = "TP3/metrics.txt"
-    accuracies, precisions, recalls, f1s, errors = parse_metrics_file(filepath)
-    plot_epochs_vs_error(errors)
+    accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
+    plot_epochs_vs_error(scaled_predictions_errors)
     plot_epochs_vs_accuracy(accuracies)
     plot_epochs_vs_precision(precisions)
     plot_epochs_vs_precision_in_classes(precisions)

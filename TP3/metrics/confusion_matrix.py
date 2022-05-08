@@ -11,14 +11,7 @@ def get_numbers_class(value):
 
 def get_xor_class(value):
     return 1 if value[0] > 0 else 0
-
-
-def get_ej2_class(value):
-    index = int(value) // 10
-    if abs(index) > 9:
-        index = 9
-    return index
-
+    
 
 def generate_confusion_matrix(expected_output, predicted_output, dataset):
     if dataset in ['parity', 'parity_noise']:
@@ -30,9 +23,6 @@ def generate_confusion_matrix(expected_output, predicted_output, dataset):
     elif dataset in ['xor_simple', 'xor_multilayer', 'and']:
         classes = [-1, 1]
         get_class = get_xor_class
-    elif dataset in ['ej_2_linear', 'ej_2_non_linear']:
-        classes = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-        get_class = get_ej2_class
 
     else:
         raise Exception(f'Dataset {dataset} not found')
