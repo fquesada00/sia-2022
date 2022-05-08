@@ -133,6 +133,7 @@ def parse_config_file(config_file_name):
         input_dataset_path = config['input_dataset_path']
         output_dataset_path = config['output_dataset_path']
         metrics_output_path = config['metrics_output_path']
+        test_metrics_output_path = config['test_metrics_output_path']
         prediction_output_path = config['prediction_output_path']
         use_optimal_parameters = config['use_optimal_parameters']
 
@@ -150,7 +151,7 @@ def parse_config_file(config_file_name):
             parameters["network"]["activation_function_str"] = parameters["network"]["activation_function"]
             del parameters["network"]["activation_function"]
 
-        return problem, input_dataset_path, output_dataset_path, metrics_output_path, prediction_output_path, parameters["network"], parameters["training"], parameters["other"]
+        return problem, input_dataset_path, output_dataset_path, metrics_output_path, test_metrics_output_path, prediction_output_path, parameters["network"], parameters["training"], parameters["other"]
 
 def graph_number_with_parity_prediction(number: np.ndarray, prediction: float, expected_output: float):
     for i in range(len(number)):
@@ -188,7 +189,7 @@ def graph_number_with_number_prediction(number: np.ndarray, prediction: np.ndarr
 if __name__ == '__main__':
     config_file_name = "./TP3/config.json"
 
-    problem, input_dataset_path, output_dataset_path, metrics_output_path, prediction_output_path, network_parameters, training_parameters, other_parameters = parse_config_file(
+    problem, input_dataset_path, output_dataset_path, metrics_output_path, test_metrics_output_path, prediction_output_path, network_parameters, training_parameters, other_parameters = parse_config_file(
         config_file_name)
 
     neural_network = NeuralNetwork(
@@ -201,7 +202,7 @@ if __name__ == '__main__':
         train_input_dataset, expected_output, get_epoch_metrics_fn=get_epoch_metrics_by_problem(problem), **training_parameters)
 
     error, predictions = neural_network.test(
-        test_input_dataset, test_expected_output_dataset)
+        test_input_dataset, test_expected_output_dataset,metrics_output_filename=test_metrics_output_path,get_epoch_metrics_fn=get_epoch_metrics_by_problem(problem))
 
     print("Test input dataset: ", test_input_dataset)
     print("Error: ", error)

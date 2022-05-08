@@ -128,3 +128,4 @@ ui-tests/playwright-report
 .vscode
 *.txt
 !datasets/ej*/*.txt
+!logs/*/*.txt

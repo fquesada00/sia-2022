@@ -1,7 +1,8 @@
 import argparse
+from ast import parse
 import numpy as np
 
-from TP3.logs import log_train_error_by_epoch
+from TP3.logs import log_error_by_epoch
 
 from ..metrics.confusion_matrix import generate_confusion_matrix
 from ..metrics import print_metrics, Metrics
@@ -37,7 +38,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--split_method", help="Method to split input data into train and test set.\n Use 'all' to use the entire dataset for training, 'holdout' for holdout validation, 'k-fold' for k-fold cross validation.",
+    parser.add_argument("--split-method", help="Method to split input data into train and test set.\n Use 'all' to use the entire dataset for training, 'holdout' for holdout validation, 'k-fold' for k-fold cross validation.",
                         dest='training_method', required=False, default='all')
     parser.add_argument("--k", help="Number of folds to use for k-fold cross validation.",
                         dest='k', required=False, default=10)
@@ -45,19 +46,22 @@ if __name__ == "__main__":
                         dest='ratio', required=False, default=0.99)
     parser.add_argument("--epochs", help="Number of epochs to train the network.",
                         dest='epochs', required=False, default='-1')
+    parser.add_argument("--log-train", help="Log epochs to file",
+                        dest='log_train', required=False, action="store_true", default=False)
+    parser.add_argument("--log-test", help="Log epochs to file",
+                        dest='log_test', required=False, action="store_true", default=False)
 
     args = parser.parse_args()
 
     input_dataset = parse_dataset('./TP3/datasets/ej2/input.txt')
     expected_output = parse_dataset('./TP3/datasets/ej2/output.txt')
-
     training_method = args.training_method
     k = int(args.k)
     training_ratio = float(args.ratio)
 
     config_file_name = "./TP3/config.json"
 
-    problem, dataset_path, output_dataset_path, metrics_output_path, prediction_output_path, network_parameters, training_parameters, other_parameters = parse_config_file(
+    problem, dataset_path, output_dataset_path, metrics_output_path, test_metrics_output_path, prediction_output_path, network_parameters, training_parameters, other_parameters = parse_config_file(
         config_file_name)
 
     train_input_dataset, test_input_dataset, expected_output, test_expected_output_dataset = get_dataset(
@@ -78,7 +82,7 @@ if __name__ == "__main__":
             train_input_dataset, expected_output, get_epoch_metrics_fn=get_epoch_metrics(), **training_parameters, verbose=False)
 
         error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output)
+            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path,get_epoch_metrics_fn=get_epoch_metrics())
 
     elif training_method == 'holdout':
         holdout_sets = holdout_eval(input_dataset, expected_output, neural_network,
@@ -88,7 +92,7 @@ if __name__ == "__main__":
         test_set_expected_output = holdout_sets['test_set'][1]
 
         error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output)
+            test_set_input, test_set_expected_output,metrics_output_filename=test_metrics_output_path,get_epoch_metrics_fn=get_epoch_metrics())
 
     elif training_method == 'k-fold':
         average_error, min_error_sets, neural_network = k_fold_cross_validation_eval(
@@ -108,5 +112,8 @@ if __name__ == "__main__":
     print(f"Predictions: {predictions}")
     print(f"Expected output: {test_set_expected_output}")
 
-
-    log_train_error_by_epoch(metrics_output_path, training_parameters["epochs"])
+    if args.log_train:
+        log_error_by_epoch(metrics_output_path, training_parameters["epochs"],'train')
+    
+    if args.log_test:
+        log_error_by_epoch(test_metrics_output_path, training_parameters["epochs"],'test')

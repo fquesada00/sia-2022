@@ -1,25 +1,51 @@
 from matplotlib import markers
 import matplotlib.pyplot as plt
 import numpy as np
-from ..logs.files.constants import TRAIN_ERROR_BY_EPOCH_FILE_PATH
+from ..logs.files.constants import TRAIN_ERROR_BY_EPOCH_FILE_PATH,TEST_ERROR_BY_EPOCH_FILE_PATH
 
 
-def plot_ej_2_linear_train_error_by_epoch():
+def get_log_stats(file_path):
     """
     Plot the train error by epoch for the linear model.
     """
 
-    epochs = []
-    train_errors = []
-
-    with open(TRAIN_ERROR_BY_EPOCH_FILE_PATH, "r") as f:
+    epochs = {}
+    with open(file_path, "r") as f:
         for line_index, line in enumerate(f):
             line_data = line.split()
-            epochs.append(int(line_data[0]))
-            train_errors.append(float(line_data[1]))
-    
-    plot_epochs_vs_error(epochs, train_errors)
+            epoch_number = int(line_data[0])
+            if epoch_number not in epochs:
+                epochs[epoch_number] = []
+            
+            epochs[epoch_number].append(float(line_data[1]))
 
+    errors_stdev = np.std(list(epochs.values()), axis=1)
+    errors_mean = np.mean(list(epochs.values()), axis=1)
+
+    return  epochs, errors_mean, errors_stdev
+    
+def plot_ej_2_linear():
+    epochs, errors_mean_train, errors_stdev_train = get_log_stats(TRAIN_ERROR_BY_EPOCH_FILE_PATH)
+    plot_epoch_vs_error_with_stdev(epochs, [errors_mean_train], [errors_stdev_train],['Training'])
+
+def plot_ej_2_non_linear():
+    epochs, errors_mean_train, errors_stdev_train = get_log_stats(TRAIN_ERROR_BY_EPOCH_FILE_PATH)
+    epochs, errors_mean_test, errors_stdev_test = get_log_stats(TEST_ERROR_BY_EPOCH_FILE_PATH)
+    plot_epoch_vs_error_with_stdev(epochs, [errors_mean_train,errors_mean_test], [errors_stdev_train,errors_stdev_test],['Training','Test'])
+
+def plot_epoch_vs_error_with_stdev(epochs:dict, mean_errors_by_set, error_stdevs_by_set,legends):
+    """
+    Plot the evolution of the error over the epochs.
+    """
+    for  i in range(len(mean_errors_by_set)):
+        plt.errorbar(list(epochs.keys()), mean_errors_by_set[i], yerr=error_stdevs_by_set[i], ls="none",
+                 ecolor='blue', marker='o', color="red", elinewidth=0.5, capsize=5)
+    
+    plt.legend(legends)
+    plt.xlabel("Epochs")
+    plt.ylabel("Error")
+    plt.yscale("log")
+    plt.show()
 
 def plot_epochs_vs_error(epochs, errors_by_epoch):
     """
@@ -151,7 +177,7 @@ def parse_metrics_file(filepath):
 
 if __name__ == "__main__":
     filepath = "TP3/metrics.txt"
-    plot_ej_2_linear_train_error_by_epoch()
+    plot_ej_2_non_linear()
     # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
     # plot_epochs_vs_error(scaled_predictions_errors)
     # plot_epochs_vs_accuracy(accuracies)

@@ -94,6 +94,7 @@ class NeuralNetwork:
               batch_size: int = 1, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False, alpha: float = 0.05, beta: float = 0.05, k: int = 0, get_epoch_metrics_fn=None, use_adaptive_learning_rate: bool = False):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
+        self.epochs = epochs
         output_file = None
 
         if (self.prediction_output_path is not None):
@@ -183,33 +184,34 @@ class NeuralNetwork:
                 if verbose:
                     print(f'error: {error}')
 
-            # Counting epochs as full batches
-            if(self.metrics_output_path is not None and get_epoch_metrics_fn is not None):
-                predictions = np.empty((0, output_layer.size))
+        # save last epoch metrics
+        if(self.metrics_output_path is not None and get_epoch_metrics_fn is not None):
+            print("Saving metrics...")
+            predictions = np.empty((0, output_layer.size))
 
-                for input_data in input_dataset:
-                    predictions = np.append(
-                        predictions, self.predict(input_data)).reshape(-1, output_layer.size)
+            for input_data in input_dataset:
+                predictions = np.append(
+                    predictions, self.predict(input_data)).reshape(-1, output_layer.size)
 
-                scaled_predictions = self.scale(
-                    predictions, self.activation_min, self.activation_max, self.train_set_min, self.train_set_max)
+            scaled_predictions = self.scale(
+                predictions, self.activation_min, self.activation_max, self.train_set_min, self.train_set_max)
 
-                # Using confusion matrix to calculate metrics
-                epoch_metrics = get_epoch_metrics_fn(
-                    scaled_predictions, expected_output)
+            # Using confusion matrix to calculate metrics
+            epoch_metrics = get_epoch_metrics_fn(
+                scaled_predictions, expected_output)
 
-                scaled_predictions_epoch_error = self.error(
-                    expected_output, scaled_predictions)
+            scaled_predictions_epoch_error = self.error(
+                expected_output, scaled_predictions)
 
-                # Calculate error scaling expected outputs to be in range of activation function image
-                scaled_expected_output = self.scale(
-                    expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
+            # Calculate error scaling expected outputs to be in range of activation function image
+            scaled_expected_output = self.scale(
+                expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
 
-                scaled_expected_output_epoch_error = self.error(
-                    scaled_expected_output, predictions)
+            scaled_expected_output_epoch_error = self.error(
+                scaled_expected_output, predictions)
 
-                self.save_epoch_metrics(
-                    current_epoch, metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error)
+            self.save_epoch_metrics(
+                metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error)
 
         if (self.prediction_output_path is not None):
             output_file.close()
@@ -232,8 +234,8 @@ class NeuralNetwork:
         return accumulated_sum
         # return 0.5 * np.sum(np.square(expected_output.T - np.array([prediction for prediction in predictions])))
 
-    def save_epoch_metrics(self, epoch, metrics_file, epoch_metrics: Metrics, scaled_predictions_epoch_error: float, scaled_expected_output_epoch_error: float):
-        metrics_file.write(f'{epoch}\n')
+    def save_epoch_metrics(self, metrics_file, epoch_metrics: Metrics, scaled_predictions_epoch_error: float, scaled_expected_output_epoch_error: float):
+        metrics_file.write(f'{self.epochs}\n')
 
         for metric in epoch_metrics:
             if type(metric) == np.ndarray:
@@ -251,20 +253,37 @@ class NeuralNetwork:
         input_data_with_bias = np.insert(input_data, 0, BIAS_NEURON_ACTIVATION)
         return self.propagate_forward(input_data_with_bias)
 
-    def test(self, input_dataset, expected_output):
+    def test(self, input_dataset, expected_output, metrics_output_filename=None,get_epoch_metrics_fn=None):
         predictions = np.array([[]])
-
         for input_data in input_dataset:
             prediction = self.predict(input_data)
             predictions = np.append(
                 predictions, prediction).reshape(-1, len(prediction) if type(prediction) == np.ndarray else 1)
 
-        print(f"predictions without scaling: {predictions}")
-
         scaled_predictions = self.scale(
             predictions, self.activation_min, self.activation_max, self.train_set_min, self.train_set_max)
+        
+        if metrics_output_filename is not None and get_epoch_metrics_fn is not None:
+            # save last epoch metrics
+            metrics_file = open(metrics_output_filename, "a")
+            print("Saving metrics...")
+            # Using confusion matrix to calculate metrics
+            epoch_metrics = get_epoch_metrics_fn(
+                scaled_predictions, expected_output)
 
-        print(f"scaled predictions: {scaled_predictions}")
+            scaled_predictions_epoch_error = self.error(
+                expected_output, scaled_predictions)
+
+            # Calculate error scaling expected outputs to be in range of activation function image
+            scaled_expected_output = self.scale(
+                expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
+
+            scaled_expected_output_epoch_error = self.error(
+                scaled_expected_output, predictions)
+
+            self.save_epoch_metrics(
+                metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error)
+
         return self.error(expected_output, scaled_predictions), scaled_predictions
 
     def scale(self, x: np.ndarray, from_min: float, from_max: float, to_min: float, to_max: float):
