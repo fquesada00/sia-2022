@@ -1,5 +1,5 @@
 {
-  "problem": "parity_noise",
+  "problem": "ej_2_non_linear",
   "use_optimal_parameters": true,
   "input_dataset_path": "",
   "output_dataset_path": "",
@@ -148,7 +148,7 @@
         "batch_size": 10,
         "momentum": 0,
         "learning_rate": 0.1,
-        "epochs": 50,
+        "epochs": 5,
         "tol": 1e-8,
         "use_adaptive_learning_rate": false,
         "alpha": 0.05,

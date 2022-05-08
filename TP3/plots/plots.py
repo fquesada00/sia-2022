@@ -1,14 +1,34 @@
+from matplotlib import markers
 import matplotlib.pyplot as plt
 import numpy as np
+from ..logs.files.constants import TRAIN_ERROR_BY_EPOCH_FILE_PATH
 
 
-def plot_epochs_vs_error(errors_by_epoch):
+def plot_ej_2_linear_train_error_by_epoch():
+    """
+    Plot the train error by epoch for the linear model.
+    """
+
+    epochs = []
+    train_errors = []
+
+    with open(TRAIN_ERROR_BY_EPOCH_FILE_PATH, "r") as f:
+        for line_index, line in enumerate(f):
+            line_data = line.split()
+            epochs.append(int(line_data[0]))
+            train_errors.append(float(line_data[1]))
+    
+    plot_epochs_vs_error(epochs, train_errors)
+
+
+def plot_epochs_vs_error(epochs, errors_by_epoch):
     """
     Plot the evolution of the error over the epochs.
     """
-    plt.plot(errors_by_epoch)
+    plt.plot(epochs, errors_by_epoch)
     plt.xlabel("Epochs")
     plt.ylabel("Error")
+    plt.yscale("log")
     plt.show()
 
 
@@ -131,12 +151,13 @@ def parse_metrics_file(filepath):
 
 if __name__ == "__main__":
     filepath = "TP3/metrics.txt"
-    accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
-    plot_epochs_vs_error(scaled_predictions_errors)
-    plot_epochs_vs_accuracy(accuracies)
-    plot_epochs_vs_precision(precisions)
-    plot_epochs_vs_precision_in_classes(precisions)
-    plot_epochs_vs_recall(recalls)
-    plot_epochs_vs_recall_in_classes(recalls)
-    plot_epochs_vs_f1(f1s)
-    plot_epochs_vs_f1_in_classes(f1s)
+    plot_ej_2_linear_train_error_by_epoch()
+    # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
+    # plot_epochs_vs_error(scaled_predictions_errors)
+    # plot_epochs_vs_accuracy(accuracies)
+    # plot_epochs_vs_precision(precisions)
+    # plot_epochs_vs_precision_in_classes(precisions)
+    # plot_epochs_vs_recall(recalls)
+    # plot_epochs_vs_recall_in_classes(recalls)
+    # plot_epochs_vs_f1(f1s)
+    # plot_epochs_vs_f1_in_classes(f1s)

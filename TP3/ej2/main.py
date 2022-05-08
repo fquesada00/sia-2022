@@ -1,6 +1,8 @@
 import argparse
 import numpy as np
 
+from TP3.logs import log_train_error_by_epoch
+
 from ..metrics.confusion_matrix import generate_confusion_matrix
 from ..metrics import print_metrics, Metrics
 from ..neural_network import NeuralNetwork
@@ -35,21 +37,20 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--function", type=str,
-                        default="linear", help="Activation function to use with perceptron.\n Value may be 'linear' or 'non-linear'", dest="activation_function", required=False)
     parser.add_argument("--split_method", help="Method to split input data into train and test set.\n Use 'all' to use the entire dataset for training, 'holdout' for holdout validation, 'k-fold' for k-fold cross validation.",
                         dest='training_method', required=False, default='all')
     parser.add_argument("--k", help="Number of folds to use for k-fold cross validation.",
                         dest='k', required=False, default=10)
     parser.add_argument("--ratio", help="Ratio of training data to use for holdout validation.",
                         dest='ratio', required=False, default=0.99)
+    parser.add_argument("--epochs", help="Number of epochs to train the network.",
+                        dest='epochs', required=False, default='-1')
 
     args = parser.parse_args()
 
     input_dataset = parse_dataset('./TP3/datasets/ej2/input.txt')
     expected_output = parse_dataset('./TP3/datasets/ej2/output.txt')
 
-    activation_function = get_activation_function(args.activation_function)
     training_method = args.training_method
     k = int(args.k)
     training_ratio = float(args.ratio)
@@ -61,6 +62,9 @@ if __name__ == "__main__":
 
     train_input_dataset, test_input_dataset, expected_output, test_expected_output_dataset = get_dataset(
         problem, dataset_path, output_dataset_path, **other_parameters)
+
+    if int(args.epochs) != -1:
+        training_parameters["epochs"] = int(args.epochs)
 
     def neural_network_supplier(): return NeuralNetwork(**network_parameters,
                                                         metrics_output_path=metrics_output_path, prediction_output_path=prediction_output_path)
@@ -103,3 +107,6 @@ if __name__ == "__main__":
     print(f"Error: {error}")
     print(f"Predictions: {predictions}")
     print(f"Expected output: {test_set_expected_output}")
+
+
+    log_train_error_by_epoch(metrics_output_path, training_parameters["epochs"])
