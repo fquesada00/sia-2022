@@ -35,7 +35,7 @@ def k_fold_cross_validation_eval(input_dataset, expected_output, model_supplier:
         model.train(
             training_set, expected_output_training_set, get_epoch_metrics_fn=get_epoch_metrics_fn, **training_parameters, verbose=False)
         
-        current_error, predictions =  model.test(test_set, expected_output)
+        current_error, predictions =  model.test(test_set, expected_output_test_set)
 
         print(f"current error ====> {current_error}")
 
