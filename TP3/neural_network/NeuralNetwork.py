@@ -84,6 +84,7 @@ class NeuralNetwork:
             layer.update_weights(momentum)
 
     def update_learning_rate(self, delta_error: float, alpha, beta):
+        print('UPDATE ETA')
         if(delta_error < 0):
             self.learning_rate = self.learning_rate + alpha
         elif delta_error > 0:
@@ -157,11 +158,18 @@ class NeuralNetwork:
                     self.update_weights(momentum)
 
                     if use_adaptive_learning_rate:
+                        predictions = []
+
+                        for input_data in input_dataset:
+                            predictions.append(self.predict(input_data))
+
                         new_error = self.error(
                             scaled_expected_output, predictions)
 
                         delta_error = new_error - error
                         delta_error_sign = np.sign(delta_error)
+
+                        print("Delta error: ", delta_error)
 
                         if (consistent_error_variation > 0 and delta_error_sign < 0) or consistent_error_variation < 0 and delta_error_sign > 0:
                             consistent_error_variation = 0
@@ -252,7 +260,7 @@ class NeuralNetwork:
         input_data_with_bias = np.insert(input_data, 0, BIAS_NEURON_ACTIVATION)
         return self.propagate_forward(input_data_with_bias)
 
-    def test(self, input_dataset, expected_output, metrics_output_filename=None,get_epoch_metrics_fn=None):
+    def test(self, input_dataset, expected_output, metrics_output_filename=None, get_epoch_metrics_fn=None):
         predictions = np.array([[]])
         for input_data in input_dataset:
             prediction = self.predict(input_data)
@@ -261,7 +269,7 @@ class NeuralNetwork:
 
         scaled_predictions = self.scale(
             predictions, self.activation_min, self.activation_max, self.train_set_min, self.train_set_max)
-        
+
         if metrics_output_filename is not None and get_epoch_metrics_fn is not None:
             # save last epoch metrics
             metrics_file = open(metrics_output_filename, "a")
