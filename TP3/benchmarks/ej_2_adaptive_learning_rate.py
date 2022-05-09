@@ -25,17 +25,38 @@ if __name__ == "__main__":
     epochs = int(args.epochs)
     iterations = int(args.iterations)
 
-    batches = [1]
-    for batch in batches:
-        print(f"Batch size: {batch}")
+    adaptives = [{
+        "a": 0.05,
+        "b": 0.01,
+    }, {
+        "a": 0.05,
+        "b": 0.05,
+    }, {
+        "a": 0.1,
+        "b": 0.1
+    }, {
+        "a": 0.2,
+        "b": 0.2
+    }, {
+        "a": 0.3,
+        "b": 0.3
+    }]
+
+    for adaptive in adaptives:
+        print(f"Adaptive: {adaptive}")
 
         config_file = open("TP3/config.json", "r")
-        json_object = json.load(config_file)
+        config = json.load(config_file)
         config_file.close()
 
-        json_object["optimal_parameters"]["ej_2_non_linear"]["training"]["batch_size"] = batch
+        config["optimal_parameters"]["ej_2_non_linear"]["training"]["use_adaptive_learning_rate"] = True
+        config["optimal_parameters"]["ej_2_non_linear"]["training"]["alpha"] = adaptive["a"]
+        config["optimal_parameters"]["ej_2_non_linear"]["training"]["beta"] = adaptive["b"]
+
         config_file = open("TP3/config.json", "w")
-        json.dump(json_object, config_file)
+
+        json.dump(config, config_file)
+
         config_file.close()
 
         for iteration in range(iterations):

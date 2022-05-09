@@ -25,17 +25,19 @@ if __name__ == "__main__":
     epochs = int(args.epochs)
     iterations = int(args.iterations)
 
-    batches = [1]
-    for batch in batches:
-        print(f"Batch size: {batch}")
+    momentums = [0.1, 0.3, 0.6, 0.8, 0.9, 0.95]
+    for momentum in momentums:
+        print(f"Momentum: {momentum}")
 
         config_file = open("TP3/config.json", "r")
-        json_object = json.load(config_file)
+        config = json.load(config_file)
         config_file.close()
 
-        json_object["optimal_parameters"]["ej_2_non_linear"]["training"]["batch_size"] = batch
+        config["optimal_parameters"]["ej_2_non_linear"]["training"]["momentum"] = momentum
         config_file = open("TP3/config.json", "w")
-        json.dump(json_object, config_file)
+
+        json.dump(config, config_file)
+
         config_file.close()
 
         for iteration in range(iterations):
