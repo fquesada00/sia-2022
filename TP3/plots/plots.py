@@ -74,6 +74,50 @@ def plot_ej_2_linear_with_batches(number_of_epochs=1, iterations_per_network=1, 
 
     plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
 
+def plot_ej_2_non_linear_with_batches(number_of_epochs=1, iterations_per_network=1, batches=[10, 20, 50, 100, 200], test_batches=[]):
+    # File structure:
+    # epoch_number error
+    # so every iterations per network the batch size is increased
+
+    train_mean_errors = []
+    train_stdev_errors = []
+
+    test_mean_errors = []
+    test_stdev_errors = []
+
+    legends = [f"Batch size = {batch}" for batch in [*batches, *test_batches]]
+
+    items = iterations_per_network * number_of_epochs - 1
+    next_line_index = 0
+    from_line_index = 0
+
+    for _ in batches:
+        next_line_index += items
+        epochs, errors_mean, errors_stdev, ignore = get_network_log_stats(TRAIN_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
+        train_mean_errors.append(errors_mean)
+        train_stdev_errors.append(errors_stdev)
+
+        epochs, test_errors_mean, test_errors_stdev, next_line_index = get_network_log_stats(TEST_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
+        test_mean_errors.append(test_errors_mean)
+        test_stdev_errors.append(test_errors_stdev)
+
+        from_line_index = next_line_index
+
+
+    print(f"train_mean_errors: {train_mean_errors}")
+    print(f"train_stdev_errors: {train_stdev_errors}")
+    print(f"test_mean_errors: {test_mean_errors}")
+    print(f"test_stdev_errors: {test_stdev_errors}") # [[], []]
+
+    mean_errors = np.append(train_mean_errors, test_mean_errors, axis=0)
+    stdev_errors = np.append(train_stdev_errors, test_stdev_errors, axis=0)
+
+    print(f"mean_errors: {mean_errors}")
+    print(f"stdev_errors: {stdev_errors}")
+
+    plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
+
+
 def plot_ej_2_non_linear():
     epochs, errors_mean_train, errors_stdev_train = get_log_stats(TRAIN_ERROR_BY_EPOCH_FILE_PATH)
     epochs, errors_mean_test, errors_stdev_test = get_log_stats(TEST_ERROR_BY_EPOCH_FILE_PATH)
@@ -84,7 +128,7 @@ def plot_epoch_vs_error(epochs:dict, mean_errors_by_set, error_stdevs_by_set,leg
     Plot the evolution of the error over the epochs.
     """
 
-    colors = ["red", "black", "magenta", "yellow", "cyan"]
+    colors = ["red", "black", "magenta", "yellow", "cyan", "lightcoral", "darkgrey", "violet", "khaki", "paleturquoise"]
 
     for  i in range(len(mean_errors_by_set)):
 
@@ -109,7 +153,7 @@ def plot_epoch_vs_error_with_stdev(epochs:dict, mean_errors_by_set, error_stdevs
     Plot the evolution of the error over the epochs.
     """
 
-    colors = ["red", "black", "magenta", "yellow", "cyan"]
+    colors = ["red", "black", "magenta", "yellow", "cyan", "lightcoral", "darkgrey", "violet", "khaki", "paleturquoise"]
     print(epochs)
     for  i in range(len(mean_errors_by_set)):
         fig = plt.figure()
@@ -261,7 +305,7 @@ def parse_metrics_file(filepath):
 
 if __name__ == "__main__":
     filepath = "TP3/metrics.txt"
-    plot_ej_2_linear_with_batches(number_of_epochs=50, iterations_per_network=5, batches=[10])
+    plot_ej_2_non_linear_with_batches(number_of_epochs=2, iterations_per_network=1, batches=[10, 20, 50, 100, 200], test_batches=[10,20,50,100,200])
     # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
     # plot_epochs_vs_error(scaled_predictions_errors)
     # plot_epochs_vs_accuracy(accuracies)

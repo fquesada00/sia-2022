@@ -45,8 +45,8 @@ if __name__ == "__main__":
             for epoch in range(epochs):
                 print(f"Epoch {epoch + 1}")
                 # Execute python script
-                cmd = f"python -m TP3.ej2.main --epochs {epoch + 1} --log-test --log-train --split-method holdout --ratio 0.99"
-                cmd = f"python -m TP3.ej2.main --epochs {epoch + 1} --log-train --seed {iteration + 2}"
+                cmd = f"python -m TP3.ej2.main --epochs {epoch + 1} --log-test --log-train --split-method holdout --ratio 0.9 --seed {iteration + 2}"
+                # cmd = f"python -m TP3.ej2.main --epochs {epoch + 1} --log-train --seed {iteration + 2}"
                 print(cmd)
                 os.system(cmd)
 

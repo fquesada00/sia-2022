@@ -146,7 +146,7 @@
         "activation_function": "logistic"
       },
       "training": {
-        "batch_size": 20,
+        "batch_size": 10,
         "momentum": 0,
         "learning_rate": 0.1,
         "epochs": 5,
