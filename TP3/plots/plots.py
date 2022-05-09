@@ -160,7 +160,7 @@ def plot_epoch_vs_error(epochs: dict, mean_errors_by_set, error_stdevs_by_set, l
     plt.ylabel("Error", fontdict={"size": 20})
     plt.yticks(fontsize=20)
     plt.xticks(fontsize=20)
-    plt.yscale("log")
+    # plt.yscale("log")
     plt.show()
 
 
@@ -389,8 +389,9 @@ def parse_metrics_file(filepath):
 
 if __name__ == "__main__":
     filepath = "TP3/metrics.txt"
-    plot_ej_2_with_momentum(
-        number_of_epochs=50, iterations_per_network=5)
+    plot_ej_2_linear_with_batches(number_of_epochs=5, iterations_per_network=5, batches=[1])
+    # plot_ej_2_with_momentum(
+    #     number_of_epochs=50, iterations_per_network=5)
     # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
     # plot_epochs_vs_error(scaled_predictions_errors)
     # plot_epochs_vs_accuracy(accuracies)

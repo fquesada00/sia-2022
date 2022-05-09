@@ -183,34 +183,34 @@ class NeuralNetwork:
                 if verbose:
                     print(f'error: {error}')
 
-        # save last epoch metrics
-        if(self.metrics_output_path is not None and get_epoch_metrics_fn is not None):
-            print("Saving metrics...")
-            predictions = np.empty((0, output_layer.size))
+            # save last epoch metrics
+            if(self.metrics_output_path is not None and get_epoch_metrics_fn is not None):
+                print("Saving metrics...")
+                predictions = np.empty((0, output_layer.size))
 
-            for input_data in input_dataset:
-                predictions = np.append(
-                    predictions, self.predict(input_data)).reshape(-1, output_layer.size)
+                for input_data in input_dataset:
+                    predictions = np.append(
+                        predictions, self.predict(input_data)).reshape(-1, output_layer.size)
 
-            scaled_predictions = self.scale(
-                predictions, self.activation_min, self.activation_max, self.train_set_min, self.train_set_max)
+                scaled_predictions = self.scale(
+                    predictions, self.activation_min, self.activation_max, self.train_set_min, self.train_set_max)
 
-            # Using confusion matrix to calculate metrics
-            epoch_metrics = get_epoch_metrics_fn(
-                scaled_predictions, expected_output)
+                # Using confusion matrix to calculate metrics
+                epoch_metrics = get_epoch_metrics_fn(
+                    scaled_predictions, expected_output)
 
-            scaled_predictions_epoch_error = self.error(
-                expected_output, scaled_predictions)
+                scaled_predictions_epoch_error = self.error(
+                    expected_output, scaled_predictions)
 
-            # Calculate error scaling expected outputs to be in range of activation function image
-            scaled_expected_output = self.scale(
-                expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
+                # Calculate error scaling expected outputs to be in range of activation function image
+                scaled_expected_output = self.scale(
+                    expected_output, self.train_set_min, self.train_set_max, self.activation_min, self.activation_max)
 
-            scaled_expected_output_epoch_error = self.error(
-                scaled_expected_output, predictions)
+                scaled_expected_output_epoch_error = self.error(
+                    scaled_expected_output, predictions)
 
-            self.save_epoch_metrics(
-                metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error)
+                self.save_epoch_metrics(
+                    metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error, current_epoch)
 
         if (self.prediction_output_path is not None):
             output_file.close()
@@ -233,8 +233,8 @@ class NeuralNetwork:
         return accumulated_sum
         # return 0.5 * np.sum(np.square(expected_output.T - np.array([prediction for prediction in predictions])))
 
-    def save_epoch_metrics(self, metrics_file, epoch_metrics: Metrics, scaled_predictions_epoch_error: float, scaled_expected_output_epoch_error: float):
-        metrics_file.write(f'{self.epochs}\n')
+    def save_epoch_metrics(self, metrics_file, epoch_metrics: Metrics, scaled_predictions_epoch_error: float, scaled_expected_output_epoch_error: float, current_epoch: int):
+        metrics_file.write(f'{current_epoch}\n')
 
         for metric in epoch_metrics:
             if type(metric) == np.ndarray:

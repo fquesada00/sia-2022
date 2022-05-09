@@ -2,7 +2,7 @@ import argparse
 from ast import parse
 import numpy as np
 
-from TP3.logs import log_error_by_epoch
+from ..logs import log_error_by_epoch, log_error_by_epoch_of_entire_network
 
 from ..metrics.confusion_matrix import generate_confusion_matrix
 from ..metrics import print_metrics, Metrics
@@ -86,8 +86,8 @@ if __name__ == "__main__":
         neural_network.train(
             train_input_dataset, expected_output, get_epoch_metrics_fn=get_epoch_metrics(), **training_parameters, verbose=False)
 
-        error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
+        # error, predictions = neural_network.test(
+        #     test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
 
     elif training_method == 'holdout':
         holdout_sets = holdout_eval(input_dataset, expected_output, neural_network,
@@ -113,12 +113,12 @@ if __name__ == "__main__":
         print("Invalid training method")
         exit(1)
 
-    print(f"Error: {error}")
-    print(f"Predictions: {predictions}")
-    print(f"Expected output: {test_set_expected_output}")
+    # print(f"Error: {error}")
+    # print(f"Predictions: {predictions}")
+    # print(f"Expected output: {test_set_expected_output}")
 
     if args.log_train:
-        log_error_by_epoch(metrics_output_path,
+        log_error_by_epoch_of_entire_network(metrics_output_path,
                            training_parameters["epochs"], 'train')
 
     if args.log_test:
