@@ -284,7 +284,7 @@ def plot_epochs_vs_f1_in_classes(f1s_by_epoch):
     plt.show()
 
 
-def plot_ej_2_with_momentum(number_of_epochs=1, iterations_per_network=1, momentums=[0.1, 0.3, 0.6, 0.8, 0.9, 0.95]):
+def plot_ej_2_with_momentum(number_of_epochs=1, iterations_per_network=1, momentums=[0, 0.1, 0.3, 0.6, 0.8, 0.9, 0.95]):
     # File structure:
     # epoch_number error
     # so every iterations per network the batch size is increased
@@ -308,22 +308,27 @@ def plot_ej_2_with_momentum(number_of_epochs=1, iterations_per_network=1, moment
     plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
 
 
-def plot_ej_2_with_adaptive(number_of_epochs=1, iterations_per_network=1, adaptives=[{
-        "a": 0.05,
-        "b": 0.01,
-    }, {
-        "a": 0.05,
-        "b": 0.05,
-}, {
-        "a": 0.1,
-        "b": 0.1
-}, {
-        "a": 0.2,
-        "b": 0.2
-}, {
-        "a": 0.3,
-        "b": 0.3
-}]):
+def plot_ej_2_with_adaptive(number_of_epochs=1, iterations_per_network=1, adaptives=[
+        {
+            "a": 0,
+            "b": 0
+        },
+        {
+            "a": 0.05,
+            "b": 0.01,
+        }, {
+            "a": 0.05,
+            "b": 0.05,
+        }, {
+            "a": 0.1,
+            "b": 0.1
+        }, {
+            "a": 0.2,
+            "b": 0.2
+        }, {
+            "a": 0.3,
+            "b": 0.3
+        }]):
     # File structure:
     # epoch_number error
     # so every iterations per network the batch size is increased
@@ -338,6 +343,7 @@ def plot_ej_2_with_adaptive(number_of_epochs=1, iterations_per_network=1, adapti
     from_line_index = 0
 
     for _ in adaptives:
+        print(_)
         next_line_index += items
         epochs, errors_mean, errors_stdev, next_line_index = get_network_log_stats(
             TRAIN_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
@@ -389,9 +395,11 @@ def parse_metrics_file(filepath):
 
 if __name__ == "__main__":
     filepath = "TP3/metrics.txt"
-    plot_ej_2_linear_with_batches(number_of_epochs=5, iterations_per_network=5, batches=[1])
+    # plot_ej_2_linear_with_batches(number_of_epochs=5, iterations_per_network=5, batches=[1])
     # plot_ej_2_with_momentum(
     #     number_of_epochs=50, iterations_per_network=5)
+    plot_ej_2_with_adaptive(
+        number_of_epochs=15, iterations_per_network=5)
     # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
     # plot_epochs_vs_error(scaled_predictions_errors)
     # plot_epochs_vs_accuracy(accuracies)
