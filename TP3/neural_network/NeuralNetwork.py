@@ -169,8 +169,6 @@ class NeuralNetwork:
                         delta_error = new_error - error
                         delta_error_sign = np.sign(delta_error)
 
-                        print("Delta error: ", delta_error)
-
                         if (consistent_error_variation > 0 and delta_error_sign < 0) or consistent_error_variation < 0 and delta_error_sign > 0:
                             consistent_error_variation = 0
                         else:
