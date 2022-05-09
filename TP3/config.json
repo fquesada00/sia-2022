@@ -4,7 +4,7 @@
   "input_dataset_path": "",
   "output_dataset_path": "",
   "metrics_output_path": "TP3/metrics.txt",
-  "test_metrics_output_path":"TP3/test_metrics.txt",
+  "test_metrics_output_path": "TP3/test_metrics.txt",
   "prediction_output_path": "TP3/weights.txt",
   "custom_parameters": {
     "network": {
@@ -146,7 +146,7 @@
         "activation_function": "logistic"
       },
       "training": {
-        "batch_size": 10,
+        "batch_size": 20,
         "momentum": 0,
         "learning_rate": 0.1,
         "epochs": 5,
@@ -210,8 +210,8 @@
       },
       "other": {
         "add_noise_to_number_dataset": true,
-        "noise_level": 0.2,
-        "test_set_size": 2
+        "noise_level": 0.05,
+        "test_set_size": 1
       }
     },
     "number": {

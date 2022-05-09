@@ -24,27 +24,111 @@ def get_log_stats(file_path):
 
     return  epochs, errors_mean, errors_stdev
     
+def get_network_log_stats(file_path, from_line_index=0, to_line_index=None):
+    """
+    Plot the train error by epoch for the linear model.
+    """
+    print(f"from line index: {from_line_index}")
+    print(f"to line index: {to_line_index}")
+    epochs = {}
+    next_line_index = 0
+    with open(file_path, "r") as f:
+        for line_index, line in enumerate(f):
+            if line_index >= from_line_index and (to_line_index is None or line_index <= to_line_index):
+                line_data = line.split()
+                epoch_number = int(line_data[0])
+                if epoch_number not in epochs:
+                    epochs[epoch_number] = []
+            
+                epochs[epoch_number].append(float(line_data[1]))
+                next_line_index = line_index + 1
+
+    errors_stdev = np.std(list(epochs.values()), axis=1)
+    errors_mean = np.mean(list(epochs.values()), axis=1)
+
+    return  epochs, errors_mean, errors_stdev, next_line_index
+
 def plot_ej_2_linear():
     epochs, errors_mean_train, errors_stdev_train = get_log_stats(TRAIN_ERROR_BY_EPOCH_FILE_PATH)
     plot_epoch_vs_error_with_stdev(epochs, [errors_mean_train], [errors_stdev_train],['Training'])
+
+def plot_ej_2_linear_with_batches(number_of_epochs=1, iterations_per_network=1, batches=[10, 20, 50, 100, 200]):
+    # File structure:
+    # epoch_number error
+    # so every iterations per network the batch size is increased
+
+    mean_errors = []
+    stdev_errors = []
+    legends = [f"Batch size = {batch}" for batch in batches]
+
+    items = iterations_per_network * number_of_epochs - 1
+    next_line_index = 0
+    from_line_index = 0
+
+    for _ in batches:
+        next_line_index += items
+        epochs, errors_mean, errors_stdev, next_line_index = get_network_log_stats(TRAIN_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
+        from_line_index = next_line_index
+        mean_errors.append(errors_mean)
+        stdev_errors.append(errors_stdev)
+
+    plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
 
 def plot_ej_2_non_linear():
     epochs, errors_mean_train, errors_stdev_train = get_log_stats(TRAIN_ERROR_BY_EPOCH_FILE_PATH)
     epochs, errors_mean_test, errors_stdev_test = get_log_stats(TEST_ERROR_BY_EPOCH_FILE_PATH)
     plot_epoch_vs_error_with_stdev(epochs, [errors_mean_train,errors_mean_test], [errors_stdev_train,errors_stdev_test],['Training','Test'])
 
-def plot_epoch_vs_error_with_stdev(epochs:dict, mean_errors_by_set, error_stdevs_by_set,legends):
+def plot_epoch_vs_error(epochs:dict, mean_errors_by_set, error_stdevs_by_set,legends):
     """
     Plot the evolution of the error over the epochs.
     """
+
+    colors = ["red", "black", "magenta", "yellow", "cyan"]
+
     for  i in range(len(mean_errors_by_set)):
-        plt.errorbar(list(epochs.keys()), mean_errors_by_set[i], yerr=error_stdevs_by_set[i], ls="none",
-                 ecolor='blue', marker='o', color="red", elinewidth=0.5, capsize=5)
+
+        epochs_list = list(epochs.keys())
+
+        # for index, value in enumerate(mean_errors_by_set[i]):
+        #     print(index)
+        #     # ax.annotate(str(round(value, 2)), xy=(index,value), xytext=(-7,7), textcoords='offset points')
+        #     ax.text(epochs_list[index], value + 150, f"{round(value, 3)}", ha="center", va="bottom")
+
+        plt.plot(epochs_list, mean_errors_by_set[i], marker='o', color=colors[i])
     
     plt.legend(legends)
     plt.xlabel("Epochs")
     plt.ylabel("Error")
-    plt.yscale("log")
+    # plt.yscale("log")
+    plt.show()
+
+
+def plot_epoch_vs_error_with_stdev(epochs:dict, mean_errors_by_set, error_stdevs_by_set,legends):
+    """
+    Plot the evolution of the error over the epochs.
+    """
+
+    colors = ["red", "black", "magenta", "yellow", "cyan"]
+    print(epochs)
+    for  i in range(len(mean_errors_by_set)):
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+        epochs_list = list(epochs.keys())
+
+        for index, value in enumerate(mean_errors_by_set[i]):
+            print(index)
+            # ax.annotate(str(round(value, 2)), xy=(index,value), xytext=(-7,7), textcoords='offset points')
+            ax.text(epochs_list[index], value + 150, f"{round(value, 3)}", ha="center", va="bottom")
+
+        plt.errorbar(epochs_list, mean_errors_by_set[i], yerr=error_stdevs_by_set[i],
+                 ecolor='blue', marker='o', color=colors[i], elinewidth=0.5, capsize=5)
+    
+    plt.legend(legends)
+    plt.xlabel("Epochs")
+    plt.ylabel("Error")
+    # plt.yscale("log")
     plt.show()
 
 def plot_epochs_vs_error(epochs, errors_by_epoch):
@@ -177,7 +261,7 @@ def parse_metrics_file(filepath):
 
 if __name__ == "__main__":
     filepath = "TP3/metrics.txt"
-    plot_ej_2_non_linear()
+    plot_ej_2_linear_with_batches(number_of_epochs=50, iterations_per_network=5, batches=[10])
     # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
     # plot_epochs_vs_error(scaled_predictions_errors)
     # plot_epochs_vs_accuracy(accuracies)

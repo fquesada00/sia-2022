@@ -50,6 +50,8 @@ if __name__ == "__main__":
                         dest='log_train', required=False, action="store_true", default=False)
     parser.add_argument("--log-test", help="Log epochs to file",
                         dest='log_test', required=False, action="store_true", default=False)
+    parser.add_argument("--seed", help="Log epochs to file",
+                        dest='seed', required=False, default="2")
 
     args = parser.parse_args()
 
@@ -70,29 +72,32 @@ if __name__ == "__main__":
     if int(args.epochs) != -1:
         training_parameters["epochs"] = int(args.epochs)
 
+    # Set seed
+    np.random.seed(int(args.seed))
+
     def neural_network_supplier(): return NeuralNetwork(**network_parameters,
                                                         metrics_output_path=metrics_output_path, prediction_output_path=prediction_output_path)
 
     neural_network = neural_network_supplier()
 
-    if training_method == 'all':
+    if training_method == 'all' or problem == "ej_2_linear":
         test_set_input = input_dataset
         test_set_expected_output = expected_output
         neural_network.train(
             train_input_dataset, expected_output, get_epoch_metrics_fn=get_epoch_metrics(), **training_parameters, verbose=False)
 
         error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path,get_epoch_metrics_fn=get_epoch_metrics())
+            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
 
     elif training_method == 'holdout':
         holdout_sets = holdout_eval(input_dataset, expected_output, neural_network,
-                                           training_ratio=training_ratio, get_epoch_metrics_fn=get_epoch_metrics(), training_parameters=training_parameters, verbose=False)
+                                    training_ratio=training_ratio, get_epoch_metrics_fn=get_epoch_metrics(), training_parameters=training_parameters, verbose=False)
 
         test_set_input = holdout_sets['test_set'][0]
         test_set_expected_output = holdout_sets['test_set'][1]
 
         error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output,metrics_output_filename=test_metrics_output_path,get_epoch_metrics_fn=get_epoch_metrics())
+            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
 
     elif training_method == 'k-fold':
         average_error, min_error_sets, neural_network = k_fold_cross_validation_eval(
@@ -102,7 +107,7 @@ if __name__ == "__main__":
         test_set_expected_output = min_error_sets['test_set'][1]
 
         error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output)
+            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
 
     else:
         print("Invalid training method")
@@ -113,7 +118,9 @@ if __name__ == "__main__":
     print(f"Expected output: {test_set_expected_output}")
 
     if args.log_train:
-        log_error_by_epoch(metrics_output_path, training_parameters["epochs"],'train')
-    
+        log_error_by_epoch(metrics_output_path,
+                           training_parameters["epochs"], 'train')
+
     if args.log_test:
-        log_error_by_epoch(test_metrics_output_path, training_parameters["epochs"],'test')
+        log_error_by_epoch(test_metrics_output_path,
+                           training_parameters["epochs"], 'test')

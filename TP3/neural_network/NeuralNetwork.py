@@ -1,5 +1,4 @@
 from io import FileIO
-import random
 import numpy as np
 
 from typing import List
@@ -122,8 +121,8 @@ class NeuralNetwork:
         while current_epoch < epochs and error > tol:
             print("Epoch: ", current_epoch)
             current_epoch += 1
-            random_indexes = random.sample(
-                range(0, dataset_length), dataset_length)
+            random_indexes = np.array(range(0, dataset_length))
+            np.random.shuffle(random_indexes)
 
             for index in random_indexes:
                 output = self.predict(input_dataset[index])
