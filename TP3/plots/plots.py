@@ -1,7 +1,7 @@
 from matplotlib import markers
 import matplotlib.pyplot as plt
 import numpy as np
-from ..logs.files.constants import TRAIN_ERROR_BY_EPOCH_CSV_FILE_PATH, TRAIN_ERROR_BY_EPOCH_FILE_PATH, TEST_ERROR_BY_EPOCH_FILE_PATH
+from ..logs.files.constants import TEST_ERROR_BY_EPOCH_CSV_FILE_PATH, TRAIN_ERROR_BY_EPOCH_CSV_FILE_PATH, TRAIN_ERROR_BY_EPOCH_FILE_PATH, TEST_ERROR_BY_EPOCH_FILE_PATH
 
 
 def get_log_stats(file_path):
@@ -442,6 +442,29 @@ def plot_ej_2_activation_functions(number_of_epochs=1, iterations_per_network=1,
     plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
 
 
+def plot_ej_2_k_fold_cross_validation(number_of_epochs=1, iterations_per_network=1, k_fold_cross_validation=[5, 10, 15, 20, 25, 30]):
+    mean_errors = []
+    stdev_errors = []
+    legends = [f"k = {k_fold}" for k_fold in k_fold_cross_validation]
+    header = "k"
+    values = k_fold_cross_validation
+
+    items = iterations_per_network * number_of_epochs - 1
+    next_line_index = 0
+    from_line_index = 0
+
+    for _ in k_fold_cross_validation:
+        next_line_index += items
+        epochs, errors_mean, errors_stdev, next_line_index = get_network_log_stats(
+            TEST_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
+        from_line_index = next_line_index
+        mean_errors.append(errors_mean)
+        stdev_errors.append(errors_stdev)
+
+    plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends, header=header,
+                        values=values, file_path=TEST_ERROR_BY_EPOCH_CSV_FILE_PATH)
+
+
 def parse_metrics_file(filepath):
     """
     Parse the metrics file and return the errors by epoch.
@@ -496,8 +519,8 @@ if __name__ == "__main__":
     # plot_ej_2_linear_with_batches(number_of_epochs=50, iterations_per_network=5, batches=[1, 10, 20, 50, 100, 200])
     # plot_ej_2_with_momentum(
     #     number_of_epochs=50, iterations_per_network=5)
-    plot_ej_2_with_adaptive(
-        number_of_epochs=15, iterations_per_network=5)
+    # plot_ej_2_with_adaptive(
+    #     number_of_epochs=15, iterations_per_network=5)
     # plot_activation_beta(number_of_epochs=15,
     #                      iterations_per_network=5, function="tanh")
     # plot_ej_2_with_adaptive_variate_k(
@@ -507,6 +530,8 @@ if __name__ == "__main__":
     #     number_of_epochs=10, iterations_per_network=5)
     # plot_ej_2_with_adaptive(
     #     number_of_epochs=15, iterations_per_network=5)
+    plot_ej_2_k_fold_cross_validation(
+        number_of_epochs=50, iterations_per_network=5)
     # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
     # plot_epochs_vs_error(scaled_predictions_errors)
     # plot_epochs_vs_accuracy(accuracies)

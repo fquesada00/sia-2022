@@ -106,6 +106,18 @@ if __name__ == "__main__":
         test_set_input = min_error_sets['test_set'][0]
         test_set_expected_output = min_error_sets['test_set'][1]
 
+        train_input_dataset = min_error_sets['training_set'][0]
+        train_expected_output = min_error_sets['training_set'][1]
+
+        open('TP3/metrics.txt', 'w').close()
+        open('TP3/weights.txt', 'w').close()
+
+
+        neural_network.train(
+            train_input_dataset, train_expected_output, get_epoch_metrics_fn=get_epoch_metrics(), **training_parameters, verbose=False, 
+            test_input_dataset=test_set_input, test_expected_output=test_set_expected_output, test_metrics_output_path=test_metrics_output_path)
+
+
         # error, predictions = neural_network.test(
         #     test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
 

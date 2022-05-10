@@ -3,8 +3,10 @@ from ..neural_network import NeuralNetwork
 from TP3 import neural_network
 
 def k_fold_cross_validation_eval(input_dataset, expected_output, model_supplier: lambda: NeuralNetwork, k=10, get_epoch_metrics_fn=None, training_parameters: dict={}, verbose=False):
-    shuffled_input = np.array(input_dataset)
-    np.random.shuffle(shuffled_input)
+    shuffled_tupled = list(zip(input_dataset, expected_output))
+    np.random.shuffle(shuffled_tupled)
+    shuffled_input, shuffled_expected_output = map(
+        np.array, zip(*shuffled_tupled))
 
     # Split the data into k folds
     fold_size = int(len(shuffled_input) / k)
@@ -25,13 +27,13 @@ def k_fold_cross_validation_eval(input_dataset, expected_output, model_supplier:
         test_set = shuffled_input[i * fold_size: (i + 1) * fold_size]
         print(f"Test set size: {len(test_set)}")
 
-        expected_output_test_set = expected_output[i * fold_size: (i + 1) * fold_size]
+        expected_output_test_set = shuffled_expected_output[i * fold_size: (i + 1) * fold_size]
 
         # Get the training data
         training_set = np.concatenate((shuffled_input[:i * fold_size], shuffled_input[(i + 1) * fold_size:]))
         print(f"Training set size: {len(training_set)}")
         
-        expected_output_training_set = np.concatenate((expected_output[:i * fold_size], expected_output[(i + 1) * fold_size:]))
+        expected_output_training_set = np.concatenate((shuffled_expected_output[:i * fold_size], shuffled_expected_output[(i + 1) * fold_size:]))
         model.train(
             training_set, expected_output_training_set, get_epoch_metrics_fn=get_epoch_metrics_fn, **training_parameters, verbose=False)
         
