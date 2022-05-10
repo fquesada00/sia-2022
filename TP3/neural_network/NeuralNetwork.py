@@ -85,10 +85,12 @@ class NeuralNetwork:
 
     def update_learning_rate(self, delta_error: float, alpha, beta):
         print('UPDATE ETA')
+
         if(delta_error < 0):
-            self.learning_rate = self.learning_rate + alpha
+            self.learning_rate = min(self.learning_rate + alpha, 1)
         elif delta_error > 0:
-            self.learning_rate = self.learning_rate - beta*self.learning_rate
+            self.learning_rate = max(
+                self.learning_rate - beta*self.learning_rate, 0.00001)
 
     def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, learning_rate: float = 1,
               batch_size: int = 1, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False, alpha: float = 0.05, beta: float = 0.05, k: int = 0, get_epoch_metrics_fn=None, use_adaptive_learning_rate: bool = False,
@@ -219,10 +221,10 @@ class NeuralNetwork:
                 self.save_epoch_metrics(
                     metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error, current_epoch)
 
-
             if test_input_dataset is not None and test_expected_output is not None and test_metrics_output_path is not None:
                 print("Saving test metrics...")
-                self.test(test_input_dataset, test_expected_output, test_metrics_output_path, get_epoch_metrics_fn, epoch_number=current_epoch)
+                self.test(test_input_dataset, test_expected_output, test_metrics_output_path,
+                          get_epoch_metrics_fn, epoch_number=current_epoch)
 
         if (self.prediction_output_path is not None):
             output_file.close()
