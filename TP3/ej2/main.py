@@ -112,6 +112,7 @@ if __name__ == "__main__":
         open('TP3/metrics.txt', 'w').close()
         open('TP3/weights.txt', 'w').close()
 
+        neural_network = neural_network_supplier()
 
         neural_network.train(
             train_input_dataset, train_expected_output, get_epoch_metrics_fn=get_epoch_metrics(), **training_parameters, verbose=False, 
