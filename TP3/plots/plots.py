@@ -57,7 +57,7 @@ def plot_ej_2_linear():
                                    errors_stdev_train], ['Training'])
 
 
-def plot_ej_2_linear_with_batches(number_of_epochs=1, iterations_per_network=1, batches=[10, 20, 50, 100, 200]):
+def plot_ej_2_linear_with_batches(number_of_epochs=10, iterations_per_network=5, batches=[10, 20, 50, 100, 200]):
     # File structure:
     # epoch_number error
     # so every iterations per network the batch size is increased
@@ -135,7 +135,7 @@ def plot_ej_2_non_linear():
                                    errors_stdev_train, errors_stdev_test], ['Training', 'Test'])
 
 
-def plot_epoch_vs_error(epochs: dict, mean_errors_by_set, error_stdevs_by_set, legends):
+def plot_epoch_vs_error(epochs: dict, mean_errors_by_set, error_stdevs_by_set, legends, title=None):
     """
     Plot the evolution of the error over the epochs.
     """
@@ -155,7 +155,9 @@ def plot_epoch_vs_error(epochs: dict, mean_errors_by_set, error_stdevs_by_set, l
         plt.plot(
             epochs_list, mean_errors_by_set[i], marker='o', color=colors[i])
 
-    plt.legend(legends, prop={'size': 10})
+    if title is not None:
+        plt.title(title)
+    plt.legend(legends, prop={'size': 20})
     plt.xlabel("Epochs", fontdict={"size": 20})
     plt.ylabel("Error", fontdict={"size": 20})
     plt.yticks(fontsize=20)
@@ -181,15 +183,17 @@ def plot_epoch_vs_error_with_stdev(epochs: dict, mean_errors_by_set, error_stdev
         for index, value in enumerate(mean_errors_by_set[i]):
             print(index)
             # ax.annotate(str(round(value, 2)), xy=(index,value), xytext=(-7,7), textcoords='offset points')
-            ax.text(epochs_list[index], value + 150,
-                    f"{round(value, 3)}", ha="center", va="bottom")
+            ax.text(epochs_list[index], value + 20,
+                    f"{round(value, 3)}", ha="center", va="bottom", fontsize=20)
 
         plt.errorbar(epochs_list, mean_errors_by_set[i], yerr=error_stdevs_by_set[i],
                      ecolor='blue', marker='o', color=colors[i], elinewidth=0.5, capsize=5)
 
-    plt.legend(legends)
-    plt.xlabel("Epochs")
-    plt.ylabel("Error")
+    plt.legend(legends, prop={'size': 20})
+    plt.xlabel("Epochs", fontdict={"size": 20})
+    plt.ylabel("Error", fontdict={"size": 20})
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
     # plt.yscale("log")
     plt.show()
 
@@ -312,10 +316,6 @@ def plot_ej_2_with_adaptive(number_of_epochs=1, iterations_per_network=1, adapti
         {
             "a": 0,
             "b": 0
-        },
-        {
-            "a": 0.05,
-            "b": 0.01,
         }, {
             "a": 0.05,
             "b": 0.05,
@@ -351,6 +351,86 @@ def plot_ej_2_with_adaptive(number_of_epochs=1, iterations_per_network=1, adapti
         mean_errors.append(errors_mean)
         stdev_errors.append(errors_stdev)
 
+    plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
+
+
+def plot_ej_2_with_adaptive_variate_k(number_of_epochs=1, iterations_per_network=1, consecutive_iterations=[
+        1, 10, 20, 30, 50]):
+    # File structure:
+    # epoch_number error
+    # so every iterations per network the batch size is increased
+
+    mean_errors = []
+    stdev_errors = []
+    legends = [
+        f"k = {k}" for k in consecutive_iterations]
+
+    items = iterations_per_network * number_of_epochs - 1
+    next_line_index = 0
+    from_line_index = 0
+
+    for _ in consecutive_iterations:
+        print(_)
+        next_line_index += items
+        epochs, errors_mean, errors_stdev, next_line_index = get_network_log_stats(
+            TRAIN_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
+        from_line_index = next_line_index
+        mean_errors.append(errors_mean)
+        stdev_errors.append(errors_stdev)
+    print(len(stdev_errors))
+    plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
+
+
+def plot_activation_beta(number_of_epochs=1, iterations_per_network=1, betas=[-0.5, -0.3, 0.3, 0.5, 0.8, 0.9, 1.0, 1.2, 1.5], function='logistic'):
+    # File structure:
+    # epoch_number error
+    # so every iterations per network the batch size is increased
+
+    mean_errors = []
+    stdev_errors = []
+    legends = [
+        f"beta = {beta}" for beta in betas]
+
+    items = iterations_per_network * number_of_epochs - 1
+    next_line_index = 0
+    from_line_index = 0
+
+    for _ in betas:
+        print(_)
+        next_line_index += items
+        epochs, errors_mean, errors_stdev, next_line_index = get_network_log_stats(
+            TRAIN_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
+        from_line_index = next_line_index
+        mean_errors.append(errors_mean)
+        stdev_errors.append(errors_stdev)
+
+    plot_epoch_vs_error(epochs, mean_errors, stdev_errors,
+                        legends, title=function)
+
+
+def plot_ej_2_activation_functions(number_of_epochs=1, iterations_per_network=1, activation_functions=['logistic', 'tanh']):
+    # File structure:
+    # epoch_number error
+    # so every iterations per network the batch size is increased
+
+    mean_errors = []
+    stdev_errors = []
+    legends = [
+        f"Function = {activation_function}" for activation_function in activation_functions]
+
+    items = iterations_per_network * number_of_epochs - 1
+    next_line_index = 0
+    from_line_index = 0
+
+    for _ in activation_functions:
+        print(_)
+        next_line_index += items
+        epochs, errors_mean, errors_stdev, next_line_index = get_network_log_stats(
+            TRAIN_ERROR_BY_EPOCH_FILE_PATH, from_line_index=from_line_index, to_line_index=next_line_index)
+        from_line_index = next_line_index
+        mean_errors.append(errors_mean)
+        stdev_errors.append(errors_stdev)
+    print(len(stdev_errors))
     plot_epoch_vs_error(epochs, mean_errors, stdev_errors, legends)
 
 
@@ -400,6 +480,13 @@ if __name__ == "__main__":
     #     number_of_epochs=50, iterations_per_network=5)
     plot_ej_2_with_adaptive(
         number_of_epochs=15, iterations_per_network=5)
+    # plot_activation_beta(number_of_epochs=15,
+    #                      iterations_per_network=5, function="tanh")
+    # plot_ej_2_with_adaptive_variate_k(
+    #     number_of_epzochs=15, iterations_per_network=5)
+    # plot_ej_2_linear_with_batches(batches=[1, 10, 20, 50, 100, 200])
+    # plot_ej_2_activation_functions(
+    #     number_of_epochs=15, iterations_per_network=5)
     # accuracies, precisions, recalls, f1s, scaled_predictions_errors, scaled_expected_output_errors = parse_metrics_file(filepath)
     # plot_epochs_vs_error(scaled_predictions_errors)
     # plot_epochs_vs_accuracy(accuracies)
