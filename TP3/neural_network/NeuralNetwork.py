@@ -287,7 +287,7 @@ class NeuralNetwork:
                 scaled_expected_output, predictions)
 
             self.save_epoch_metrics(
-                metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error)
+                metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error, self.epochs)
 
         return self.error(expected_output, scaled_predictions), scaled_predictions
 

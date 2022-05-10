@@ -7,7 +7,7 @@ from matplotlib import animation
 
 def plot_linear_separation(input_dataset, expected_output, weights):
     fig = plt.figure(figsize=[10, 5])
-    ax = plt.axes(xlim=(-3, 3), ylim=(-3, 3))
+    ax = plt.axes(xlim=(-3, 3), ylim=(-10, 10))
     line, = ax.plot([], [], lw=2)
 
     def init():
@@ -40,7 +40,7 @@ def plot_linear_separation(input_dataset, expected_output, weights):
     # plt.xlim(left=-3, right=3)
     # plt.ylim(bottom=-3, top=3)
     plt.grid()
-    # anim.save('learning.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
+    anim.save('and_animation.mp4', fps=5, extra_args=['-vcodec', 'libx264'])
 
     plt.show()
 

@@ -29,10 +29,6 @@ if __name__ == "__main__":
         {
             "a": 0,
             "b": 0,
-        },
-        {
-            "a": 0.05,
-            "b": 0.01,
         }, {
             "a": 0.05,
             "b": 0.05,
@@ -69,7 +65,7 @@ if __name__ == "__main__":
 
             # Execute python script
             # cmd = f"python -m TP3.ej2.main --epochs {epoch + 1} --log-test --log-train --split-method holdout --ratio 0.9 --seed {iteration + 2}"
-            cmd = f"sudo nice -n -20 python -m TP3.ej2.main --epochs {epochs} --log-train --seed {iteration + 2}"
+            cmd = f"sudo  -E PATH=$PATH nice -n -20 python -m TP3.ej2.main --epochs {epochs} --log-train --seed {iteration + 2}"
             print(cmd)
             os.system(cmd)
 

@@ -7,7 +7,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--epochs", help="Number of epochs to train the network.",
-                        dest='epochs', required=False, default='5')
+                        dest='epochs', required=False, default='10')
     parser.add_argument("--iterations", help="Number of iterations per epoch.",
                         dest='iterations', required=False, default='5')
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         for iteration in range(iterations):
             print(f"Iteration {iteration + 1} of {iterations}")
             # Execute python script
-            # cmd = f"python -m TP3.ej2.main --epochs {epoch + 1} --log-test --log-train --split-method holdout --ratio 0.9 --seed {iteration + 2}"
+            # cmd = f"python -m TP3.ej2.main --epochs {epochs} --log-test --log-train --split-method holdout --ratio 0.8 --seed {iteration + 2}"
             cmd = f"python -m TP3.ej2.main --epochs {epochs} --log-train --seed {iteration + 2}"
             print(cmd)
             os.system(cmd)

@@ -45,6 +45,7 @@ def get_default_dataset_paths(problem):
 
     return input_dataset_path, output_dataset_path
 
+
 def check_valid_test_size(test_set: np.ndarray, test_size: int):
     print("Test size:", test_size)
     print("Test set size:", test_set.shape[0])
@@ -153,6 +154,7 @@ def parse_config_file(config_file_name):
 
         return problem, input_dataset_path, output_dataset_path, metrics_output_path, test_metrics_output_path, prediction_output_path, parameters["network"], parameters["training"], parameters["other"]
 
+
 def graph_number_with_parity_prediction(number: np.ndarray, prediction: float, expected_output: float):
     for i in range(len(number)):
         if number[i] == 0:
@@ -166,7 +168,8 @@ def graph_number_with_parity_prediction(number: np.ndarray, prediction: float, e
 
     plt.figure(figsize=(5, 5))
     plt.imshow(number.reshape(7, 5), cmap='gray')
-    plt.text(0, -1, f"Expected: {expected_output} - Predicted: {prediction}", bbox=dict(fill=False, edgecolor='red', linewidth=2))    
+    plt.text(0, -1, f"Expected: {expected_output} - Predicted: {prediction}",
+             bbox=dict(fill=False, edgecolor='red', linewidth=2))
 
 
 def graph_number_with_number_prediction(number: np.ndarray, prediction: np.ndarray, expected_output: np.ndarray):
@@ -182,9 +185,9 @@ def graph_number_with_number_prediction(number: np.ndarray, prediction: np.ndarr
 
     plt.figure(figsize=(5, 5))
     plt.imshow(number.reshape(7, 5), cmap='gray')
-    plt.text(0, -1, f"Expected: {expected_output} - Predicted: {prediction}", bbox=dict(fill=False, edgecolor='red', linewidth=2))    
+    plt.text(0, -1, f"Expected: {expected_output} - Predicted: {prediction}",
+             bbox=dict(fill=False, edgecolor='red', linewidth=2))
 
-    
 
 if __name__ == '__main__':
     config_file_name = "./TP3/config.json"
@@ -202,7 +205,7 @@ if __name__ == '__main__':
         train_input_dataset, expected_output, get_epoch_metrics_fn=get_epoch_metrics_by_problem(problem), **training_parameters)
 
     error, predictions = neural_network.test(
-        test_input_dataset, test_expected_output_dataset,metrics_output_filename=test_metrics_output_path,get_epoch_metrics_fn=get_epoch_metrics_by_problem(problem))
+        test_input_dataset, test_expected_output_dataset, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics_by_problem(problem))
 
     print("Test input dataset: ", test_input_dataset)
     print("Error: ", error)
@@ -212,13 +215,13 @@ if __name__ == '__main__':
     if problem.startswith("parity"):
         for i in range(len(test_input_dataset)):
             # plt.figure(i)
-            graph_number_with_parity_prediction(test_input_dataset[i], predictions[i][0], test_expected_output_dataset[i][0])
-        
+            graph_number_with_parity_prediction(
+                test_input_dataset[i], predictions[i][0], test_expected_output_dataset[i][0])
+
         plt.show()
     elif problem.startswith("number"):
         for i in range(len(test_input_dataset)):
-            graph_number_with_number_prediction(test_input_dataset[i], predictions[i], test_expected_output_dataset[i])
+            graph_number_with_number_prediction(
+                test_input_dataset[i], predictions[i], test_expected_output_dataset[i])
 
         plt.show()
-        
-    
