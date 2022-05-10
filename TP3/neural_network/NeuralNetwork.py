@@ -91,7 +91,8 @@ class NeuralNetwork:
             self.learning_rate = self.learning_rate - beta*self.learning_rate
 
     def train(self, input_dataset: np.ndarray, expected_output: np.ndarray, learning_rate: float = 1,
-              batch_size: int = 1, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False, alpha: float = 0.05, beta: float = 0.05, k: int = 0, get_epoch_metrics_fn=None, use_adaptive_learning_rate: bool = False):
+              batch_size: int = 1, epochs: int = 1, tol: float = 1e-5, momentum: float = 0.9, verbose: bool = False, alpha: float = 0.05, beta: float = 0.05, k: int = 0, get_epoch_metrics_fn=None, use_adaptive_learning_rate: bool = False,
+              test_input_dataset: np.ndarray = None, test_expected_output: np.ndarray = None, test_metrics_output_path: str = None):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.epochs = epochs
@@ -218,6 +219,11 @@ class NeuralNetwork:
                 self.save_epoch_metrics(
                     metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error, current_epoch)
 
+
+            if test_input_dataset is not None and test_expected_output is not None and test_metrics_output_path is not None:
+                print("Saving test metrics...")
+                self.test(test_input_dataset, test_expected_output, test_metrics_output_path, get_epoch_metrics_fn, epoch_number=current_epoch)
+
         if (self.prediction_output_path is not None):
             output_file.close()
 
@@ -258,7 +264,7 @@ class NeuralNetwork:
         input_data_with_bias = np.insert(input_data, 0, BIAS_NEURON_ACTIVATION)
         return self.propagate_forward(input_data_with_bias)
 
-    def test(self, input_dataset, expected_output, metrics_output_filename=None, get_epoch_metrics_fn=None):
+    def test(self, input_dataset, expected_output, metrics_output_filename=None, get_epoch_metrics_fn=None, epoch_number=-1):
         predictions = np.array([[]])
         for input_data in input_dataset:
             prediction = self.predict(input_data)
@@ -287,7 +293,7 @@ class NeuralNetwork:
                 scaled_expected_output, predictions)
 
             self.save_epoch_metrics(
-                metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error, self.epochs)
+                metrics_file, epoch_metrics, scaled_predictions_epoch_error, scaled_expected_output_epoch_error, self.epochs if epoch_number == -1 else epoch_number)
 
         return self.error(expected_output, scaled_predictions), scaled_predictions
 

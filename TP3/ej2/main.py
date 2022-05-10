@@ -96,8 +96,8 @@ if __name__ == "__main__":
         test_set_input = holdout_sets['test_set'][0]
         test_set_expected_output = holdout_sets['test_set'][1]
 
-        error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
+        # error, predictions = neural_network.test(
+        #     test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
 
     elif training_method == 'k-fold':
         average_error, min_error_sets, neural_network = k_fold_cross_validation_eval(
@@ -106,8 +106,8 @@ if __name__ == "__main__":
         test_set_input = min_error_sets['test_set'][0]
         test_set_expected_output = min_error_sets['test_set'][1]
 
-        error, predictions = neural_network.test(
-            test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
+        # error, predictions = neural_network.test(
+        #     test_set_input, test_set_expected_output, metrics_output_filename=test_metrics_output_path, get_epoch_metrics_fn=get_epoch_metrics())
 
     else:
         print("Invalid training method")
@@ -122,5 +122,5 @@ if __name__ == "__main__":
                            training_parameters["epochs"], 'train')
 
     if args.log_test:
-        log_error_by_epoch(test_metrics_output_path,
+        log_error_by_epoch_of_entire_network(test_metrics_output_path,
                            training_parameters["epochs"], 'test')
