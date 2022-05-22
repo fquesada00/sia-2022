@@ -4,13 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-scikit-learn = "*"
-matplotlib = "*"
-numpy = "*"
-pandas = "*"
-ipython = "*"
 
 [dev-packages]
+ipykernel = "*"
 
 [requires]
 python_version = "3.9"
