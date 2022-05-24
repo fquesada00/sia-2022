@@ -8,8 +8,9 @@ scikit-learn = "*"
 matplotlib = "*"
 numpy = "*"
 pandas = "*"
-ipython = "*"
 ipympl = "*"
+ipython = "*"
+pyqt5 = "*"
 
 [dev-packages]
 
