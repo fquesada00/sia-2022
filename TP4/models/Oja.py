@@ -3,7 +3,7 @@ import numpy as np
 
 class Oja:
     @classmethod
-    def compute_pc1(input_dataset: np.ndarray, epochs: int, learning_rate: float):
+    def compute_pc1(self, input_dataset: np.ndarray, epochs: int, learning_rate: float) -> np.ndarray:
         """
         Approximate the first principal component of the input dataset.
 
@@ -11,11 +11,11 @@ class Oja:
         :param epochs: The number of epochs.
         :return: The first principal component approximation.
         """
-        
-        # Initialize the weights with random values and norm 1.
-        weights = np.random.rand(input_dataset.shape[1])
-        weights /= np.linalg.norm(weights)
 
+        # Initialize the weights with random values and norm 1.
+        weights = np.random.uniform(
+            size=input_dataset.shape[1], low=-1, high=1)
+        weights /= np.linalg.norm(weights)
 
         # For each epoch.
         for epoch in range(epochs):
@@ -26,4 +26,4 @@ class Oja:
                 # Update the weights.
                 weights += learning_rate * proj * (sample - proj * weights)
 
-        return weights        
+        return weights
