@@ -1,1 +1,1 @@
-from .Kohonen import Kohonen
+from . import *
