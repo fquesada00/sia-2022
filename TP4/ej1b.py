@@ -5,7 +5,7 @@ from utils.read_dataset import read_dataset
 
 
 if __name__ == '__main__':
-    data = read_dataset('europe.csv')
+    data = read_dataset('./datasets/europe.csv')
 
     # remove Country column from dataset
     data_no_countries = data.drop(['Country'], axis=1)
