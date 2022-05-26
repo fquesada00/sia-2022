@@ -39,7 +39,7 @@ class Hopfield:
         for index, weight_row in enumerate(self.weights):
             H += np.dot(weight_row, state) * state[index]
         
-        return H
+        return -H * 0.5
 
     def associate(self, pattern: list[list[int]]):
         # calculate the output of the network
