@@ -1,31 +1,23 @@
 from pprint import pprint
 import numpy as np
 
-from .models import Kohonen
+from models import Kohonen  
+from utils.read_dataset import read_dataset
 
 
 def main():
-    print("Ejercicio 1a")
-    dataset_input = np.array([[0, 1, 2, 3, 4, 5, 6],
-                     [1, 2, 3, 4, 5, 6, 7],
-                     [2, 3, 4, 5, 6, 7, 8],
-                     [3, 4, 5, 6, 7, 8, 9],
-                     [4, 5, 6, 7, 8, 9, 10],
-                     [5, 6, 7, 8, 9, 10, 11],
-                     [6, 7, 8, 9, 10, 11, 12],
-                     [7, 8, 9, 10, 11, 12, 13],
-                     [8, 9, 10, 11, 12, 13, 14],
-                     [9, 10, 11, 12, 13, 14, 15],
-                     [10, 11, 12, 13, 14, 15, 16],
-                     [11, 12, 13, 14, 15, 16, 17],
-                     [12, 13, 14, 15, 16, 17, 18],
-                     [13, 14, 15, 16, 17, 18, 19],
-                     [14, 15, 16, 17, 18, 19, 20],
-                     [15, 16, 17, 18, 19, 20, 21]])
+    data = read_dataset('./datasets/europe.csv')
+
+    # remove Country column from dataset
+    data_no_countries = data.drop(['Country'], axis=1)
+
+    # scale dataset
+    data_scaled = (data_no_countries - data_no_countries.mean()
+                   ) / data_no_countries.std()
     k = 7
-    kohonen = Kohonen(k, dataset_input,10,0.9)
-    elems = kohonen.train(dataset_input, 100)
-    neuron_map = kohonen.test(dataset_input)
+    kohonen = Kohonen(k, data_scaled,10,0.9)
+    elems = kohonen.train(data_scaled, 100)
+    neuron_map = kohonen.test(data_scaled)
     pprint(neuron_map)
 
 if __name__ == '__main__':
