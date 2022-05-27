@@ -3,7 +3,6 @@ from models.PCA_SVD import PCA_SVD
 from models.Oja import Oja
 from utils.read_dataset import read_dataset
 
-
 if __name__ == '__main__':
     data = read_dataset('./datasets/europe.csv')
 
@@ -14,12 +13,13 @@ if __name__ == '__main__':
     data_scaled = (data_no_countries - data_no_countries.mean()
                    ) / data_no_countries.std()
 
-    # compute the first principal component with Oja's algorithm
-    pc1_oja = Oja.compute_pc1(data_scaled.to_numpy(),
-                              epochs=100000, learning_rate=0.0001)
-
     # compute the first principal component with SVD
     pc1_svd = PCA_SVD.compute_pc1(data_scaled.to_numpy())
+
+    # compute the first principal component with Oja's algorithm
+    pc1_oja = Oja.compute_pc1(data_scaled.to_numpy(),
+                              epochs=1000, learning_rate=0.0001, generate_plots=True,
+                              real_pc1=pc1_svd, headers=data_no_countries.columns, sample_labels=data['Country'].to_list())
 
     # compare
     print("With Oja's algorithm:")
