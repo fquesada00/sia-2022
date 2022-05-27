@@ -75,6 +75,19 @@ def plot_map(winners_sequence, winners, countries, k):
     plt.show()
 
 
+def plot_heatmap(heatmap, i, title):
+    plt.figure(i)
+    plt.title(title)
+    plt.tight_layout()
+
+    plt.imshow(heatmap, cmap='jet', interpolation='nearest')
+    # Plot colorbar
+    cbar = plt.colorbar()
+    cbar.ax.set_ylabel('Weights', rotation=-90, va="bottom")
+    # Limit color bar values
+    # plt.show()
+
+
 def main():
     data = read_dataset('./datasets/europe.csv')
 
@@ -86,13 +99,25 @@ def main():
                    ) / data_no_countries.std()
     data_scaled_numpy = data_scaled.to_numpy()
 
-    k = 7
+    k = 20
 
     kohonen = Kohonen(k, data_scaled_numpy, k, 0.01)
     winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr = kohonen.train(
-        data_scaled_numpy, 100)
+        data_scaled_numpy, 500)
 
     winners_sequence, winners = kohonen.test(data_scaled_numpy)
+    heatmap = kohonen.get_mean_column_weight(0)
+    plot_heatmap(heatmap, 2, data.columns[1])
+    heatmap = kohonen.get_mean_column_weight(1)
+    plot_heatmap(heatmap, 3, data.columns[2])
+    heatmap = kohonen.get_mean_column_weight(2)
+    plot_heatmap(heatmap, 4, data.columns[3])
+    heatmap = kohonen.get_mean_column_weight(3)
+    plot_heatmap(heatmap, 5, data.columns[4])
+    heatmap = kohonen.get_mean_column_weight(4)
+    plot_heatmap(heatmap, 6, data.columns[5])
+    heatmap = kohonen.get_mean_column_weight(5)
+    plot_heatmap(heatmap, 7, data.columns[6])
 
     plot_map(winners_sequence, winners, data['Country'], k)
 
