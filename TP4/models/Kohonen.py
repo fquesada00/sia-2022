@@ -90,9 +90,11 @@ class Kohonen():
         return winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr
 
     def test(self, dataset_input):
-        neurons = np.zeros(shape=(self.k, self.k))
+        winners_sequence = []
+        winners = []
         for input_value in dataset_input:
             winner_index_i, winner_index_j, winner, dist = self.__get_winner(
                 input_value)
-            neurons[winner_index_i, winner_index_j] += 1
-        return neurons
+            winners_sequence.append((winner_index_i, winner_index_j))
+            winners.append((winner_index_i, winner_index_j))
+        return winners_sequence, winners
