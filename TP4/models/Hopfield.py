@@ -41,20 +41,31 @@ class Hopfield:
         
         return -H * 0.5
 
-    def associate(self, pattern: list[list[int]]):
+    def predict(self, pattern: list[int], iterations: int):
         # calculate the output of the network
-        prev_state = np.array(pattern).flatten()
+        prev_state = pattern
         has_converged = False
 
         self.print_state(prev_state)
-        print(self.energy(prev_state))
-        while not has_converged:
+
+        total_iterations = 0
+
+        energies = []
+        states = [prev_state]
+
+        while not has_converged and total_iterations < iterations:
             sign = np.sign(np.dot(self.weights, prev_state))
             self.print_state(sign)
+
             state = sign if np.count_nonzero(sign) > 0 else prev_state
+            states.append(state)
+
             energy = self.energy(state)
-            print(energy)
+            energies.append(energy)
+
             has_converged = np.array_equal(state, prev_state)
-            break
+
+            prev_state = state
+            total_iterations += 1
         
-        return state
+        return state, energies, states
