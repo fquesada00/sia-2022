@@ -1,14 +1,177 @@
+import argparse
+from datetime import datetime
+import itertools
+import random
+from matplotlib.animation import FuncAnimation
+from matplotlib.ticker import MaxNLocator
+
+import numpy as np
 from models.Hopfield import Hopfield
 from datasets.font_1 import alphabet
 
+import matplotlib.pyplot as plt
+
+def add_noise(pattern: list[int], noise_level: float):
+    pattern_with_noise = []
+
+    for i in range(len(pattern)):
+        if random.random() < noise_level:
+            pattern_with_noise.append(pattern[i] * -1)
+        else:
+            pattern_with_noise.append(pattern[i])
+    
+    return pattern_with_noise
+
+def add_noise_to_dataset(letters: list[str], dataset: list[list[list[int]]], noise_level: float, total_noisy_patterns: int, randomize: bool):
+    dataset_with_noise = []
+    selected_letters = []
+
+    if total_noisy_patterns > len(dataset):
+        total_noisy_patterns = len(dataset)
+
+    if randomize:
+        indexes = random.sample(range(len(dataset)), total_noisy_patterns)
+    else:
+        indexes = range(total_noisy_patterns)
+
+    for index in indexes:
+        pattern = np.array(dataset[index]).flatten()
+        noisy_pattern = add_noise(pattern, noise_level)
+        dataset_with_noise.append(noisy_pattern)
+        selected_letters.append(letters[index])
+
+    return selected_letters, dataset_with_noise
+
+
+def calculate_most_orthogonal_patterns(dataset: dict[str, list[list[int]]], top_patterns: int = 10): 
+    # flatten the matrixes
+    flat_letters = {
+        k: np.array(m).flatten() for (k, m) in dataset.items()
+    }
+
+    # generate all possible pattern combinations with 4 letters 
+    all_groups = itertools.combinations(flat_letters.keys(), r=4)
+
+    avg_dot_product = []
+    max_dot_product = []
+
+    for g in all_groups:
+        # get the pattern vectors
+        group = np.array([v for k,v in flat_letters.items() if k in g])
+
+        # calculate all dot products
+        ortho_matrix = group.dot(group.T)
+
+        # fill diagonal with zeros as we don't want to compare a pattern with itself
+        np.fill_diagonal(ortho_matrix, 0)
+
+        row, _ = ortho_matrix.shape
+
+        avg_dot_product.append((np.abs(ortho_matrix).sum()/(ortho_matrix.size-row), g))
+        max_dot_product.append((np.abs(ortho_matrix).max(), g))
+
+    best_avg_dot_product = sorted(avg_dot_product, key=lambda x: x[0], reverse=False)
+
+    print("=============================================")
+    print(f"Top {top_patterns} most orthogonal patterns:")
+    for i in range(top_patterns):
+        print(f"Letters: {best_avg_dot_product[i][1]} - Average dot product: {best_avg_dot_product[i][0]}")
+    print("=============================================")
+
+    worst_max_dot_product = sorted(max_dot_product, key=lambda x: x[0], reverse=True)
+
+    print(f"Last {top_patterns} least orthogonal patterns:")
+    for i in range(top_patterns):
+        print(f"Letters: {worst_max_dot_product[i][1]} - Average dot product: {worst_max_dot_product[i][0]}")
+    print("=============================================")
+    
+
+# TODO: use received letters from arguments to train and test the network
+# TODO: save values to .csv file
 
 if __name__ == "__main__":
     dataset = list(alphabet.values())
+    letters = list(alphabet.keys())
+
+    
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--noise-level", "-p", help="Probability to add noise to a given pattern. Defaults to 0.", type=float, default=0.0, required=False)
+    parser.add_argument("--iterations", "-N", help="Number of maximum iterations of Hopfield neural network. Defaults to 100.", type=int, default=100, required=False)
+    parser.add_argument("--total-noisy-patterns", "-T", help="Number of patterns to add noise to. Defaults to 0.", type=int, default=0, required=False)
+    parser.add_argument("--random", "-r", help="Randomize the order of the noise patterns. Defaults to False.", action="store_true", default=False, required=False)
+    parser.add_argument("--show-patterns", "-show", help="Show the patterns before and after adding noise. Defaults to False.", action="store_true", default=False, required=False)
+    parser.add_argument("--show-animation", "-anim", help="Show the animation of the test patterns. Defaults to False.", action="store_true", default=False, required=False)
+    parser.add_argument("--calculate-orthogonal-patterns", "-calc", help="Calculate the most and least orthogonal patterns. Defaults to False.", action="store_true", default=False, required=False)
+
+    args = parser.parse_args()
+
+    if args.calculate_orthogonal_patterns:
+        calculate_most_orthogonal_patterns(alphabet)
+        exit(0)
+
+
+    iterations = args.iterations
+
     inputs = [alphabet["K"], alphabet["N"], alphabet["S"], alphabet["V"]]
     hopfield = Hopfield(inputs)
-    k = [	[-1,-1,-1,+1,-1],
-			[+1,-1,+1,-1,-1],
-			[+1,+1,-1,-1,-1],
-			[+1,-1,+1,-1,-1],
-			[+1,-1,-1,+1,-1]]
-    print(hopfield.associate(k))
+
+    max_iterations = 0
+
+    energies_per_pattern = []
+    iterations_per_pattern = []
+    states_per_pattern = []
+    predictions = []
+
+    selected_letters, dataset_with_noise = add_noise_to_dataset(letters, dataset, args.noise_level, args.total_noisy_patterns, args.random)
+    for pattern in dataset_with_noise:
+        print(f"Pattern: {pattern}")
+        predicted_state, energies, states = hopfield.predict(pattern, iterations)
+        energies_per_pattern.append(energies)
+        iterations_per_pattern.append(len(energies))
+        predictions.append(predicted_state)
+        states_per_pattern.append(states)
+    
+        if args.show_animation or args.show_patterns:
+            # plot pixel img
+            # show modified dataset
+            for pattern, letter, predicted_pattern, states in zip(dataset_with_noise, selected_letters, predictions, states_per_pattern):
+                if args.show_animation:
+                    anim_fig, ax = plt.subplots()
+
+                    def animate(i):
+                        ax.clear()
+                        ax.imshow(np.reshape(states[i], (5, 5)), cmap="gray_r")
+                        ax.set_title(f"Iteration: {i}")
+
+                    ani = FuncAnimation(anim_fig, animate, frames=len(states), interval=500, repeat=False)
+                    my_date = datetime.now()
+                    ani.save(f"{letter}_pattern_{my_date.strftime('%Y_%m_%dT%H_%M_%SZ')}.gif")
+                    
+
+                if args.show_patterns:
+                    fig, (ax_left, ax_right) = plt.subplots(1, 2)
+                    ax_left.imshow(np.reshape(pattern, (5, 5)), cmap="gray_r")
+                    ax_left.text(1, -0.8, f"Letter {letter}", fontsize=15)
+                    ax_right.imshow(np.reshape(predicted_pattern, (5, 5)), cmap="gray_r")
+
+            if args.show_animation:
+                plt.close("all")
+            # else:
+            #     plt.close(1)
+            
+
+    # plot energies
+    labels = []
+    fig, ax = plt.subplots()
+    for energy, total_iterations, letter in zip(energies_per_pattern, iterations_per_pattern, selected_letters):
+        ax.plot(np.arange(total_iterations), energy, linestyle="--", marker="o")
+        labels.append(f"{letter} pattern - {total_iterations} iterations")
+
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("Energy")
+    ax.legend(labels)
+    # ax = plt.figure(args.total_noisy_patterns, figsize=(10, 10)).gca()
+    fig.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.show()
+    plt.close()
