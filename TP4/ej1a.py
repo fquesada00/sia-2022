@@ -72,7 +72,6 @@ def plot_map(winners_sequence, winners, countries, k):
                                    frames=28, interval=1000, blit=True, repeat=False)
 
     # anim.save('kohonen_map.mp4', fps=2, dpi=300)
-    plt.show()
 
 
 def plot_heatmap(heatmap, i, title):
@@ -85,41 +84,45 @@ def plot_heatmap(heatmap, i, title):
     cbar = plt.colorbar()
     cbar.ax.set_ylabel('Weights', rotation=-90, va="bottom")
     # Limit color bar values
-    # plt.show()
 
+def plot_u_matrix(u_matrix):
+    plt.figure(3)
+    plt.title('U matrix')
+    plt.tight_layout()
+
+    plt.imshow(u_matrix, cmap='gray', interpolation='nearest')
+    # Plot colorbar
+    cbar = plt.colorbar()
+    cbar.ax.set_ylabel('Weights', rotation=-90, va="bottom")
+    # Limit color bar values
 
 def main():
     data = read_dataset('./datasets/europe.csv')
 
     # remove Country column from dataset
     data_no_countries = data.drop(['Country'], axis=1)
-
     # scale dataset
     data_scaled = (data_no_countries - data_no_countries.mean()
                    ) / data_no_countries.std()
+    
     data_scaled_numpy = data_scaled.to_numpy()
 
-    k = 20
+    k = 7
 
     kohonen = Kohonen(k, data_scaled_numpy, k, 0.01)
     winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr = kohonen.train(
-        data_scaled_numpy, 500)
+        data_scaled_numpy, 100)
 
     winners_sequence, winners = kohonen.test(data_scaled_numpy)
-    heatmap = kohonen.get_mean_column_weight(0)
-    plot_heatmap(heatmap, 2, data.columns[1])
-    heatmap = kohonen.get_mean_column_weight(1)
-    plot_heatmap(heatmap, 3, data.columns[2])
-    heatmap = kohonen.get_mean_column_weight(2)
-    plot_heatmap(heatmap, 4, data.columns[3])
-    heatmap = kohonen.get_mean_column_weight(3)
-    plot_heatmap(heatmap, 5, data.columns[4])
-    heatmap = kohonen.get_mean_column_weight(4)
-    plot_heatmap(heatmap, 6, data.columns[5])
-    heatmap = kohonen.get_mean_column_weight(5)
-    plot_heatmap(heatmap, 7, data.columns[6])
+    u_matrix = kohonen.get_u_matrix()
+    print(u_matrix.mean())
+    plot_u_matrix(u_matrix)
+    # for i in range (len(data_scaled_numpy)):
+    #     heatmap = kohonen.get_mean_column_weight(i)
+    #     plot_heatmap(heatmap, 2, data.columns[i+1])
 
-    plot_map(winners_sequence, winners, data['Country'], k)
+    # plot_map(winners_sequence, winners, data['Country'], k)
+    plt.show()
 
 
 if __name__ == '__main__':

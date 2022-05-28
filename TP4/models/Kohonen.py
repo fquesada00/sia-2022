@@ -107,3 +107,21 @@ class Kohonen():
         row_weights = self.weights[:, :, column].reshape(self.k*self.k)
         mean = np.mean(row_weights, axis=0)
         return row_weights.reshape(self.k, self.k) / mean
+    
+    def get_u_matrix(self):
+        u_matrix = np.zeros((self.k, self.k))
+        for i in range(self.k):
+            for j in range(self.k):
+                v = self.weights[i][j]  # a vector 
+                sum_dists = 0.0; ct = 0
+                if i-1 >= 0:    # above
+                    sum_dists += np.linalg.norm(v - self.weights[i-1][j]); ct += 1
+                if i+1 <= (self.k-1):   # below
+                    sum_dists += np.linalg.norm(v - self.weights[i+1][j]); ct += 1
+                if j-1 >= 0:   # left
+                    sum_dists += np.linalg.norm(v - self.weights[i][j-1]); ct += 1
+                if j+1 <= (self.k-1):   # right
+                    sum_dists += np.linalg.norm(v - self.weights[i][j+1]); ct += 1
+                u_matrix[i][j] = sum_dists / ct
+
+        return u_matrix
