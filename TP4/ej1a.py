@@ -70,7 +70,7 @@ def plot_map(winners_sequence, winners, countries, k):
 
     anim = animation.FuncAnimation(fig, animate, init_func=init,
                                    frames=28, interval=1000, blit=True, repeat=False)
-
+    plt.show()
     # anim.save('kohonen_map.mp4', fps=2, dpi=300)
 
 
@@ -85,15 +85,43 @@ def plot_heatmap(heatmap, i, title):
     cbar.ax.set_ylabel('Weights', rotation=-90, va="bottom")
     # Limit color bar values
 
+def plot_u_matrix_anim(u_matrix_train):
+    fig = plt.figure(3)
+    txt = plt.title('U matrix ({0})'.format(0))
+    plt.tight_layout()
+    
+    ax = fig.add_subplot(111)
+# Plot neurons
+    im = ax.imshow(u_matrix_train[0], cmap='gray', interpolation='nearest')
+    # Plot colorbar
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.ax.set_ylabel('Mean distance with neighbors', rotation=-90, va="bottom")
+    # def init():
+    #     cbar_min,cbar_max = u_matrix_train[0].min(), u_matrix_train[0].max()
+    #     im.set_clim(cbar_min,cbar_max)
+    #     im.set_data(np.zeros((k, k)))
+    #     return im,
+
+    def animate(i):
+        # Add country name with font size of 20
+        cbar_min,cbar_max = 0, u_matrix_train[i].max()
+        im.set_data(u_matrix_train[i])
+        im.set_clim(cbar_min,cbar_max)
+        txt.set_text('U matrix ({0})'.format(i))
+        # return im,
+
+    anim = animation.FuncAnimation(fig, animate,
+                                   frames=len(u_matrix_train), repeat=False)
+    plt.show()
 def plot_u_matrix(u_matrix):
-    plt.figure(3)
+    plt.figure(2)
     plt.title('U matrix')
     plt.tight_layout()
 
-    plt.imshow(u_matrix, cmap='gray', interpolation='nearest')
+    plt.imshow(u_matrix, cmap='gray', interpolation='nearest',clim=(0,u_matrix.max()))
     # Plot colorbar
     cbar = plt.colorbar()
-    cbar.ax.set_ylabel('Weights', rotation=-90, va="bottom")
+    cbar.ax.set_ylabel('Mean distance with neighbors', rotation=-90, va="bottom")
     # Limit color bar values
 
 def main():
@@ -106,23 +134,24 @@ def main():
                    ) / data_no_countries.std()
     
     data_scaled_numpy = data_scaled.to_numpy()
-
-    k = 7
-
+    print(len(data_scaled_numpy[0]))
+    k = 3
     kohonen = Kohonen(k, data_scaled_numpy, k, 0.01)
-    winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr = kohonen.train(
-        data_scaled_numpy, 100)
+    winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr,u_matrix_train = kohonen.train(
+        data_scaled_numpy, 300)
 
     winners_sequence, winners = kohonen.test(data_scaled_numpy)
     u_matrix = kohonen.get_u_matrix()
-    print(u_matrix.mean())
     plot_u_matrix(u_matrix)
-    # for i in range (len(data_scaled_numpy)):
-    #     heatmap = kohonen.get_mean_column_weight(i)
-    #     plot_heatmap(heatmap, 2, data.columns[i+1])
+    plot_u_matrix_anim(u_matrix_train)
+    pprint(u_matrix)
+    pprint(u_matrix_train[-1])
+    for i in range (len(data_scaled_numpy[0])):
+        print(i)
+        heatmap = kohonen.get_mean_column_weight(i)
+        plot_heatmap(heatmap, i+4, data.columns[i+1])
 
-    # plot_map(winners_sequence, winners, data['Country'], k)
-    plt.show()
+    plot_map(winners_sequence, winners, data['Country'], k)
 
 
 if __name__ == '__main__':

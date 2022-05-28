@@ -57,8 +57,12 @@ class Kohonen():
         learning_rate_arr = []
         dist_arr = []
 
+        u_matrix_arr = []
+        
         time_constant = epochs / np.log(self.initial_r)
         for i in range(len(dataset_input[0])*(epochs + 1)):
+
+            u_matrix_arr.append(self.get_u_matrix())
 
             shuffled_inputs = np.random.permutation(dataset_input)
 
@@ -90,7 +94,7 @@ class Kohonen():
                         if neuron_distance <= radius:
                             self.weights[x, y, :] = w + lr*(input_vector-w)
 
-        return winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr
+        return winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr,u_matrix_arr
 
     def test(self, dataset_input):
         winners_sequence = []
