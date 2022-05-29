@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     # compute the first principal component with Oja's algorithm
     pc1_oja = Oja.compute_pc1(data_scaled.to_numpy(),
-                              epochs=1000, learning_rate=0.0001, generate_plots=True,
+                              epochs=1200, learning_rate=0.0001, generate_plots=True,
                               real_pc1=pc1_svd, headers=data_no_countries.columns, sample_labels=data['Country'].to_list())
 
     # compare
