@@ -30,49 +30,81 @@ def plot(input_dataset: np.ndarray, weights_evolution: np.ndarray, iterations: n
                              for i in range(len(weights_evolution))]
 
     # generate data for plots
-    errors = [np.linalg.norm(loadings - real_pc1)
-              for loadings in weights_evolution]
-    angles = [angle_between(loadings, real_pc1)
-              for loadings in weights_evolution]
+
+    plot_loadings_animation(weights_evolution, real_pc1,
+                            headers, sample_labels, animation_step)
+
+    plot_pc1_projection_animation(weights_evolution, input_dataset, real_pc1,
+                                  headers, sample_labels, animation_step)
+
+    plot_angle_error_evolution(
+        weights_evolution, iterations, real_pc1, animation_step)
+
+    # plots
+
+    # angle and error between real PCA and approx PCA vs iteration
+
+    biplot_evolution_fig = plt.figure(5)
+
+    # anim.save('loadings_bar_evolution.gif', writer='imagemagick', fps=10
+
+    plt.show()
+
+
+def plot_pc1_projection_animation(weights_evolution: np.ndarray, input_dataset: np.ndarray, real_pc1: np.ndarray, headers: list[str], sample_labels: list[str], animation_step: int = 100):
+    proj_Y_axis = np.arange(len(input_dataset))
+
     proj_bar_evolution = [input_dataset.dot(loadings)
                           for loadings in weights_evolution]
 
-    # plots
-    loadings_X_axis = np.arange(len(weights_evolution[0]))
-    proj_Y_axis = np.arange(len(input_dataset))
+    proj_bar_evolution = proj_bar_evolution[0::animation_step]
 
-    # angle and error between real PCA and approx PCA vs iteration
-    angle_error_evolution_fig, angle_error_evolution_axs = plt.subplots(
-        2, 1)
-    angle_error_evolution_axs[0].set_title(
-        "Ángulo entre autovector real y aproximado")
-    angle_error_evolution_axs[0].set_xlabel("Iteración")
-    angle_error_evolution_axs[0].set_ylabel("Ángulo (radianes)")
-    angle_error_evolution_axs[1].set_title(
-        "Distancia euclidiana entre autovector real y aproximado")
-    angle_error_evolution_axs[1].set_xlabel("Iteración")
-    angle_error_evolution_axs[1].set_ylabel("Distancia euclidiana")
-    angle_error_evolution_axs[0].set_yscale('log')
-    angle_error_evolution_axs[1].set_yscale('log')
+    proj_barh_evolution_fig, proj_barh_evolution_ax = plt.subplots(
+        1, 1)
+
+    proj_barh_evolution_ax.legend()
+
+    def animate(i):
+        # i = i * 100
+        proj_barh_evolution_ax.clear()
+
+        proj_barh_evolution_ax.barh(
+            proj_Y_axis - 0.2, proj_bar_evolution[i], 0.4, color="blue", label="Aproximación")
+
+        proj_barh_evolution_ax.barh(proj_Y_axis + 0.2, input_dataset.dot(
+            real_pc1), 0.4, color="red", label="Librería")
+
+        proj_barh_evolution_ax.legend()
+        proj_barh_evolution_ax.set_xlim([-7, 7])
+
+        proj_barh_evolution_ax.set_title(
+            "PC1 aproximada vs librería\n Iteración: {}".format(i * animation_step))
+        proj_barh_evolution_ax.set_xlabel("PC1")
+        proj_barh_evolution_ax.set_ylabel("País")
+
+        proj_barh_evolution_ax.set_yticks(range(len(sample_labels)))
+        proj_barh_evolution_ax.set_yticklabels(sample_labels)
+
+    anim = animation.FuncAnimation(
+        proj_barh_evolution_fig, animate, frames=len(proj_bar_evolution), interval=1)
+
+    plt.show()
+
+
+def plot_loadings_animation(weights_evolution: np.ndarray, real_pc1: np.ndarray, headers: list[str], sample_labels: list[str], animation_step: int = 100):
+    loadings_X_axis = np.arange(len(weights_evolution[0]))
 
     loadings_bar_evolution_fig, loadings_bar_evolution_ax = plt.subplots(
         1, 1)
 
-    proj_barh_evolution_fig, proj_barh_evolution_ax = plt.subplots(
-        1, 1)
-    proj_barh_evolution_ax.set_title("PC1 aproximada")
-    proj_barh_evolution_ax.set_xlabel("PC1")
-    proj_barh_evolution_ax.set_yticks(range(len(sample_labels)))
-    proj_barh_evolution_ax.set_yticklabels(sample_labels)
-
-    biplot_evolution_fig = plt.figure(5)
+    weights_evolution = weights_evolution[0::animation_step]
 
     def animate(i):
         # i = i * 100
         loadings_bar_evolution_ax.clear()
 
         loadings_bar_evolution_ax.bar(
-            loadings_X_axis - 0.2, weights_evolution[0::animation_step][i], 0.4, color="blue", label="Aproximación")
+            loadings_X_axis - 0.2, weights_evolution[i], 0.4, color="blue", label="Aproximación")
 
         loadings_bar_evolution_ax.bar(
             loadings_X_axis + 0.2, real_pc1, 0.4, color="red", label="Librería")
@@ -87,24 +119,34 @@ def plot(input_dataset: np.ndarray, weights_evolution: np.ndarray, iterations: n
         loadings_bar_evolution_ax.set_xticks(range(len(headers)))
         loadings_bar_evolution_ax.set_xticklabels(headers)
 
-        print(i)
-
     anim = animation.FuncAnimation(
-        loadings_bar_evolution_fig, animate, frames=len(weights_evolution[0::animation_step]), interval=1)
+        loadings_bar_evolution_fig, animate, frames=len(weights_evolution), interval=1)
 
-    # anim.save('loadings_bar_evolution.gif', writer='imagemagick', fps=10)
+    plt.show()
 
-    # angle and error evolutions
+
+def plot_angle_error_evolution(weights_evolution: np.ndarray, iterations: np.ndarray, real_pc1: np.ndarray, animation_step: int = 100):
+    errors = [np.linalg.norm(loadings - real_pc1)
+              for loadings in weights_evolution]
+    angles = [angle_between(loadings, real_pc1)
+              for loadings in weights_evolution]
+
+    angle_error_evolution_fig, angle_error_evolution_axs = plt.subplots(
+        2, 1)
+
+    angle_error_evolution_axs[0].set_title(
+        "Ángulo entre autovector real y aproximado")
+    angle_error_evolution_axs[0].set_xlabel("Iteración")
+    angle_error_evolution_axs[0].set_ylabel("Ángulo (radianes)")
+    angle_error_evolution_axs[1].set_title(
+        "Distancia euclidiana entre autovector real y aproximado")
+    angle_error_evolution_axs[1].set_xlabel("Iteración")
+    angle_error_evolution_axs[1].set_ylabel("Distancia euclidiana")
+    angle_error_evolution_axs[0].set_yscale('log')
+    angle_error_evolution_axs[1].set_yscale('log')
+
     angle_error_evolution_axs[0].plot(iterations, angles)
     angle_error_evolution_axs[1].plot(iterations, errors)
-    # loadings evolution
-
-    # projection evolution
-    proj_barh_evolution_ax.barh(
-        proj_Y_axis - 0.2, proj_bar_evolution[-1], 0.4, color="blue", label="Aproximación")
-    proj_barh_evolution_ax.barh(proj_Y_axis + 0.2, input_dataset.dot(
-        real_pc1), 0.4, color="red", label="Librería")
-    proj_barh_evolution_ax.legend()
 
     plt.show()
 
