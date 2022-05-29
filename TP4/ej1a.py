@@ -79,7 +79,7 @@ def plot_heatmap(heatmap, i, title):
     plt.title(title)
     plt.tight_layout()
 
-    plt.imshow(heatmap, cmap='jet', interpolation='nearest')
+    plt.imshow(heatmap, cmap='jet', interpolation='bicubic')
     # Plot colorbar
     cbar = plt.colorbar()
     cbar.ax.set_ylabel('Weights', rotation=-90, va="bottom")
@@ -135,7 +135,7 @@ def main():
     
     data_scaled_numpy = data_scaled.to_numpy()
     print(len(data_scaled_numpy[0]))
-    k = 3
+    k = 5
     kohonen = Kohonen(k, data_scaled_numpy, k, 0.01)
     winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr,u_matrix_train = kohonen.train(
         data_scaled_numpy, 300)
