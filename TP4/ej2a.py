@@ -22,7 +22,7 @@ def add_noise(pattern: list[int], noise_level: float):
     
     return pattern_with_noise
 
-def add_noise_to_dataset(letters: list[str], dataset: list[list[list[int]]], noise_level: float, total_noisy_patterns: int, randomize: bool):
+def add_noise_to_dataset(letters: list[str], dataset: list[list[list[int]]], noise_level: float, total_noisy_patterns: int, randomize: bool, received_letters: list[str] = None):
     dataset_with_noise = []
     selected_letters = []
 
@@ -38,7 +38,11 @@ def add_noise_to_dataset(letters: list[str], dataset: list[list[list[int]]], noi
         pattern = np.array(dataset[index]).flatten()
         noisy_pattern = add_noise(pattern, noise_level)
         dataset_with_noise.append(noisy_pattern)
-        selected_letters.append(letters[index])
+
+        if received_letters is not None:
+            selected_letters.append(received_letters[index])
+        else:
+            selected_letters.append(letters[index])
 
     return selected_letters, dataset_with_noise
 
@@ -86,7 +90,6 @@ def calculate_most_orthogonal_patterns(dataset: dict[str, list[list[int]]], top_
     print("=============================================")
     
 
-# TODO: use received letters from arguments to train and test the network
 # TODO: save values to .csv file
 
 if __name__ == "__main__":
@@ -94,7 +97,6 @@ if __name__ == "__main__":
     letters = list(alphabet.keys())
 
     
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--noise-level", "-p", help="Probability to add noise to a given pattern. Defaults to 0.", type=float, default=0.0, required=False)
     parser.add_argument("--iterations", "-N", help="Number of maximum iterations of Hopfield neural network. Defaults to 100.", type=int, default=100, required=False)
@@ -103,6 +105,8 @@ if __name__ == "__main__":
     parser.add_argument("--show-patterns", "-show", help="Show the patterns before and after adding noise. Defaults to False.", action="store_true", default=False, required=False)
     parser.add_argument("--show-animation", "-anim", help="Show the animation of the test patterns. Defaults to False.", action="store_true", default=False, required=False)
     parser.add_argument("--calculate-orthogonal-patterns", "-calc", help="Calculate the most and least orthogonal patterns. Defaults to False.", action="store_true", default=False, required=False)
+    parser.add_argument("--predict-patterns", "-pred", help="Predict the patterns. Defaults to ''.", type=str, default="", required=False)
+    parser.add_argument("--train-patterns", "-train", help="Train with the patterns. Defaults to ''.", type=str, default="", required=False)
 
     args = parser.parse_args()
 
@@ -113,17 +117,31 @@ if __name__ == "__main__":
 
     iterations = args.iterations
 
-    inputs = [alphabet["K"], alphabet["N"], alphabet["S"], alphabet["V"]]
-    hopfield = Hopfield(inputs)
+    if len(args.train_patterns) > 0:
+        inputs = []
+        args.train_patterns = args.train_patterns.upper()
+        train_patterns = args.train_patterns.split(",")
+        for pattern in train_patterns:
+            inputs.append(alphabet[pattern])
+    else:
+        inputs = [alphabet["K"], alphabet["N"], alphabet["S"], alphabet["V"]]
 
-    max_iterations = 0
+    hopfield = Hopfield(inputs)
 
     energies_per_pattern = []
     iterations_per_pattern = []
     states_per_pattern = []
     predictions = []
 
-    selected_letters, dataset_with_noise = add_noise_to_dataset(letters, dataset, args.noise_level, args.total_noisy_patterns, args.random)
+    received_patterns = None
+    if len(args.predict_patterns) > 0:
+        dataset = []
+        args.predict_patterns = args.predict_patterns.upper()
+        received_patterns = args.predict_patterns.split(",")
+        for pattern in received_patterns:
+            dataset.append(alphabet[pattern])
+
+    selected_letters, dataset_with_noise = add_noise_to_dataset(letters, dataset, args.noise_level, args.total_noisy_patterns, args.random, received_patterns)
     for pattern in dataset_with_noise:
         print(f"Pattern: {pattern}")
         predicted_state, energies, states = hopfield.predict(pattern, iterations)
@@ -164,11 +182,21 @@ if __name__ == "__main__":
     # plot energies
     labels = []
     fig, ax = plt.subplots()
-    for energy, total_iterations, letter in zip(energies_per_pattern, iterations_per_pattern, selected_letters):
-        ax.plot(np.arange(total_iterations), energy, linestyle="--", marker="o")
-        labels.append(f"{letter} pattern - {total_iterations} iterations")
+    with open("energy_vs_iterations.csv", "w") as f:
+        max_iterations = max(iterations_per_pattern)
+        header = ",".join(["Pattern"] + ["Iteration " + str(i) for i in range(max_iterations)])
+        f.write(header + "\n")
+        for energy, total_iterations, letter in zip(energies_per_pattern, iterations_per_pattern, selected_letters):
+            ax.plot(np.arange(total_iterations), energy, linestyle="--", marker="o")
+            labels.append(f"{letter} pattern - {total_iterations - 1} iterations")
 
-    ax.set_xlabel("Iterations")
+            for _ in range(max_iterations - total_iterations):
+                energy.append("-")
+                
+            energies = ','.join(str(round(float(e), 4) if e != "-" else e) for e in energy)
+            f.write(f"{letter},{energies}\n")
+
+    ax.set_xlabel("Iteration")
     ax.set_ylabel("Energy")
     ax.legend(labels)
     # ax = plt.figure(args.total_noisy_patterns, figsize=(10, 10)).gca()

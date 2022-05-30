@@ -53,6 +53,9 @@ class Hopfield:
         energies = []
         states = [prev_state]
 
+        energy = self.energy(prev_state)
+        energies.append(energy)
+
         while not has_converged and total_iterations < iterations:
             sign = np.sign(np.dot(self.weights, prev_state))
             self.print_state(sign)
