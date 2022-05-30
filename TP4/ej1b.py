@@ -1,3 +1,4 @@
+from pprint import pprint
 from matplotlib import animation, pyplot as plt
 import numpy as np
 from models.PCA_SVD import PCA_SVD
@@ -25,7 +26,7 @@ def angle_between(v1, v2):
     return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
 
-def generate_plots(input_dataset: np.ndarray, weights_evolution: list[np.ndarray], iterations: list[int], real_pc1: np.ndarray, real_pc2: np.ndarray, headers: list[str], sample_labels: list[str], correct_direction: bool = True, animation_step: int = 100):
+def generate_plots(input_dataset: np.ndarray, weights_evolution: list[np.ndarray], real_pc1: np.ndarray, real_pc2: np.ndarray, headers: list[str], sample_labels: list[str], correct_direction: bool = True, animation_step: int = 100, learning_rates: list[float] = None, epochs: int = None):
     # correct approximation sign in case it was computed in opposite direction
     if not np.array_equiv(np.sign(weights_evolution[-1]), np.sign(real_pc1)) and correct_direction:
         weights_evolution = [-weights_evolution[i]
@@ -37,11 +38,10 @@ def generate_plots(input_dataset: np.ndarray, weights_evolution: list[np.ndarray
     plot_pc1_projection_animation(weights_evolution, input_dataset, real_pc1,
                                   headers, sample_labels, animation_step)
 
-    plot_angle_error_evolution(
-        weights_evolution, iterations, real_pc1, animation_step)
-
     plot_biplot_evolution(
         input_dataset, weights_evolution, real_pc2, headers, sample_labels, animation_step)
+
+    plot_learning_rate_benchmark(learning_rates, epochs)
 
     # anim.save('loadings_bar_evolution.gif', writer='imagemagick', fps=10
 
@@ -122,32 +122,6 @@ def plot_loadings_animation(weights_evolution: list[np.ndarray], real_pc1: np.nd
     plt.show()
 
 
-def plot_angle_error_evolution(weights_evolution: list[np.ndarray], iterations: list[int], real_pc1: np.ndarray, real_pc2: np.ndarray, animation_step: int = 100):
-    errors = [np.linalg.norm(loadings - real_pc1)
-              for loadings in weights_evolution]
-    angles = [angle_between(loadings, real_pc1)
-              for loadings in weights_evolution]
-
-    fig, axs = plt.subplots(
-        2, 1)
-
-    axs[0].set_title(
-        "Ángulo entre autovector real y aproximado")
-    axs[0].set_xlabel("Iteración")
-    axs[0].set_ylabel("Ángulo (radianes)")
-    axs[1].set_title(
-        "Distancia euclidiana entre autovector real y aproximado")
-    axs[1].set_xlabel("Iteración")
-    axs[1].set_ylabel("Distancia euclidiana")
-    axs[0].set_yscale('log')
-    axs[1].set_yscale('log')
-
-    axs[0].plot(iterations, angles)
-    axs[1].plot(iterations, errors)
-
-    plt.show()
-
-
 def plot_biplot_evolution(input_dataset: np.ndarray, weights_evolution: list[np.ndarray], real_pc2: np.ndarray, headers: list[str], sample_labels: list[str], animation_step: int = 100):
     fig, ax = plt.subplots(1, 1)
 
@@ -192,6 +166,54 @@ def plot_biplot_evolution(input_dataset: np.ndarray, weights_evolution: list[np.
     plt.show()
 
 
+def plot_learning_rate_benchmark(learning_rates: list[float], epochs=1200, correct_direction=True):
+    fig, axs = plt.subplots(2, 1)
+
+    axs[0].set_title(
+        "Ángulo entre autovector real y aproximado")
+    axs[0].set_xlabel("Iteración")
+    axs[0].set_ylabel("Ángulo (radianes)")
+    axs[1].set_title(
+        "Distancia euclídea entre autovector real y aproximado")
+    axs[1].set_xlabel("Iteración")
+    axs[1].set_ylabel("Distancia euclidiana")
+    axs[0].set_yscale('log')
+    axs[1].set_yscale('log')
+
+    real_pc1 = PCA_SVD.compute_pca(data_scaled.to_numpy())[0]
+
+    colors = ["#332288", "#88CCEE", "#44AA99", "#117733",
+              "#999933", "#DDCC77", "#CC6677", "#882255", "#AA4499"]
+
+    for i, learning_rate in enumerate(learning_rates):
+        np.random.seed(0)
+
+        pc1_evolution = Oja.compute_pc1(data_scaled.to_numpy(),
+                                        epochs=epochs, learning_rate=learning_rate, generate_plot_data=True)
+
+        if not np.array_equiv(np.sign(pc1_evolution[-1]), np.sign(real_pc1)) and correct_direction:
+            pc1_evolution = [-pc1_evolution[i]
+                             for i in range(len(pc1_evolution))]
+
+        pprint('INITIAL WEIGHTS: {}'.format(
+            pc1_evolution[0]
+        ))
+
+        errors = [np.linalg.norm(loadings - real_pc1)
+                  for loadings in pc1_evolution]
+        angles = [angle_between(loadings, real_pc1)
+                  for loadings in pc1_evolution]
+
+        axs[0].plot(range(len(angles)), angles, label="Tasa de aprendizaje: {}".format(
+            learning_rate), color=colors[i % len(colors)])
+        axs[1].plot(range(len(errors)), errors, label="Tasa de aprendizaje: {}".format(
+            learning_rate),  color=colors[i % len(colors)])
+
+    axs[0].legend()
+    axs[1].legend()
+    plt.show()
+
+
 if __name__ == '__main__':
     data = read_dataset('./datasets/europe.csv')
 
@@ -206,19 +228,20 @@ if __name__ == '__main__':
     components = PCA_SVD.compute_pca(data_scaled.to_numpy())
 
     # compute the first principal component with Oja's algorithm
-    pc1_oja, pc1_evolution, iterations = Oja.compute_pc1(data_scaled.to_numpy(),
-                                                         epochs=1200, learning_rate=0.0001, generate_plot_data=True)
+    pc1_evolution = Oja.compute_pc1(data_scaled.to_numpy(),
+                                    epochs=1200, learning_rate=0.0001, generate_plot_data=True)
 
-    generate_plots(data_scaled.to_numpy(), pc1_evolution, iterations,
-                   components[0], components[1], data_no_countries.columns, data['Country'].to_list(), True, 100)
+    learning_rates = [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.01]
+    generate_plots(data_scaled.to_numpy(), pc1_evolution,
+                   components[0], components[1], data_no_countries.columns, data['Country'].to_list(), True, 100, learning_rates, 20000)
 
     # compare
     print("With Oja's algorithm:")
-    print(pc1_oja)
+    print(pc1_evolution[-1])
 
     print("With SVD:")
     print(components[0])
 
     # distance
     print("Distance:")
-    print(np.linalg.norm(pc1_oja - components[0]))
+    print(np.linalg.norm(pc1_evolution[-1] - components[0]))
