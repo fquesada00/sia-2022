@@ -4,3 +4,4 @@ __pycache__
 .vscode/*
 
 *.gif
+energy_vs_iterations.csv
