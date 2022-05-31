@@ -25,7 +25,6 @@ class Oja:
         # for plots
         if generate_plot_data:
             weights_evolution = [weights]
-            iterations = [0]
 
         # For each epoch.
         for epoch in range(epochs):
@@ -38,11 +37,10 @@ class Oja:
 
                 # for plots
                 if generate_plot_data:
-                    iterations.append(epoch * input_dataset.shape[0] + i)
                     weights_evolution.append(weights.copy())
 
         # for plots
         if generate_plot_data:
-            return weights, weights_evolution, iterations
+            return weights_evolution
 
         return weights
