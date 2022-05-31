@@ -5,3 +5,5 @@ __pycache__
 
 *.gif
 energy_vs_iterations.csv
+ortho.csv
+*.mp4

@@ -2,7 +2,7 @@ import argparse
 from datetime import datetime
 import itertools
 import random
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FFMpegWriter, FuncAnimation
 from matplotlib.ticker import MaxNLocator
 
 import numpy as np
@@ -13,17 +13,17 @@ import matplotlib.pyplot as plt
 
 def add_noise(pattern: list[int], noise_level: float):
     pattern_with_noise = []
-
     for i in range(len(pattern)):
         if random.random() < noise_level:
             pattern_with_noise.append(pattern[i] * -1)
         else:
             pattern_with_noise.append(pattern[i])
-    
+
     return pattern_with_noise
 
 def add_noise_to_dataset(letters: list[str], dataset: list[list[list[int]]], noise_level: float, total_noisy_patterns: int, randomize: bool, received_letters: list[str] = None):
     dataset_with_noise = []
+    dataset_without_noise = []
     selected_letters = []
 
     if total_noisy_patterns > len(dataset):
@@ -36,6 +36,7 @@ def add_noise_to_dataset(letters: list[str], dataset: list[list[list[int]]], noi
 
     for index in indexes:
         pattern = np.array(dataset[index]).flatten()
+        dataset_without_noise.append(pattern)
         noisy_pattern = add_noise(pattern, noise_level)
         dataset_with_noise.append(noisy_pattern)
 
@@ -44,7 +45,7 @@ def add_noise_to_dataset(letters: list[str], dataset: list[list[list[int]]], noi
         else:
             selected_letters.append(letters[index])
 
-    return selected_letters, dataset_with_noise
+    return selected_letters, dataset_with_noise, dataset_without_noise
 
 
 def calculate_most_orthogonal_patterns(dataset: dict[str, list[list[int]]], top_patterns: int = 10): 
@@ -70,27 +71,44 @@ def calculate_most_orthogonal_patterns(dataset: dict[str, list[list[int]]], top_
         np.fill_diagonal(ortho_matrix, 0)
 
         row, _ = ortho_matrix.shape
-
         avg_dot_product.append((np.abs(ortho_matrix).sum()/(ortho_matrix.size-row), g))
         max_dot_product.append((np.abs(ortho_matrix).max(), g))
 
     best_avg_dot_product = sorted(avg_dot_product, key=lambda x: x[0], reverse=False)
 
+    # for i, p in enumerate(best_avg_dot_product):
+    #     p = p[1]
+    #     if "O" in p and "C" in p and "T" in p and "A" in p:
+    #         print(f"Letters: {best_avg_dot_product[i][1]} - Average dot product: {best_avg_dot_product[i][0]}")
+    #         break
+
     print("=============================================")
     print(f"Top {top_patterns} most orthogonal patterns:")
-    for i in range(top_patterns):
-        print(f"Letters: {best_avg_dot_product[i][1]} - Average dot product: {best_avg_dot_product[i][0]}")
-    print("=============================================")
+    with open("ortho.csv", "w") as f:
+        f.write("best, average dot product\n")
+        for i in range(top_patterns):
+            csv_letters = []
+            for l in best_avg_dot_product[i][1]:
+                csv_letters.append(l)
+            csv_letters = ' - '.join(csv_letters)
+            f.write(f"{csv_letters}, {best_avg_dot_product[i][0]}\n")
+            print(f"Letters: {best_avg_dot_product[i][1]} - Average dot product: {best_avg_dot_product[i][0]}")
+        print("=============================================")
 
-    worst_max_dot_product = sorted(max_dot_product, key=lambda x: x[0], reverse=True)
-
-    print(f"Last {top_patterns} least orthogonal patterns:")
-    for i in range(top_patterns):
-        print(f"Letters: {worst_max_dot_product[i][1]} - Average dot product: {worst_max_dot_product[i][0]}")
-    print("=============================================")
+        worst_max_dot_product = sorted(max_dot_product, key=lambda x: x[0], reverse=True)
+        f.write("least, average dot product\n")
+        print(f"Last {top_patterns} least orthogonal patterns:")
+        for i in range(top_patterns):
+            csv_letters = []
+            for l in worst_max_dot_product[i][1]:
+                csv_letters.append(l)
+            csv_letters = ' - '.join(csv_letters)
+            f.write(f"{csv_letters}, {worst_max_dot_product[i][0]}\n")
+            print(f"Letters: {worst_max_dot_product[i][1]} - Average dot product: {worst_max_dot_product[i][0]}")
+        print("=============================================")
     
-
-# TODO: save values to .csv file
+def matches(pattern1: list[int], pattern2: list[int]):
+    return np.array_equal(pattern1, pattern2)
 
 if __name__ == "__main__":
     dataset = list(alphabet.values())
@@ -111,7 +129,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.calculate_orthogonal_patterns:
-        calculate_most_orthogonal_patterns(alphabet)
+        calculate_most_orthogonal_patterns(alphabet,10)
         exit(0)
 
 
@@ -124,7 +142,7 @@ if __name__ == "__main__":
         for pattern in train_patterns:
             inputs.append(alphabet[pattern])
     else:
-        inputs = [alphabet["K"], alphabet["N"], alphabet["S"], alphabet["V"]]
+        inputs = [alphabet["A"], alphabet["F"], alphabet["I"], alphabet["P"]]
 
     hopfield = Hopfield(inputs)
 
@@ -138,10 +156,11 @@ if __name__ == "__main__":
         dataset = []
         args.predict_patterns = args.predict_patterns.upper()
         received_patterns = args.predict_patterns.split(",")
+        args.total_noisy_patterns = len(received_patterns)
         for pattern in received_patterns:
             dataset.append(alphabet[pattern])
 
-    selected_letters, dataset_with_noise = add_noise_to_dataset(letters, dataset, args.noise_level, args.total_noisy_patterns, args.random, received_patterns)
+    selected_letters, dataset_with_noise, dataset_without_noise = add_noise_to_dataset(letters, dataset, args.noise_level, args.total_noisy_patterns, args.random, received_patterns)
     for pattern in dataset_with_noise:
         print(f"Pattern: {pattern}")
         predicted_state, energies, states = hopfield.predict(pattern, iterations)
@@ -153,7 +172,7 @@ if __name__ == "__main__":
         if args.show_animation or args.show_patterns:
             # plot pixel img
             # show modified dataset
-            for pattern, letter, predicted_pattern, states in zip(dataset_with_noise, selected_letters, predictions, states_per_pattern):
+            for pattern, letter, predicted_pattern, states, pattern_without_noise in zip(dataset_with_noise, selected_letters, predictions, states_per_pattern, dataset_without_noise):
                 if args.show_animation:
                     anim_fig, ax = plt.subplots()
 
@@ -162,16 +181,21 @@ if __name__ == "__main__":
                         ax.imshow(np.reshape(states[i], (5, 5)), cmap="gray_r")
                         ax.set_title(f"Iteration: {i}")
 
-                    ani = FuncAnimation(anim_fig, animate, frames=len(states), interval=500, repeat=False)
+                    ani = FuncAnimation(anim_fig, animate, frames=len(states), interval=1000, repeat=False)
                     my_date = datetime.now()
-                    ani.save(f"{letter}_pattern_{my_date.strftime('%Y_%m_%dT%H_%M_%SZ')}.gif")
+                    # FFwriter = FFMpegWriter()
+                    # ani.save('plot.mp4', writer=FFwriter)
+                    ani.save(f"{letter}_pattern_{my_date.strftime('%Y_%m_%dT%H_%M_%SZ')}.mp4", writer='ffmpeg', fps=1, dpi=600)
+                    plt.show()
                     
 
                 if args.show_patterns:
                     fig, (ax_left, ax_right) = plt.subplots(1, 2)
                     ax_left.imshow(np.reshape(pattern, (5, 5)), cmap="gray_r")
-                    ax_left.text(1, -0.8, f"Letter {letter}", fontsize=15)
+                    ax_left.text(0.5, -0.8, f"Input pattern", fontsize=15)
                     ax_right.imshow(np.reshape(predicted_pattern, (5, 5)), cmap="gray_r")
+                    ax_right.text(0.3, -0.8, f"Output pattern", fontsize=15)
+                    fig.suptitle(f"Matches: {'Yes' if matches(pattern_without_noise, predicted_pattern) else 'No'}", fontsize=16)
 
             if args.show_animation:
                 plt.close("all")

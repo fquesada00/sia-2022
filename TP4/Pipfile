@@ -8,6 +8,7 @@ numpy = "*"
 sklearn = "*"
 pandas = "*"
 matplotlib = "*"
+ffmpeg-python = "*"
 
 [dev-packages]
 
