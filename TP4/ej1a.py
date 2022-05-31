@@ -43,24 +43,23 @@ def plot_map(winners_sequence, winners, countries, k):
             texts[i][j] = texts[i][j][:-1]
 
     # Plot kohonen map
-    # ax.set_title('Kohonen Map')
+    ax.set_title('Kohonen Map')
 
     # Plot neurons
-    # ax.imshow(count_matrix, cmap='jet', interpolation='nearest')
+    ax.imshow(count_matrix, cmap='jet', interpolation='nearest')
 
     # Plot colorbar
-    # cbar = ax.figure.colorbar(ax.images[0], ax=ax)
-    # cbar.ax.set_ylabel('Winners', rotation=-90, va="bottom")
+    cbar = ax.figure.colorbar(ax.images[0], ax=ax)
+    cbar.ax.set_ylabel('Winners', rotation=-90, va="bottom")
     # Limit color bar values
-    # ax.grid(False)
-    ax.axis('off')
+    ax.grid(False)
+    # ax.axis('off')
 
     for i in range(k):
         for j in range(k):
             plt.annotate(texts[i][j], (j, i),
                          ha='center', va='center', color='black', bbox=dict(facecolor='white', alpha=0.5))
 
-    plt.savefig('demo.png', transparent=True)
     plt.show()
 
 
@@ -162,7 +161,6 @@ def main():
     u_matrix = kohonen.get_u_matrix()
     plot_u_matrix(u_matrix)
     plt.show()
-    # plot_u_matrix_anim(u_matrix_train)
 
     for i in range(len(data_scaled_numpy[0])):
         if i > 3:
@@ -171,7 +169,6 @@ def main():
         plot_heatmap(heatmap, (i+1) % 5, data.columns[i+1], k)
 
     plot_map(winners_sequence, winners, data['Country'], k)
-    # plt.show()
 
 
 if __name__ == '__main__':
