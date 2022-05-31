@@ -1,3 +1,4 @@
+from pprint import pprint
 import numpy as np
 from pandas import array
 
@@ -47,7 +48,7 @@ class Kohonen():
         return self.initial_r * np.exp(-time/time_constant)
 
     def decay_learning_rate(self, time, epochs):
-        return self.initial_lr * np.exp(-time/epochs)
+        return self.initial_lr / (time + 1)
 
     def train(self, dataset_input, epochs):
 
@@ -58,15 +59,19 @@ class Kohonen():
         dist_arr = []
 
         u_matrix_arr = []
-        
-        time_constant = epochs / np.log(self.initial_r)
-        for i in range(len(dataset_input[0])*(epochs + 1)):
 
-            u_matrix_arr.append(self.get_u_matrix())
+        total_iterations = epochs * \
+            dataset_input.shape[0] * dataset_input.shape[1]
+        current_iteration = 0
+        time_constant = epochs / np.log(self.initial_r)
+        print(dataset_input.shape)
+        for i in range(epochs * dataset_input.shape[1]):
 
             shuffled_inputs = np.random.permutation(dataset_input)
 
             for input_vector in shuffled_inputs:
+                print(f"\r{current_iteration}/{total_iterations}", end="")
+                u_matrix_arr.append(self.get_u_matrix())
                 # Get the winner index
                 winner_index_i, winner_index_j, winner, dist = self.__get_winner(
                     input_vector)
@@ -78,7 +83,9 @@ class Kohonen():
                 # Decay radius and learning rate
 
                 radius = self.decay_radius(i, time_constant)
-                lr = self.decay_learning_rate(i, epochs)
+                lr = self.decay_learning_rate(
+                    i, epochs)
+                current_iteration += 1
 
                 radius_arr.append(radius)
                 learning_rate_arr.append(lr)
@@ -94,7 +101,8 @@ class Kohonen():
                         if neuron_distance <= radius:
                             self.weights[x, y, :] = w + lr*(input_vector-w)
 
-        return winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr,u_matrix_arr
+        print('iterations: ', current_iteration)
+        return winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr, u_matrix_arr
 
     def test(self, dataset_input):
         winners_sequence = []
@@ -109,23 +117,27 @@ class Kohonen():
 
     def get_mean_column_weight(self, column):
         row_weights = self.weights[:, :, column].reshape(self.k*self.k)
-        mean = np.mean(row_weights, axis=0)
-        return row_weights.reshape(self.k, self.k) / mean
-    
+        return row_weights.reshape(self.k, self.k)
+
     def get_u_matrix(self):
         u_matrix = np.zeros((self.k, self.k))
         for i in range(self.k):
             for j in range(self.k):
-                v = self.weights[i][j]  # a vector 
-                sum_dists = 0.0; ct = 0
+                v = self.weights[i][j]  # a vector
+                sum_dists = 0.0
+                ct = 0
                 if i-1 >= 0:    # above
-                    sum_dists += np.linalg.norm(v - self.weights[i-1][j]); ct += 1
+                    sum_dists += np.linalg.norm(v - self.weights[i-1][j])
+                    ct += 1
                 if i+1 <= (self.k-1):   # below
-                    sum_dists += np.linalg.norm(v - self.weights[i+1][j]); ct += 1
+                    sum_dists += np.linalg.norm(v - self.weights[i+1][j])
+                    ct += 1
                 if j-1 >= 0:   # left
-                    sum_dists += np.linalg.norm(v - self.weights[i][j-1]); ct += 1
+                    sum_dists += np.linalg.norm(v - self.weights[i][j-1])
+                    ct += 1
                 if j+1 <= (self.k-1):   # right
-                    sum_dists += np.linalg.norm(v - self.weights[i][j+1]); ct += 1
+                    sum_dists += np.linalg.norm(v - self.weights[i][j+1])
+                    ct += 1
                 u_matrix[i][j] = sum_dists / ct
 
         return u_matrix

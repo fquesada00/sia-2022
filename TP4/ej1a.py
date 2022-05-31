@@ -26,67 +26,71 @@ def generate_shifted_dots(winners):
 
 def plot_map(winners_sequence, winners, countries, k):
 
-    # fig, ax = plt.subplots(figsize=(10, 10))
-    fig = plt.figure(1, figsize=(10, 7))
+    fig = plt.figure(10, figsize=(10, 7))
     plt.tight_layout()
-    data = generate_shifted_dots(winners)
     ax = plt.axes(xlim=(-1, k), ylim=(-1, k))
+    texts = [['' for i in range(k)] for j in range(k)]
+    count_matrix = np.zeros((k, k))
+    for i in range(len(winners_sequence)):
+        x = winners_sequence[i][0]
+        y = winners_sequence[i][1]
+        count_matrix[x][y] += 1
+        texts[x][y] += countries[i] + '\n'
 
-    scatter = ax.scatter([], [], s=500,  color='red', edgecolors='black')
-    annotations = []
-    for i in range(len(data)):
-        annotation = ax.annotate(
-            '', (data[i][0], data[i][1]), fontsize=10, color='black')
-        annotations.append(annotation)
+    # # Trim end of lines at end of text
+    for i in range(k):
+        for j in range(k):
+            texts[i][j] = texts[i][j][:-1]
 
     # Plot kohonen map
-    ax.set_title('Kohonen Map')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
+    # ax.set_title('Kohonen Map')
 
     # Plot neurons
-    im = ax.imshow(np.zeros((k, k)), cmap='jet',
-                   clim=(0, k), interpolation='none')
+    # ax.imshow(count_matrix, cmap='jet', interpolation='nearest')
+
     # Plot colorbar
-    cbar = ax.figure.colorbar(ax.images[0], ax=ax)
-    cbar.ax.set_ylabel('Winners', rotation=-90, va="bottom")
+    # cbar = ax.figure.colorbar(ax.images[0], ax=ax)
+    # cbar.ax.set_ylabel('Winners', rotation=-90, va="bottom")
     # Limit color bar values
-    ax.grid(False)
+    # ax.grid(False)
+    ax.axis('off')
 
-    def init():
-        for annotation in annotations:
-            annotation.set_text('')
-        im.set_data(np.zeros((k, k)))
-        return im, scatter, *annotations,
+    for i in range(k):
+        for j in range(k):
+            plt.annotate(texts[i][j], (j, i),
+                         ha='center', va='center', color='black', bbox=dict(facecolor='white', alpha=0.5))
 
-    def animate(i):
-        # Add country name with font size of 20
-        im_data = im.get_array()
-        im_data[winners_sequence[i][1]][winners_sequence[i][0]] += 1
-        im.set_data(im_data)
-        annotations[i].set_text(countries[i])
-        scatter.set_offsets(data[:(i+1), :])
-        return im, scatter, *annotations
-
-    anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                   frames=28, interval=1000, blit=True, repeat=False)
+    plt.savefig('demo.png', transparent=True)
     plt.show()
-    # anim.save('kohonen_map.mp4', fps=2, dpi=300)
 
 
-def plot_heatmap(heatmap, i, title):
-    plt.figure(i)
-    plt.title(title)
+def plot_heatmap(heatmap, i, title, k):
+    plt.subplot(2, 2, i)
+    texts = [['' for i in range(k)] for j in range(k)]
+    plt.axis('off')
+    plt.title(title, fontsize=15)
     plt.tight_layout()
-
-    plt.imshow(heatmap, cmap='jet', interpolation='bicubic')
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.imshow(np.flip(heatmap, axis=0), cmap='jet', interpolation='nearest')
     # Plot colorbar
     cbar = plt.colorbar()
-    cbar.ax.set_ylabel('Weights', rotation=-90, va="bottom")
+    cbar.ax.set_ylabel('Variable Weights', rotation=-90, va="bottom")
     # Limit color bar values
+    for i in range(k):
+        for j in range(k):
+            plt.annotate(texts[i][j], (j, i),
+                         ha='center', va='center', color='black', bbox=dict(facecolor='white', alpha=0.5))
 
 
 def plot_u_matrix_anim(u_matrix_train):
+    u_matrix_train = np.array(u_matrix_train)
+    plt.figure(100)
+    flatten_matrixes = []
+    for i in range(len(u_matrix_train)):
+        flatten_matrixes.append(u_matrix_train[i].flatten())
+    plt.plot(np.mean(flatten_matrixes, axis=1))
+
     fig = plt.figure(3)
     txt = plt.title('U matrix ({0})'.format(0))
     plt.tight_layout()
@@ -101,6 +105,7 @@ def plot_u_matrix_anim(u_matrix_train):
 
     def animate(i):
         # Add country name with font size of 20
+        print(np.mean(u_matrix_train[i]))
         cbar_min, cbar_max = 0, u_matrix_train[i].max()
         im.set_data(u_matrix_train[i])
         im.set_clim(cbar_min, cbar_max)
@@ -108,17 +113,23 @@ def plot_u_matrix_anim(u_matrix_train):
         # return im,
 
     anim = animation.FuncAnimation(fig, animate,
-                                   frames=len(u_matrix_train), repeat=False)
+                                   frames=len(u_matrix_train), repeat=False, interval=25)
     plt.show()
 
 
 def plot_u_matrix(u_matrix):
+
     plt.figure(2)
     plt.title('U matrix')
     plt.tight_layout()
 
     plt.imshow(u_matrix, cmap='gray', interpolation='nearest',
                clim=(0, u_matrix.max()))
+
+    for i in range(len(u_matrix)):
+        for j in range(len(u_matrix)):
+            plt.text(j, i, '{0:.2f}'.format(u_matrix[i][j]),
+                     ha='center', va='center', color='black', bbox=dict(facecolor='white', alpha=0.5))
     # Plot colorbar
     cbar = plt.colorbar()
     cbar.ax.set_ylabel('Mean distance with neighbors',
@@ -127,6 +138,7 @@ def plot_u_matrix(u_matrix):
 
 
 def main():
+    np.random.seed(13)
     data = read_dataset('./datasets/europe.csv')
 
     # remove Country column from dataset
@@ -140,23 +152,26 @@ def main():
 
     k = 5
 
-    kohonen = Kohonen(k, data_scaled_numpy, k, 0.01)
+    kohonen = Kohonen(k, data_scaled_numpy, k, 0.90)
 
     winner_idx_arr_row, winner_idx_arr_col, radius_arr, learning_rate_arr, dist_arr, u_matrix_train = kohonen.train(
-        data_scaled_numpy, 300)
+        data_scaled_numpy, 700)
 
     winners_sequence, winners = kohonen.test(data_scaled_numpy)
 
     u_matrix = kohonen.get_u_matrix()
-
-    plot_u_matrix_anim(u_matrix_train)
+    plot_u_matrix(u_matrix)
+    plt.show()
+    # plot_u_matrix_anim(u_matrix_train)
 
     for i in range(len(data_scaled_numpy[0])):
-        print(i)
+        if i > 3:
+            break
         heatmap = kohonen.get_mean_column_weight(i)
-        plot_heatmap(heatmap, i+4, data.columns[i+1])
+        plot_heatmap(heatmap, (i+1) % 5, data.columns[i+1], k)
 
     plot_map(winners_sequence, winners, data['Country'], k)
+    # plt.show()
 
 
 if __name__ == '__main__':
