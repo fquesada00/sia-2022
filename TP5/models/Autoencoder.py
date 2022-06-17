@@ -55,9 +55,9 @@ class Autoencoder():
             distances = predictions - target_dataset
 
             error = 0.5 * np.sum(distances ** 2)
-            reg_term = 0.1 * np.max(weights**2)
+            reg_term = 0.000005 * np.sum(abs(weights))
             loss = error + reg_term
-            print(f'Step {step}: {loss}')
+            # print(f'Step {step}: {loss}')
 
             return loss
 
@@ -89,5 +89,7 @@ class Autoencoder():
         # build optimizer function
         optimal_weights = self.optimizer(
             loss_function, flattened_weights, step_size=learning_rate, num_iters=epochs)
+
+        print(f"loss ===> {loss_function(optimal_weights)}")
 
         self.update_weights(optimal_weights)

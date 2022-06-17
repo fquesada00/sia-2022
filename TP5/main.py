@@ -1,4 +1,6 @@
 
+import time
+from utils import plot_latent_space
 from models.Autoencoder import Autoencoder
 from models.Model import Model
 from models.Dense import Dense
@@ -26,18 +28,22 @@ if __name__ == "__main__":
     hidden_decoder_layer_1 = Dense(
         10, activation="relu", name="Hidden layer")(input_decoder)
     hidden_decoder_layer_2 = Dense(
-        10, activation="relu", name="Hidden layer")(hidden_decoder_layer_1)
+        20, activation="relu", name="Hidden layer")(hidden_decoder_layer_1)
     x_decoded = Dense(35, activation="logistic",
                       name="Output")(hidden_decoder_layer_2)
     decoder = Model(input_decoder, x_decoded, name="Decoder")
 
     # Create autoencoder
     autoencoder = Autoencoder(encoder, decoder, optimizer='powell')
-
+    start = time.time()
     # Create dataset
-    autoencoder.fit(dataset, dataset, epochs=100)
-
+    autoencoder.fit(dataset, dataset, epochs=10)
+    end = time.time()
+    print("Training time: ", end - start)
     # Test autoencoder
     prediction = autoencoder(dataset[3])
 
     plot(prediction.reshape((7, 5)))
+
+    # Plot latent space
+    plot_latent_space(encoder, dataset)
