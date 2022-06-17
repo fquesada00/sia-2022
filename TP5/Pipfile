@@ -5,6 +5,10 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+autograd = "*"
+numdifftools = "*"
+matplotlib = "*"
+scipy = "*"
 
 [dev-packages]
 
