@@ -47,6 +47,21 @@ def plot_5n_letters(output: np.ndarray, labelled_dataset: list[dict], n: int = 1
             ax.set(title=labelled_dataset[i * 5 + j]["char"])
 
 
+def plot_denoiser(input: np.ndarray, output: np.ndarray, raw_dataset: np.ndarray, labelled_dataset: list[dict]):
+    fig, axs = plt.subplots(
+        5, 3, sharey=False, tight_layout=True, figsize=(12, 6), facecolor='white')
+
+    for i in range(0, 5):
+        axs[i][0].imshow(input[i].reshape(7, 5), cmap=monocromatic_cmap)
+        axs[i][1].imshow(raw_dataset[i].reshape(7, 5), cmap=monocromatic_cmap)
+        axs[i][2].imshow(output[i].reshape(7, 5), cmap=monocromatic_cmap)
+        axs[i][0].set(title=f"{labelled_dataset[i]['char']} - Entrada")
+        axs[i][1].set(title=f"{labelled_dataset[i]['char']} - Deseado")
+        axs[i][2].set(title=f"{labelled_dataset[i]['char']} - Resultado")
+
+    plt.show()
+
+
 def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     fig, ax = plt.subplots()
 
@@ -76,21 +91,19 @@ def add_noise(image: np.ndarray, mode: str, amount: float = 0.1) -> np.ndarray:
 
          'gauss'     Gaussian-distributed additive noise.
 
-         'poisson'   Poisson-distributed noise generated from the data.
+         's&p'   Salt and pepper noise.
      amount : float
             Amount of noise to add. Default is 0.1. Must be a value between 0 and 1.
 
      """
     if mode == "gauss":
-        row, col, ch = image.shape
         mean = 0
         sigma = 1
-        gauss = np.random.normal(mean, sigma, (row, col, ch)) * amount
+        gauss = np.random.normal(mean, sigma, image.shape) * amount
         # gauss = gauss.reshape(row, col, ch)
         noisy = image + gauss
 
     elif mode == "s&p":
-        row, col, ch = image.shape
         noisy = np.copy(image)
         s_vs_p = 0.5
         # Salt mode
