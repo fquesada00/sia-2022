@@ -5,7 +5,7 @@ from models.Autoencoder import Autoencoder
 from models.Model import Model
 from models.Dense import Dense
 from models.Input import Input
-from utils import plot, to_bin_array, to_raw_dataset, add_noise
+from utils import plot, to_bin_array, to_raw_dataset, add_noise, plot_5n_letters
 from utils.dataset import font_1, font_2, font_3
 import numpy as np
 
@@ -113,10 +113,15 @@ if __name__ == "__main__":
     end = time.time()
 
     print("Training time: ", end - start)
-    # Test autoencoder
-    prediction = autoencoder(raw_dataset[3])
 
-    plot(prediction.reshape((7, 5)))
+    # Test autoencoder
+    predictions = [autoencoder(char).reshape((7, 5))
+                   for char in raw_dataset[:5]]
+
+    # Plot 5 predictions
+    plot_5n_letters(predictions, labelled_dataset, n=1)
+
+    # plot(prediction.reshape((7, 5)))
 
     # Plot latent space
     plot_latent_space(encoder, labelled_dataset)
