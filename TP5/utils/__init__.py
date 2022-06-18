@@ -48,3 +48,50 @@ def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
         ax.annotate(txt["char"], (latent_space[i, 0], latent_space[i, 1]))
 
     plt.show()
+
+
+def add_noise(image: np.ndarray, mode: str, s_p_amount: float = 0.1, s_p_ratio: float = 0.5, gauss_var: float = 0.1):
+    """
+     Add noise to an image.
+
+     Parameters
+     ----------
+     image : ndarray
+         Input image data. Will be converted to float.
+     mode : str
+         One of the following strings, selecting the type of noise to add:
+
+         'gauss'     Gaussian-distributed additive noise.
+
+         'poisson'   Poisson-distributed noise generated from the data.
+     s_p_amount : float
+            Amount of noise to add for salt and pepper noise.
+     s_p_ratio : float
+            Salt to pepper ratio salt/pepper.
+     gauss_var : float
+            Variance of the gaussian noise.
+     """
+
+    if mode == "gauss":
+        row, col, ch = image.shape
+        mean = 0
+        sigma = gauss_var**0.5
+        gauss = np.random.normal(mean, sigma, (row, col, ch))
+        gauss = gauss.reshape(row, col, ch)
+        noisy = image + gauss
+        return noisy
+    elif mode == "s&p":
+        row, col, ch = image.shape
+        noisy = np.copy(image)
+        # Salt mode
+        num_salt = np.ceil(s_p_amount * image.size * s_p_ratio)
+        coords = [np.random.randint(0, i - 1, int(num_salt))
+                  for i in image.shape]
+        noisy[coords] = 1
+
+        # Pepper mode
+        num_pepper = np.ceil(s_p_ratio * image.size * (1. - s_p_ratio))
+        coords = [np.random.randint(0, i - 1, int(num_pepper))
+                  for i in image.shape]
+        noisy[coords] = 0
+        return noisy
