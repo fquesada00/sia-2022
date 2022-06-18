@@ -16,7 +16,7 @@ class Autoencoder():
     def __call__(self, input_data):
         return self.decoder(self.encoder(input_data))
 
-    def feed_forward(self, input_data, encoder_weights, decoder_weights):
+    def feed_forward(self, input_data: np.ndarray, encoder_weights: np.ndarray, decoder_weights: np.ndarray):
         previous_layer_activation = input_data
         layer_weight_index = 0
 
@@ -41,8 +41,7 @@ class Autoencoder():
         return previous_layer_activation
 
     # Builds loss function from neural network using weights as parameters
-
-    def build_loss_function(self, input_dataset, target_dataset):
+    def build_loss_function(self, input_dataset: np.ndarray, target_dataset: np.ndarray):
         target_dataset = np.array(target_dataset)
         # weights are flattened
 
@@ -71,7 +70,7 @@ class Autoencoder():
 
         return loss_function
 
-    def update_weights(self, updated_weights):
+    def update_weights(self, updated_weights: np.ndarray):
         # update encoder weights
         layer_weight_offset = 0
         for layer in [*self.encoder.layers[1:], *self.decoder.layers[1:]]:
@@ -82,7 +81,7 @@ class Autoencoder():
 
             layer_weight_offset += layer_weights_size
 
-    def fit(self, input_dataset: list[list[int]], target_dataset, epochs=10, learning_rate=0.01):
+    def fit(self, input_dataset: np.ndarray, target_dataset: np.ndarray, epochs: int = 10, learning_rate: float = 0.01):
         # flatten weights
         flattened_weights = []
 
