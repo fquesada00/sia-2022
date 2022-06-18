@@ -61,10 +61,10 @@ class Autoencoder():
             # distances = predictions - target_dataset
 
             # error = 0.5 * np.sum(distances ** 2)
-            reg_term = 0.000005 * np.sum(np.power(weights, 2))
-            reg_term = 0
+            reg_term = 0.00001 * np.sum(np.power(weights, 2))
+            # reg_term = 0
             loss += reg_term
-            print(f'Step {step}: {loss}')
+            # print(f'Step {step}: {loss}')
 
             return loss
 

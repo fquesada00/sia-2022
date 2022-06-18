@@ -91,7 +91,7 @@ def denoising_autoencoder(dataset: list[list[int]], encoder_layers: list[int], d
 
 if __name__ == "__main__":
     font = font_2
-    labelled_dataset = font[:5]
+    labelled_dataset = font
     raw_dataset = np.array([data.flatten() for data in map(
         to_bin_array, to_raw_dataset(labelled_dataset))])
 
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     autoencoder = Autoencoder(encoder, decoder, optimizer='powell')
 
     start = time.time()
-    autoencoder.fit(raw_dataset, raw_dataset, epochs=10)
+    autoencoder.fit(raw_dataset, raw_dataset, epochs=2)
     end = time.time()
 
     print("Training time: ", end - start)
