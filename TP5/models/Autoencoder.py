@@ -41,9 +41,11 @@ class Autoencoder():
         return previous_layer_activation
 
     # Builds loss function from neural network using weights as parameters
-    def build_loss_function(self, input_dataset, target_dataset):
 
+    def build_loss_function(self, input_dataset, target_dataset):
+        target_dataset = np.array(target_dataset)
         # weights are flattened
+
         def loss_function(weights, step=None):
 
             # convert flatten weights to layers
@@ -52,12 +54,18 @@ class Autoencoder():
             decoder_weights = weights[total_encoder_weights:]
             predictions = np.array([self.feed_forward(
                 input_data, encoder_weights, decoder_weights) for input_data in input_dataset])
-            distances = predictions - target_dataset
+            # print(predictions)
+            predictions = np.clip(predictions, 1e-15, 1-1e-15)
+            # compute binary cross entropy of predictions and target_dataset
+            loss = np.sum(-np.sum(target_dataset * np.log(predictions) +
+                                  (1 - target_dataset) * np.log(1 - predictions)))
+            # distances = predictions - target_dataset
 
-            error = 0.5 * np.sum(distances ** 2)
-            reg_term = 0.000005 * np.sum(abs(weights))
-            loss = error + reg_term
-            # print(f'Step {step}: {loss}')
+            # error = 0.5 * np.sum(distances ** 2)
+            reg_term = 0.000005 * np.sum(np.power(weights, 2))
+            reg_term = 0
+            loss += reg_term
+            print(f'Step {step}: {loss}')
 
             return loss
 
