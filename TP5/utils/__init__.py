@@ -38,8 +38,6 @@ def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     latent_space = np.stack([encoder(bitmap.flatten()) for bitmap in map(
         to_bin_array, to_raw_dataset(labelled_dataset))])
 
-    print(latent_space)
-
     ax.scatter(latent_space[:, 0], latent_space[:, 1])
     ax.set_xlabel('$z_1$')
     ax.set_ylabel('$z_2$')
@@ -50,7 +48,7 @@ def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     plt.show()
 
 
-def add_noise(image: np.ndarray, mode: str, s_p_amount: float = 0.1, s_p_ratio: float = 0.5, gauss_var: float = 0.1):
+def add_noise(image: np.ndarray, mode: str, amount: float = 0.1) -> np.ndarray:
     """
      Add noise to an image.
 
@@ -64,34 +62,33 @@ def add_noise(image: np.ndarray, mode: str, s_p_amount: float = 0.1, s_p_ratio: 
          'gauss'     Gaussian-distributed additive noise.
 
          'poisson'   Poisson-distributed noise generated from the data.
-     s_p_amount : float
-            Amount of noise to add for salt and pepper noise.
-     s_p_ratio : float
-            Salt to pepper ratio salt/pepper.
-     gauss_var : float
-            Variance of the gaussian noise.
-     """
+     amount : float
+            Amount of noise to add. Default is 0.1. Must be a value between 0 and 1.
 
+     """
     if mode == "gauss":
         row, col, ch = image.shape
         mean = 0
-        sigma = gauss_var**0.5
-        gauss = np.random.normal(mean, sigma, (row, col, ch))
-        gauss = gauss.reshape(row, col, ch)
+        sigma = 1
+        gauss = np.random.normal(mean, sigma, (row, col, ch)) * amount
+        # gauss = gauss.reshape(row, col, ch)
         noisy = image + gauss
-        return noisy
+
     elif mode == "s&p":
         row, col, ch = image.shape
         noisy = np.copy(image)
+        s_vs_p = 0.5
         # Salt mode
-        num_salt = np.ceil(s_p_amount * image.size * s_p_ratio)
+        num_salt = np.ceil(amount * image.size * s_vs_p)
         coords = [np.random.randint(0, i - 1, int(num_salt))
                   for i in image.shape]
         noisy[coords] = 1
 
         # Pepper mode
-        num_pepper = np.ceil(s_p_ratio * image.size * (1. - s_p_ratio))
+        num_pepper = np.ceil(amount * image.size * (1. - s_vs_p))
         coords = [np.random.randint(0, i - 1, int(num_pepper))
                   for i in image.shape]
         noisy[coords] = 0
-        return noisy
+
+    # ensure values are between 0 and 1
+    return np.clip(noisy, 0., 1.)

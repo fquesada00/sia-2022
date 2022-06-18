@@ -10,7 +10,6 @@ class Dense(Layer):
         self.name = name
 
     def __call__(self, previous_layer: Layer):
-
         # Connect
         self.weights = np.random.rand(self.dim, previous_layer.dim)
         self.previous_layer = previous_layer
