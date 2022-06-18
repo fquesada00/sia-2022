@@ -32,6 +32,21 @@ def plot(character):
     plt.show()
 
 
+def plot_5n_letters(output: np.ndarray, labelled_dataset: list[dict], n: int = 1):
+    fig, axs = plt.subplots(
+        n, 5, sharey=False, tight_layout=True, figsize=(12, 6), facecolor='white')
+
+    for i in range(0, n):
+        for j in range(0, 5):
+            if (n > 1):
+                ax = axs[i][j]
+            else:
+                ax = axs[j]
+
+            ax.imshow(output[i * 5 + j], cmap=monocromatic_cmap)
+            ax.set(title=labelled_dataset[i * 5 + j]["char"])
+
+
 def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     fig, ax = plt.subplots()
 
