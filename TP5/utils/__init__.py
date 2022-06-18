@@ -47,14 +47,18 @@ def plot_5n_letters(output: np.ndarray, labelled_dataset: list[dict], n: int = 1
             ax.set(title=labelled_dataset[i * 5 + j]["char"])
 
 
-def plot_denoiser(input: np.ndarray, output: np.ndarray, raw_dataset: np.ndarray, labelled_dataset: list[dict]):
+def plot_denoiser(test_set: np.ndarray, denoised_output: np.ndarray, labelled_dataset: list[dict]):
     fig, axs = plt.subplots(
         5, 3, sharey=False, tight_layout=True, figsize=(12, 6), facecolor='white')
 
+    original_dataset = to_raw_dataset(labelled_dataset)
+
     for i in range(0, 5):
-        axs[i][0].imshow(input[i].reshape(7, 5), cmap=monocromatic_cmap)
-        axs[i][1].imshow(raw_dataset[i].reshape(7, 5), cmap=monocromatic_cmap)
-        axs[i][2].imshow(output[i].reshape(7, 5), cmap=monocromatic_cmap)
+        axs[i][0].imshow(test_set[i].reshape(7, 5), cmap=monocromatic_cmap)
+        axs[i][1].imshow(original_dataset[i].reshape(
+            7, 5), cmap=monocromatic_cmap)
+        axs[i][2].imshow(denoised_output[i].reshape(
+            7, 5), cmap=monocromatic_cmap)
         axs[i][0].set(title=f"{labelled_dataset[i]['char']} - Entrada")
         axs[i][1].set(title=f"{labelled_dataset[i]['char']} - Deseado")
         axs[i][2].set(title=f"{labelled_dataset[i]['char']} - Resultado")
