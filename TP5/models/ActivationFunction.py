@@ -1,4 +1,6 @@
 import numpy as np
+import warnings
+warnings.filterwarnings("error")
 
 
 class ActivationFunction():
@@ -19,7 +21,13 @@ class ActivationFunction():
 
     def __get_function__(self):
         if self.name == ActivationFunction.LOGISTIC:
-            return lambda x: 1 / (1 + np.exp(-2 * self.beta * x))
+            def logistic(x):
+                try:
+                    value = 1 / (1 + np.exp(-self.beta * x))
+                except RuntimeWarning:
+                    value = 0
+                return value
+            return logistic
         elif self.name == ActivationFunction.TANH:
             return lambda x: np.tanh(self.beta * x)
         elif self.name == ActivationFunction.RELU:
