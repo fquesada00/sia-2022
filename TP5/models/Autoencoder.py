@@ -2,7 +2,7 @@ from pprint import pprint
 import numpy as np
 import numdifftools as nd
 
-from models.OptimizeFunction import OptimizerFunction
+from models.OptimizerFunction import OptimizerFunction
 from .Model import Model
 
 

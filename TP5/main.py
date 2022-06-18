@@ -5,14 +5,15 @@ from models.Autoencoder import Autoencoder
 from models.Model import Model
 from models.Dense import Dense
 from models.Input import Input
-from utils import plot, to_bin_array
+from utils import plot, to_bin_array, to_raw_dataset
 from utils.dataset import font_1, font_2, font_3
 import numpy as np
 
 if __name__ == "__main__":
     font = font_2
-    dataset = font[:5]
-    dataset = [data.flatten() for data in map(to_bin_array, dataset)]
+    labelled_dataset = font[:5]
+    raw_dataset = [data.flatten() for data in map(
+        to_bin_array, to_raw_dataset(labelled_dataset))]
     # input_shape = dataset[0].
     # Create encoder and decoder
     x = Input(shape=(35,), name="Encoder Input")
@@ -37,13 +38,13 @@ if __name__ == "__main__":
     autoencoder = Autoencoder(encoder, decoder, optimizer='powell')
     start = time.time()
     # Create dataset
-    autoencoder.fit(dataset, dataset, epochs=10)
+    autoencoder.fit(raw_dataset, raw_dataset, epochs=10)
     end = time.time()
     print("Training time: ", end - start)
     # Test autoencoder
-    prediction = autoencoder(dataset[3])
+    prediction = autoencoder(raw_dataset[3])
 
     plot(prediction.reshape((7, 5)))
 
     # Plot latent space
-    plot_latent_space(encoder, dataset)
+    plot_latent_space(encoder, labelled_dataset)
