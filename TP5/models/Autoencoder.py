@@ -1,9 +1,45 @@
 from pprint import pprint
 import numpy as np
 import numdifftools as nd
-
 from models.OptimizerFunction import OptimizerFunction
 from .Model import Model
+from .Input import Input
+from .Dense import Dense
+
+
+def create_autoencoder(input_size: int, encoder_layers: list[int], decoder_layers: list[int],
+                       encoder_activations: list[str], decoder_activations: list[str]) -> tuple[Model, Model]:
+    # Create encoder
+    input_layer = Input(shape=(input_size,), name="Encoder Input")
+    prev_layer = input_layer
+
+    for i, hidden_size in enumerate(encoder_layers[:-1]):
+        hidden_layer = Dense(
+            hidden_size, activation=encoder_activations[i], name=f"Encoder Hidden {i}")(prev_layer)
+        prev_layer = hidden_layer
+
+    encoder_output = Dense(
+        encoder_layers[-1], activation=encoder_activations[-1], name="Encoder Output")(prev_layer)
+
+    encoder = Model(input_layer=input_layer,
+                    output_layer=encoder_output, name="Encoder")
+
+    # Create decoder
+    input_layer = Input(shape=(encoder_layers[-1],), name="Decoder Input")
+    prev_layer = input_layer
+
+    for i, hidden_size in enumerate(decoder_layers[:-1]):
+        hidden_layer = Dense(
+            hidden_size, activation=decoder_activations[i], name=f"Decoder Hidden {i}")(prev_layer)
+        prev_layer = hidden_layer
+
+    decoder_output = Dense(
+        decoder_layers[-1], activation=decoder_activations[-1], name="Decoder Output")(prev_layer)
+
+    decoder = Model(input_layer=input_layer,
+                    output_layer=decoder_output, name="Decoder")
+
+    return encoder, decoder
 
 
 class Autoencoder():
