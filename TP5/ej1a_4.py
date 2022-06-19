@@ -40,6 +40,17 @@ def get_n_points_in_line(source, target, n):
     for i in range(n+2):
         points.append(move_point_in_direction(
             source, normalized_direction, step_size * i))
+    
+    print("points: ", points)
+
+    for index in range(1, len(points)):
+        if points[index][0] == points[index-1][0]:
+            slope = float("inf")
+        elif points[index][1] == points[index-1][1]:
+            slope = 0
+        else:
+            slope = (points[index][1] - points[index-1][1]) / (points[index][0] - points[index-1][0])
+        print("slope: ", slope)
     return points
 
 
@@ -105,7 +116,7 @@ def generate_n_new_letters(decoder: Model, source: dict, target: dict, n: int = 
     points = get_n_points_in_line(source["point"], target["point"], n)
     decoded_letters = []
     for i in range(n+2):
-        point = (points[i][0].round(2), points[i][1].round(2))
+        point = (points[i][0], points[i][1])
         decoded_letters.append({
             "letter": decoder(np.array([point[0], point[1]])).reshape((7, 5)),
             "point": point,
@@ -156,13 +167,14 @@ def plot_generated_letters(generated_letters: list[list[dict]]):
 def plot_generated_lines(generated_letters: list[list[dict]]):
     legends = []
     annotated_chars = []
-    for letter_sequence in generated_letters:
+    colors = ["blue", "orange", "green", "red", "purple", "brown", "black", "cyan", "yellow"]
+    for index, letter_sequence in enumerate(generated_letters):
         x_axis = []
         y_axis = []
         for letter in letter_sequence:
             x_axis.append(letter["point"][0])
             y_axis.append(letter["point"][1])
-            
+
         if letter_sequence[0]['chars'][0] not in annotated_chars:
             plt.annotate(letter_sequence[0]['chars'][0], xy=(letter_sequence[0]['point'][0], letter_sequence[0]['point'][1]))
             annotated_chars.append(letter_sequence[0]['chars'][0])
@@ -171,8 +183,9 @@ def plot_generated_lines(generated_letters: list[list[dict]]):
             plt.annotate(letter_sequence[0]['chars'][1], xy=(letter_sequence[-1]['point'][0], letter_sequence[-1]['point'][1]))
             annotated_chars.append(letter_sequence[0]['chars'][1])
             
-        legends.append(f"{letter_sequence[0]['chars'][0]} -> {letter_sequence[0]['chars'][1]} - {letter_sequence[0]['distance'].round(2)}")
-        plt.plot(x_axis, y_axis, "-o")
+        legends.append(f"{letter_sequence[0]['chars'][0]} -> {letter_sequence[0]['chars'][1]} - {round(letter_sequence[0]['distance'], 2)}")
+        plt.plot(x_axis, y_axis, "-o", color=colors[index])
+        # plt.plot([letter_sequence[0]['point'][0], letter_sequence[-1]['point'][0]], [letter_sequence[0]['point'][1], letter_sequence[-1]['point'][1]], "-o", color=colors[index])
     plt.legend(legends)
     plt.tight_layout()
     plt.show()
