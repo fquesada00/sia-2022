@@ -46,13 +46,12 @@ def plot_5n_letters(output: np.ndarray, labelled_dataset: list[dict], n: int = 1
             ax.imshow(output[i * 5 + j], cmap=monocromatic_cmap)
             ax.set(title=labelled_dataset[i * 5 + j]["char"])
 
-def prepare_plot_5n_unlabelled_letters(output: list[np.ndarray], n: int = 1):
+def prepare_plot_5n_unlabelled_letters(output, n: int = 1):
     fig, axs = plt.subplots(
-        n, 5, sharey=False, tight_layout=True, figsize=(12, 6), facecolor='white')
-
+        1, n, sharey=False, tight_layout=True, figsize=(12, 6), facecolor='white')
     for i in range(n):
-        axs[0][i].imshow(output[i], cmap=monocromatic_cmap)
-        axs[0][i].set(title=f"{i}")
+        axs[i].imshow(output[i]["letter"], cmap=monocromatic_cmap)
+        axs[i].set(title=f"{output[i]['point']}")
 
 
 def plot_denoiser(test_set: np.ndarray, denoised_output: np.ndarray, labelled_dataset: list[dict]):
