@@ -5,6 +5,8 @@ import numdifftools as nd
 from models.OptimizerFunction import OptimizerFunction
 from .Model import Model
 
+iteration = 0
+
 
 class Autoencoder():
 
@@ -81,9 +83,12 @@ class Autoencoder():
 
             layer_weight_offset += layer_weights_size
 
-    def fit(self, input_dataset: np.ndarray, target_dataset: np.ndarray, epochs: int = 10, learning_rate: float = 0.01):
+    def fit(self, input_dataset: np.ndarray, target_dataset: np.ndarray, epochs: int = 10, learning_rate: float = 0.01, weights_filename: str = None, error_filename: str = None):
         # flatten weights
         flattened_weights = []
+
+        if weights_filename is not None:
+            weights_file = open(weights_filename, 'r')
 
         for layer in [*self.encoder.layers[1:], *self.decoder.layers[1:]]:
             flattened_weights = np.append(
@@ -93,9 +98,29 @@ class Autoencoder():
         loss_function = self.build_loss_function(
             input_dataset, target_dataset)
 
+        save_error = None
+
+        if error_filename is not None:
+            error_file = open(error_filename, 'a')
+
+            def save_error(weights):
+                global iteration
+                error = loss_function(weights, iteration)
+                print(f"Iteration {iteration} - Error: {error}")
+                iteration += 1
+                error_file.write(str(error) + '\n')
+                error_file.flush()
+
         # build optimizer function
         optimal_weights = self.optimizer(
-            loss_function, flattened_weights, step_size=learning_rate, num_iters=epochs)
+            loss_function, flattened_weights, step_size=learning_rate, num_iters=epochs, callback=save_error)
+
+        if weights_filename is not None:
+            weights_file.write(str(optimal_weights))
+            weights_file.close()
+
+        if error_filename is not None:
+            error_file.close()
 
         print(f"loss ===> {loss_function(optimal_weights)}")
 
