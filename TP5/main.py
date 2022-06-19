@@ -89,6 +89,33 @@ def denoising_autoencoder(dataset: list[list[int]], encoder_layers: list[int], d
     return autoencoder
 
 
+def create_and_train_default_autoencoder(font = font_2):
+    labelled_dataset = font
+    raw_dataset = np.array([data.flatten() for data in map(
+        to_bin_array, to_raw_dataset(labelled_dataset))])
+
+    # Create autoencoder
+    input_size = len(raw_dataset[0])
+    latent_space_size = 2
+    encoder_layers = [25, 10, latent_space_size]
+    decoder_layers = [10, 25, input_size]
+    encoder_activations = ["relu", "logistic", "relu"]
+    decoder_activations = ["relu", "logistic", "logistic"]
+
+    encoder, decoder = create_autoencoder(
+        input_size, encoder_layers, decoder_layers, encoder_activations, decoder_activations)
+
+    autoencoder = Autoencoder(encoder, decoder, optimizer='powell')
+
+    start = time.time()
+    autoencoder.fit(raw_dataset, raw_dataset, epochs=2)
+    end = time.time()
+
+    print("Training time: ", end - start)
+
+    return encoder, decoder, autoencoder
+
+
 if __name__ == "__main__":
     font = font_2
     labelled_dataset = font
