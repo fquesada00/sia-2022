@@ -41,6 +41,7 @@ def create_autoencoder(input_size: int, encoder_layers: list[int], decoder_layer
 
     return encoder, decoder
 
+
 iteration = 0
 
 
@@ -78,6 +79,17 @@ class Autoencoder():
 
         return previous_layer_activation
 
+    def load_weights(self, weights: np.ndarray):
+        # update encoder weights
+        layer_weight_offset = 0
+        for layer in [*self.encoder.layers[1:], *self.decoder.layers[1:]]:
+            layer_weights_size = layer.weights.size
+
+            layer.load_weights(
+                weights[layer_weight_offset:layer_weight_offset+layer_weights_size])
+
+            layer_weight_offset += layer_weights_size
+
     # Builds loss function from neural network using weights as parameters
     def build_loss_function(self, input_dataset: np.ndarray, target_dataset: np.ndarray):
         target_dataset = np.array(target_dataset)
@@ -89,8 +101,10 @@ class Autoencoder():
             total_encoder_weights = self.encoder.total_weights()
             encoder_weights = weights[:total_encoder_weights]
             decoder_weights = weights[total_encoder_weights:]
-            predictions = np.array([self.feed_forward(
-                input_data, encoder_weights, decoder_weights) for input_data in input_dataset])
+            # predictions = np.array([self.feed_forward(
+            #     input_data, encoder_weights, decoder_weights) for input_data in input_dataset])
+            predictions = np.array(self.feed_forward(
+                input_dataset, encoder_weights, decoder_weights))
             # print(predictions)
             predictions = np.clip(predictions, 1e-15, 1-1e-15)
             # compute binary cross entropy of predictions and target_dataset
@@ -124,7 +138,7 @@ class Autoencoder():
         flattened_weights = []
 
         if weights_filename is not None:
-            weights_file = open(weights_filename, 'r')
+            weights_file = open(weights_filename, 'w')
 
         for layer in [*self.encoder.layers[1:], *self.decoder.layers[1:]]:
             flattened_weights = np.append(
@@ -152,7 +166,7 @@ class Autoencoder():
             loss_function, flattened_weights, step_size=learning_rate, num_iters=epochs, callback=save_error)
 
         if weights_filename is not None:
-            weights_file.write(str(optimal_weights))
+            np.savetxt(weights_file, optimal_weights, delimiter=' ')
             weights_file.close()
 
         if error_filename is not None:
