@@ -19,10 +19,10 @@ if __name__ == "__main__":
     # Create autoencoder
     input_size = len(raw_dataset[0])
     latent_space_size = 2
-    encoder_layers = [20, 10, latent_space_size]
-    decoder_layers = [10, 20, input_size]
-    encoder_activations = ["relu", "relu", "logistic"]
-    decoder_activations = ["relu", "relu", "logistic"]
+    encoder_layers = [25, 10, latent_space_size]
+    decoder_layers = [10, 25, input_size]
+    encoder_activations = ["relu", "logistic", "relu"]
+    decoder_activations = ["relu", "logistic", "logistic"]
 
     encoder, decoder = create_autoencoder(
         input_size, encoder_layers, decoder_layers, encoder_activations, decoder_activations)
