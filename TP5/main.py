@@ -16,6 +16,8 @@ if __name__ == "__main__":
     raw_dataset = np.array([data.flatten() for data in map(
         to_bin_array, to_raw_dataset(labelled_dataset))])
 
+    raw_dataset = raw_dataset[:5]
+
     # Create autoencoder
     input_size = len(raw_dataset[0])
     latent_space_size = 2
@@ -30,7 +32,7 @@ if __name__ == "__main__":
     autoencoder = Autoencoder(encoder, decoder, optimizer='powell')
 
     start = time.time()
-    autoencoder.fit(raw_dataset, raw_dataset, epochs=2)
+    autoencoder.fit(raw_dataset, raw_dataset, epochs=10)
     end = time.time()
 
     print("Training time: ", end - start)
