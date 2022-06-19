@@ -25,7 +25,7 @@ class ActivationFunction():
                 try:
                     value = 1 / (1 + np.exp(-self.beta * x))
                 except RuntimeWarning:
-                    value = 0
+                    value = np.zeros(x.shape)
                 return value
             return logistic
         elif self.name == ActivationFunction.TANH:
