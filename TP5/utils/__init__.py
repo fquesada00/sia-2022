@@ -80,6 +80,7 @@ def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     for i, txt in enumerate(labelled_dataset):
         ax.annotate(txt["char"], (latent_space[i, 0], latent_space[i, 1]))
 
+    plt.grid()
     plt.show()
 
 

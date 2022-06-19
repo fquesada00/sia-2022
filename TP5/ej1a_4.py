@@ -160,7 +160,6 @@ def plot_generated_letters(generated_letters: list[list[dict]]):
             # ax.set_title(f"{source_char} -> {target_char} {distance}")
 
             # axs[i][j].axis('off')
-
     plt.show()
     
 
@@ -188,6 +187,7 @@ def plot_generated_lines(generated_letters: list[list[dict]]):
         # plt.plot([letter_sequence[0]['point'][0], letter_sequence[-1]['point'][0]], [letter_sequence[0]['point'][1], letter_sequence[-1]['point'][1]], "-o", color=colors[index])
     plt.legend(legends)
     plt.tight_layout()
+    plt.grid()
     plt.show()
 
 def create_and_train_default_autoencoder(font, total_fonts: int = 5, epochs: int = 2):
