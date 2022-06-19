@@ -8,7 +8,7 @@ from utils.dataset import font_1, font_2, font_3
 
 def denoising_autoencoder(dataset: list[list[int]], encoder_layers: list[int], decoder_layers: list[int],
                           encoder_activations: list[str], decoder_activations: list[str], optimizer: str,
-                          epochs: int, noise_type: str, noise_amount: float) -> Model:
+                          epochs: int, noise_type: str, noise_amount: float, noise_samples: int = 1) -> Model:
     """
     Create and train a denoising autoencoder.
 
@@ -41,8 +41,8 @@ def denoising_autoencoder(dataset: list[list[int]], encoder_layers: list[int], d
     autoencoder = Autoencoder(encoder, decoder, optimizer)
 
     # Create noisy dataset
-    noisy_dataset = [add_noise(np.copy(bitmap), noise_type, noise_amount)
-                     for bitmap in dataset]
+    noisy_dataset = [add_noise(np.copy(bitmap), noise_type, noise_amount, seed=i)
+                     for i, bitmap in enumerate(np.repeat(dataset, noise_samples, axis=0))]
 
     # Train autoencoder
     autoencoder.fit(noisy_dataset, dataset, epochs)
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     # Create and train autoencoder
     start = time.time()
     dae = denoising_autoencoder(raw_dataset[:5], encoder_layers, decoder_layers, encoder_activations,
-                                decoder_activations, optimizer='powell', epochs=10, noise_type="gauss", noise_amount=0.5)
+                                decoder_activations, optimizer='powell', epochs=10, noise_type="gauss", noise_amount=0.5, noise_samples=5)
     end = time.time()
     print("Training time: ", end - start)
 
