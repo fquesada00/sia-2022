@@ -18,10 +18,14 @@ class Dense(Layer):
 
     def forward(self, input_data, weights: np.ndarray):
         weights = weights.reshape(self.dim, self.previous_layer.dim)
-        excitation = np.dot(weights, input_data.T)
+        excitation = np.dot(input_data, weights.T)
         activation = self.activation(excitation)
         return activation
 
     def update_weights(self, weights: np.ndarray):
+        weights = weights.reshape(self.dim, self.previous_layer.dim)
+        self.weights = weights
+
+    def load_weights(self, weights: np.ndarray):
         weights = weights.reshape(self.dim, self.previous_layer.dim)
         self.weights = weights
