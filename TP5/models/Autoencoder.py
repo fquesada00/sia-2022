@@ -116,8 +116,8 @@ class Autoencoder():
 
             # loss = np.sum(-np.sum(target_dataset * np.log(predictions) +
             #                       (1 - target_dataset) * np.log(1 - predictions)))
-            distances = predictions - target_dataset
-            loss = 0.5 * np.sum(distances ** 2)
+            loss = np.sum((predictions - target_dataset)
+                          ** 2) / len(input_dataset)
             reg_term = 0.00001 * np.sum(np.power(weights, 2))
             # reg_term = 0
             loss += reg_term
