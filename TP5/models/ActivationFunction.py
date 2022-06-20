@@ -21,13 +21,7 @@ class ActivationFunction():
 
     def __get_function__(self):
         if self.name == ActivationFunction.LOGISTIC:
-            def logistic(x):
-                try:
-                    value = 1 / (1 + np.exp(-self.beta * x))
-                except RuntimeWarning:
-                    value = np.zeros(x.shape)
-                return value
-            return logistic
+            return lambda x: 1 / (1 + np.exp(-self.beta * x))
         elif self.name == ActivationFunction.TANH:
             return lambda x: np.tanh(self.beta * x)
         elif self.name == ActivationFunction.RELU:
