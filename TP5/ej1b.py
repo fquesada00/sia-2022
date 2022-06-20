@@ -41,11 +41,12 @@ def denoising_autoencoder(dataset: list[list[int]], encoder_layers: list[int], d
     autoencoder = Autoencoder(encoder, decoder, optimizer)
 
     # Create noisy dataset
-    noisy_dataset = [add_noise(np.copy(bitmap), noise_type, noise_amount, seed=i)
-                     for i, bitmap in enumerate(np.repeat(dataset, noise_samples, axis=0))]
+    noisy_dataset = np.array([add_noise(np.copy(bitmap), noise_type, noise_amount, seed=i)
+                              for i, bitmap in enumerate(np.repeat(dataset, noise_samples, axis=0))])
+    target_dataset = np.repeat(dataset, noise_samples, axis=0)
 
     # Train autoencoder
-    autoencoder.fit(noisy_dataset, dataset, epochs)
+    autoencoder.fit(noisy_dataset, target_dataset, epochs)
 
     return autoencoder
 
