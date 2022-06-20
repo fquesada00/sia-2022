@@ -108,11 +108,16 @@ class Autoencoder():
             # print(predictions)
             predictions = np.clip(predictions, 1e-15, 1-1e-15)
             # compute binary cross entropy of predictions and target_dataset
-            loss = np.sum(-np.sum(target_dataset * np.log(predictions) +
-                                  (1 - target_dataset) * np.log(1 - predictions)))
-            # distances = predictions - target_dataset
+            # print(f"targeeeeet: {target_dataset * np.log(predictions) + (1 - target_dataset) * np.log(1 - predictions)}")
+            # print(f"term: {np.divide(np.sum(target_dataset * np.log(predictions) + (1 - target_dataset) * np.log(1 - predictions), axis=1), len(input_dataset[0]))}")
 
-            # error = 0.5 * np.sum(distances ** 2)
+            # loss_output = np.divide(-np.sum(target_dataset * np.log(predictions) + (1 - target_dataset) * np.log(1 - predictions), axis=1), len(input_dataset[0]))
+            # loss = np.sum(loss_output)
+
+            # loss = np.sum(-np.sum(target_dataset * np.log(predictions) +
+            #                       (1 - target_dataset) * np.log(1 - predictions)))
+            distances = predictions - target_dataset
+            loss = 0.5 * np.sum(distances ** 2)
             reg_term = 0.00001 * np.sum(np.power(weights, 2))
             # reg_term = 0
             loss += reg_term
