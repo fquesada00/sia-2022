@@ -47,26 +47,6 @@ def plot_5n_letters(output: np.ndarray, labelled_dataset: list[dict], n: int = 1
             ax.set(title=labelled_dataset[i * 5 + j]["char"])
 
 
-
-def plot_denoiser(test_set: np.ndarray, denoised_output: np.ndarray, labelled_dataset: list[dict]):
-    fig, axs = plt.subplots(
-        5, 3, sharey=False, tight_layout=True, figsize=(12, 6), facecolor='white')
-
-    original_dataset = to_raw_dataset(labelled_dataset)
-
-    for i in range(0, 5):
-        axs[i][0].imshow(test_set[i].reshape(7, 5), cmap=monocromatic_cmap)
-        axs[i][1].imshow(original_dataset[i].reshape(
-            7, 5), cmap=monocromatic_cmap)
-        axs[i][2].imshow(denoised_output[i].reshape(
-            7, 5), cmap=monocromatic_cmap)
-        axs[i][0].set(title=f"{labelled_dataset[i]['char']} - Entrada")
-        axs[i][1].set(title=f"{labelled_dataset[i]['char']} - Deseado")
-        axs[i][2].set(title=f"{labelled_dataset[i]['char']} - Resultado")
-
-    plt.show()
-
-
 def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     fig, ax = plt.subplots()
 
@@ -84,45 +64,21 @@ def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     plt.show()
 
 
-def add_noise(image: np.ndarray, mode: str, amount: float = 0.1) -> np.ndarray:
-    """
-     Add noise to an image.
+def plot_decoded_latent_space(image_shape: tuple, decoder, grid_transform, digits: int = 10):
+    figure = np.zeros((image_shape[0] * digits, image_shape[1] * digits))
+    # linearly spaced coordinates on the unit square were transformed through the inverse CDF (ppf) of the Gaussian
+    # to produce values of the latent variables z, since the prior of the latent space is Gaussian
+    grid_x = grid_transform(np.linspace(0.05, 0.95, digits))
+    grid_y = grid_transform(np.linspace(0.05, 0.95, digits))
 
-     Parameters
-     ----------
-     image : ndarray
-         Input image data. Will be converted to float.
-     mode : str
-         One of the following strings, selecting the type of noise to add:
+    for i, yi in enumerate(grid_x):
+        for j, xi in enumerate(grid_y):
+            z_sample = np.array([[xi, yi]])
+            x_decoded = decoder.predict(z_sample)
+            digit = x_decoded[0].reshape(image_shape)
+            figure[i * image_shape[1]: (i + 1) * image_shape[1],
+                   j * image_shape[0]: (j + 1) * image_shape[0]] = digit
 
-         'gauss'     Gaussian-distributed additive noise.
-
-         's&p'   Salt and pepper noise.
-     amount : float
-            Amount of noise to add. Default is 0.1. Must be a value between 0 and 1.
-
-     """
-    if mode == "gauss":
-        mean = 0
-        sigma = 1
-        gauss = np.random.normal(mean, sigma, image.shape) * amount
-        # gauss = gauss.reshape(row, col, ch)
-        noisy = image + gauss
-
-    elif mode == "s&p":
-        noisy = np.copy(image)
-        s_vs_p = 0.5
-        # Salt mode
-        num_salt = np.ceil(amount * image.size * s_vs_p)
-        coords = [np.random.randint(0, i - 1, int(num_salt))
-                  for i in image.shape]
-        noisy[coords] = 1
-
-        # Pepper mode
-        num_pepper = np.ceil(amount * image.size * (1. - s_vs_p))
-        coords = [np.random.randint(0, i - 1, int(num_pepper))
-                  for i in image.shape]
-        noisy[coords] = 0
-
-    # ensure values are between 0 and 1
-    return np.clip(noisy, 0., 1.)
+    plt.figure(figsize=(10, 10))
+    plt.imshow(figure, cmap='Greys_r')
+    plt.show()

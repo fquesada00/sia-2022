@@ -9,6 +9,8 @@ autograd = "*"
 numdifftools = "*"
 matplotlib = "*"
 scipy = "*"
+keras = "*"
+tensorflow = "*"
 
 [dev-packages]
 
