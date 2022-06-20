@@ -156,6 +156,11 @@ def run_architectures(dataset: np.ndarray, architectures: list[dict[list[int], l
 
 
 def plot_architecture_errors(error_filename_prefix: str, architectures: list[dict[list[int], list[int], list[str], list[str]]]):
+    # clear figure
+    plt.clf()
+
+    plt.figure(figsize=(10, 10))
+
     error_filenames = [
         f"{error_filename_prefix}{i+1}.txt" for i in range(len(architectures))]
 
@@ -170,7 +175,8 @@ def plot_architecture_errors(error_filename_prefix: str, architectures: list[dic
     plt.ylabel("Error", fontsize=15)
     plt.title("Error vs Epochs for different architectures", fontsize=20)
     plt.legend()
-    plt.show()
+
+    plt.savefig(f"{error_filename_prefix}_errors.png")
 
 
 if __name__ == "__main__":
@@ -199,27 +205,27 @@ if __name__ == "__main__":
             "encoder_activations": ["logistic"],
             "decoder_activations": ["logistic"],
         },
-        {
-            "encoder_layers": [20],
-            "decoder_layers": [35],
-            "encoder_activations": ["logistic"],
-            "decoder_activations": ["logistic"],
-        },
-        {
-            "encoder_layers": [20, 10],
-            "decoder_layers": [20, 35],
-            "encoder_activations": ["relu", "logistic"],
-            "decoder_activations": ["relu", "logistic"],
-        },
-        {
-            "encoder_layers": [15, 2],
-            "decoder_layers": [15, 35],
-            "encoder_activations": ["relu", "logistic"],
-            "decoder_activations": ["relu", "logistic"],
-        },
+        # {
+        #     "encoder_layers": [20],
+        #     "decoder_layers": [35],
+        #     "encoder_activations": ["logistic"],
+        #     "decoder_activations": ["logistic"],
+        # },
+        # {
+        #     "encoder_layers": [20, 10],
+        #     "decoder_layers": [20, 35],
+        #     "encoder_activations": ["relu", "logistic"],
+        #     "decoder_activations": ["relu", "logistic"],
+        # },
+        # {
+        #     "encoder_layers": [15, 2],
+        #     "decoder_layers": [15, 35],
+        #     "encoder_activations": ["relu", "logistic"],
+        #     "decoder_activations": ["relu", "logistic"],
+        # },
     ]
 
-    run_architectures(raw_dataset, architectures=architectures, optimizer="powell", epochs=10,
+    run_architectures(raw_dataset, architectures=architectures, optimizer="powell", epochs=50,
                       noise_type="gauss", noise_amount=0.5, noise_samples=5)
 
     plot_architecture_errors("denoiser_error_", architectures)
