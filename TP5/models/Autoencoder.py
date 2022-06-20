@@ -101,15 +101,9 @@ class Autoencoder():
             total_encoder_weights = self.encoder.total_weights()
             encoder_weights = weights[:total_encoder_weights]
             decoder_weights = weights[total_encoder_weights:]
-            # predictions = np.array([self.feed_forward(
-            #     input_data, encoder_weights, decoder_weights) for input_data in input_dataset])
             predictions = np.array(self.feed_forward(
                 input_dataset, encoder_weights, decoder_weights))
-            # print(predictions)
             predictions = np.clip(predictions, 1e-15, 1-1e-15)
-            # compute binary cross entropy of predictions and target_dataset
-            # print(f"targeeeeet: {target_dataset * np.log(predictions) + (1 - target_dataset) * np.log(1 - predictions)}")
-            # print(f"term: {np.divide(np.sum(target_dataset * np.log(predictions) + (1 - target_dataset) * np.log(1 - predictions), axis=1), len(input_dataset[0]))}")
 
             # loss_output = np.divide(-np.sum(target_dataset * np.log(predictions) + (1 - target_dataset) * np.log(1 - predictions), axis=1), len(input_dataset[0]))
             # loss = np.sum(loss_output)
@@ -118,8 +112,8 @@ class Autoencoder():
             #                       (1 - target_dataset) * np.log(1 - predictions)))
             loss = np.sum((predictions - target_dataset)
                           ** 2) / len(input_dataset)
+
             reg_term = 0.00001 * np.sum(np.power(weights, 2))
-            # reg_term = 0
             loss += reg_term
             # print(f'Step {step}: {loss}')
 
