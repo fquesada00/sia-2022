@@ -1,6 +1,6 @@
 import numpy as np
 import warnings
-warnings.filterwarnings("error")
+warnings.filterwarnings('ignore')
 
 
 class ActivationFunction():
