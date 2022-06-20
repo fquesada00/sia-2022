@@ -126,8 +126,4 @@ ui-tests/playwright-report
 
 # VSCode
 .vscode
-
-# Benchmark outputs
-*.txt
-*.png
   
