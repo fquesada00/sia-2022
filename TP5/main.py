@@ -25,12 +25,20 @@ if __name__ == "__main__":
     parser.add_argument("--read_weights", action="store_true",
                         help="Read weights from file")
 
+    parser.add_argument("--lambda_var", type=float, default=0.00001,
+                        help="Lambda")
+
+    parser.add_argument('--reg-term', type=str, default='l2',
+                        help='Regularization term')
+
     args = parser.parse_args()
     latent_space = args.latent
     architecture = eval(args.architecture)
     epochs = args.epochs
     read_weights = args.read_weights
     optimizer = args.optimizer
+    lambda_ = args.lambda_var
+    reg_term = args.reg_term
 
     font = font_2
     labelled_dataset = font
@@ -57,17 +65,17 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    weights_filename = f"data/weights_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}.txt"
+    weights_filename = f"data/weights_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}_{reg_term}_{lambda_}.txt"
 
-    error_filename = f"data/error_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}_{optimizer}.txt"
+    error_filename = f"data/error_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}_{optimizer}_{reg_term}_{lambda_}.txt"
 
     if read_weights:
         weights = np.loadtxt(weights_filename)
         autoencoder.load_weights(weights)
 
-    # autoencoder.fit(raw_dataset, raw_dataset, epochs=epochs,
-    #                 weights_filename=weights_filename,
-    #                 error_filename=error_filename)
+    autoencoder.fit(raw_dataset, raw_dataset, epochs=epochs,
+                    weights_filename=weights_filename,
+                    error_filename=error_filename, lambda_var=lambda_, reg_term=reg_term)
     end = time.time()
 
     print("Training time: ", end - start)

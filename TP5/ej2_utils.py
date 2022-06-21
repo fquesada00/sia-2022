@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 
-def plot_loss_from_txt(filename, epochs=100):
+def plot_loss_from_txt(filename, epochs=10):
     with open(filename, "r") as f:
         legends = []
         x_values = np.linspace(0, epochs, epochs)
@@ -12,6 +12,7 @@ def plot_loss_from_txt(filename, epochs=100):
                 legends.append(line.split("\n")[0])
             else:
                 line_split_by_semicolon.pop()
+                line_split_by_semicolon = line_split_by_semicolon[:epochs]
                 y_values = np.array(line_split_by_semicolon).astype(np.float)
                 plt.plot(x_values, y_values)
         plt.legend(legends)
@@ -19,8 +20,10 @@ def plot_loss_from_txt(filename, epochs=100):
         plt.xlabel("Epoch")
         plt.show()
 
+
 def main():
-    plot_loss_from_txt("vae_fashion_mnist_history.txt")
+    plot_loss_from_txt("basic_fashion_mnist_history.txt")
+
 
 if __name__ == "__main__":
     main()

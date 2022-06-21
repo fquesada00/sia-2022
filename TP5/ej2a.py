@@ -28,26 +28,32 @@ batch_size = original_dim
 
 latent_dim = 2
 latent_activation = "sigmoid"
-intermediate_dims = [256, 180, 128, 64, 32]
-activations=["relu", "relu", "relu", "relu", "relu"]
-epochs = 2
+intermediate_dims = [450, 275, 128]
+activations = ["relu", "relu", "relu"]
+epochs = 200
 
 
 # input to our encoder
 x = Input(shape=(original_dim,), name="input")
 # intermediate layer
+
+
 def create_hidden_encoding_layers(input_layer, intermediate_dims, activations):
     prev_layer = input_layer
     layers = []
     for i in range(len(intermediate_dims)):
-        intermediate_layer = Dense(intermediate_dims[i], activation=activations[i], name=f"encoding-{i + 1}")(prev_layer)
+        intermediate_layer = Dense(
+            intermediate_dims[i], activation=activations[i], name=f"encoding-{i + 1}")(prev_layer)
         prev_layer = intermediate_layer
         layers.append(intermediate_layer)
     return layers
 
-last_hidden_encoding_layer = create_hidden_encoding_layers(x, intermediate_dims, activations)[-1]
 
-latent_space_layer = Dense(latent_dim, activation=latent_activation, name="latent-space")(last_hidden_encoding_layer)
+last_hidden_encoding_layer = create_hidden_encoding_layers(
+    x, intermediate_dims, activations)[-1]
+
+latent_space_layer = Dense(latent_dim, activation=latent_activation,
+                           name="latent-space")(last_hidden_encoding_layer)
 # defining the encoder as a keras model
 encoder = Model(x, latent_space_layer, name="encoder")
 # print out summary of what we just did
@@ -55,18 +61,24 @@ encoder.summary()
 
 # Input to the decoder
 input_decoder = Input(shape=(latent_dim,), name="decoder_input")
+
+
 def create_hidden_decoding_layers(input_layer, intermediate_dims, activations):
     print(intermediate_dims)
     prev_layer = input_layer
     layers = []
     for i in range(len(intermediate_dims)):
-        intermediate_layer = Dense(intermediate_dims[i], activation=activations[i], name=f"decoding-{i + 1}")(prev_layer)
+        intermediate_layer = Dense(
+            intermediate_dims[i], activation=activations[i], name=f"decoding-{i + 1}")(prev_layer)
         prev_layer = intermediate_layer
         layers.append(intermediate_layer)
     return layers
 
-last_hidden_decoding_layer = create_hidden_decoding_layers(input_decoder, intermediate_dims[::-1], activations[::-1])[-1]
-decoder_output_layer = Dense(original_dim, activation="sigmoid", name="decoder_output")(last_hidden_decoding_layer)
+
+last_hidden_decoding_layer = create_hidden_decoding_layers(
+    input_decoder, intermediate_dims[::-1], activations[::-1])[-1]
+decoder_output_layer = Dense(
+    original_dim, name="decoder_output")(last_hidden_decoding_layer)
 # defining the decoder as a keras model
 decoder = Model(input_decoder, decoder_output_layer, name="decoder")
 decoder.summary()
@@ -80,7 +92,7 @@ simple_autoencoder.summary()
 
 
 simple_autoencoder.compile(loss='mse',
-    metrics=[tf.keras.metrics.MeanAbsoluteError()])
+                           metrics=[tf.keras.metrics.MeanAbsoluteError()])
 simple_autoencoder.summary()
 
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
@@ -91,14 +103,21 @@ x_train = x_train.reshape((len(x_train), np.prod(x_train.shape[1:])))
 x_test = x_test.reshape((len(x_test), np.prod(x_test.shape[1:])))
 
 history = simple_autoencoder.fit(x_train, x_train,
-        shuffle=True,
-        epochs=epochs,
-        batch_size=batch_size)
+                                 shuffle=True,
+                                 epochs=epochs,
+                                 batch_size=batch_size)
 
 x_test_encoded = encoder.predict(x_test, batch_size=batch_size)
 for x_text in x_test_encoded:
     if x_text[0] < 0 or x_text[1] < 0:
         print(x_text)
+
+with open('latent_fashion_mnist_history.txt', 'a') as f:
+    f.write(
+        f"{original_dim}-{'-'.join(map(str,intermediate_dims))}-{latent_dim}-{'-'.join(map(str,intermediate_dims[::-1]))}-{original_dim}\n")
+    for loss in history.history["loss"]:
+        f.write(f"{loss};")
+    f.write("\n")
 plt.figure(figsize=(6, 6))
 plt.scatter(x_test_encoded[:, 0],
             x_test_encoded[:, 1], c=y_test, cmap='viridis')
@@ -111,6 +130,7 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train'], loc='upper right')
 plt.show()
+
 
 def plot_decoded_latent_space():
     n = 15  # figure with 15x15 digits
@@ -127,7 +147,7 @@ def plot_decoded_latent_space():
             x_decoded = decoder.predict(z_sample)
             digit = x_decoded[0].reshape(digit_size, digit_size)
             figure[i * digit_size: (i + 1) * digit_size,
-                j * digit_size: (j + 1) * digit_size] = digit
+                   j * digit_size: (j + 1) * digit_size] = digit
 
     plt.figure(figsize=(10, 10))
     plt.imshow(figure, cmap='Greys_r')

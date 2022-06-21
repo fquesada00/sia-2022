@@ -91,9 +91,18 @@ class Autoencoder():
             layer_weight_offset += layer_weights_size
 
     # Builds loss function from neural network using weights as parameters
-    def build_loss_function(self, input_dataset: np.ndarray, target_dataset: np.ndarray):
+
+    def build_loss_function(self, input_dataset: np.ndarray, target_dataset: np.ndarray, lambda_var, reg_term):
         target_dataset = np.array(target_dataset)
         # weights are flattened
+
+        def l1_reg(lambda_var, weights):
+            return lambda_var * np.sum(np.abs(weights))
+
+        def l2_reg(lambda_var, weights):
+            return lambda_var * np.sum(np.power(weights, 2))
+
+        reg_term_fun = l1_reg if reg_term == 'l1' else l2_reg
 
         def loss_function(weights, step=None):
 
@@ -113,7 +122,7 @@ class Autoencoder():
             loss = np.sum(
                 np.power((predictions - target_dataset), 2)) / len(input_dataset)
 
-            reg_term = 0.00001 * np.sum(np.power(weights, 2))
+            reg_term = reg_term_fun(lambda_var, weights)
             loss += reg_term
             # print(f'Step {step}: {loss}')
 
@@ -132,8 +141,9 @@ class Autoencoder():
 
             layer_weight_offset += layer_weights_size
 
-    def fit(self, input_dataset: np.ndarray, target_dataset: np.ndarray, epochs: int = 10, learning_rate: float = 0.01, weights_filename: str = None, error_filename: str = None):
+    def fit(self, input_dataset: np.ndarray, target_dataset: np.ndarray, epochs: int = 10, learning_rate: float = 0.01, weights_filename: str = None, error_filename: str = None, lambda_var: float = 0.00001, reg_term: str = 'l1'):
         # flatten weights
+
         flattened_weights = []
 
         if weights_filename is not None:
@@ -145,7 +155,7 @@ class Autoencoder():
 
         # build loss function
         loss_function = self.build_loss_function(
-            input_dataset, target_dataset)
+            input_dataset, target_dataset, lambda_var, reg_term)
 
         def save_error(weights):
             global iteration
