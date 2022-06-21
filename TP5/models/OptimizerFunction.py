@@ -8,6 +8,7 @@ class OptimizerFunction():
     ADAM = "adam"
     POWELL = "powell"
     CG = "cg"
+    BFGS = "bfgs"
 
     def __init__(self, name):
         self.name = name
@@ -23,6 +24,8 @@ class OptimizerFunction():
             return lambda loss_function, weights, num_iters=1000, step_size=None, callback=None: minimize(loss_function, weights, method="Powell", options={'maxiter': num_iters, "disp": True}, callback=callback, tol=1e-5)['x']
         elif self.name == OptimizerFunction.CG:
             return lambda loss_function, weights, num_iters=1000, step_size=None, callback=None: minimize(loss_function, weights, method="CG", options={'maxiter': num_iters, "disp": True}, callback=callback, tol=1e-5)['x']
+        elif self.name == OptimizerFunction.BFGS:
+            return lambda loss_function, weights, num_iters=1000, step_size=None, callback=None: minimize(loss_function, weights, method="BFGS", options={'maxiter': num_iters, "disp": True}, callback=callback, tol=1e-5)['x']
         else:
             raise Exception("Unknown optimizer function")
 

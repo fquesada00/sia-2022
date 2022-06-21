@@ -35,7 +35,6 @@ def plot(character):
 def plot_5n_letters(output: np.ndarray, labelled_dataset: list[dict], n: int = 1):
     fig, axs = plt.subplots(
         n, 5, sharey=False, tight_layout=True, figsize=(12, 6), facecolor='white')
-
     for i in range(0, n):
         for j in range(0, 5):
             if (n > 1):
@@ -45,6 +44,7 @@ def plot_5n_letters(output: np.ndarray, labelled_dataset: list[dict], n: int = 1
 
             ax.imshow(output[i * 5 + j], cmap=monocromatic_cmap)
             ax.set(title=labelled_dataset[i * 5 + j]["char"])
+            ax.axis('off')
 
 
 def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
@@ -83,6 +83,7 @@ def plot_decoded_latent_space_v1(image_shape: tuple, decoder, grid_transform, di
     plt.imshow(figure, cmap='Greys_r')
     plt.show()
 
+
 def plot_decoded_latent_space(decoder: Model):
     height = 7
     width = 5
@@ -100,7 +101,8 @@ def plot_decoded_latent_space(decoder: Model):
             # Load the decoded x
             for y in range(height):
                 for x in range(width):
-                    figure[(n - 1 - y_index) * height + y][x_index * width + x] = x_decoded[y * width + x]
+                    figure[(n - 1 - y_index) * height + y][x_index *
+                                                           width + x] = x_decoded[y * width + x]
     plt.figure(figsize=(10, 10))
     plt.imshow(figure, cmap=monocromatic_cmap)
     plt.xticks([])

@@ -59,15 +59,15 @@ if __name__ == "__main__":
 
     weights_filename = f"data/weights_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}.txt"
 
-    error_filename = f"data/error_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}.txt"
+    error_filename = f"data/error_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}_{optimizer}.txt"
 
     if read_weights:
         weights = np.loadtxt(weights_filename)
         autoencoder.load_weights(weights)
 
-    autoencoder.fit(raw_dataset, raw_dataset, epochs=epochs,
-                    weights_filename=weights_filename,
-                    error_filename=error_filename)
+    # autoencoder.fit(raw_dataset, raw_dataset, epochs=epochs,
+    #                 weights_filename=weights_filename,
+    #                 error_filename=error_filename)
     end = time.time()
 
     print("Training time: ", end - start)

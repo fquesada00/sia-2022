@@ -5,13 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def findnth(haystack, needle, n):
-    parts = haystack.split(needle, n+1)
-    if len(parts) <= n+1:
-        return -1
-    return len(haystack)-len(parts[-1])-len(needle)
-
-
 def plot_error(error_files):
 
     plt.figure(figsize=(10, 10))
@@ -39,12 +32,9 @@ if __name__ == "__main__":
     errors_files = {}
     for file_name in sorted(os.listdir('data')):
 
-        if file_name.startswith('error') and file_name.endswith("150.txt"):
-            latent_space_index = findnth(file_name, "_", 1)+1
-            latent_space_end = findnth(file_name, "_", 2)
-            errors_files[file_name[
-                latent_space_index:latent_space_end
-            ]] = os.path.join('data', file_name)
+        if file_name.startswith("error") and (file_name.endswith('powell.txt') or file_name.endswith('cg.txt') or file_name.endswith('bfgs.txt')):
+            errors_files[file_name[file_name.rindex(
+                "_") + 1:file_name.index('.')]] = os.path.join('data', file_name)
 
-    # pprint(errors_files)
+    pprint(errors_files)
     plot_error(errors_files)

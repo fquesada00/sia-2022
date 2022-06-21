@@ -7,9 +7,7 @@ if __name__ == "__main__":
     architecture = [25, 10]
 
     optimizers = [
-        "powell",
-        "cg",
-        "adam"
+        "bfgs"
     ]
 
     epochs = 200
