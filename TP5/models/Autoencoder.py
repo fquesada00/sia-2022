@@ -110,8 +110,8 @@ class Autoencoder():
 
             # loss = np.sum(-np.sum(target_dataset * np.log(predictions) +
             #                       (1 - target_dataset) * np.log(1 - predictions)))
-            loss = np.sum((predictions - target_dataset)
-                          ** 2) / len(input_dataset)
+            loss = np.sum(
+                np.power((predictions - target_dataset), 2)) / len(input_dataset)
 
             reg_term = 0.00001 * np.sum(np.power(weights, 2))
             loss += reg_term
@@ -147,7 +147,11 @@ class Autoencoder():
         loss_function = self.build_loss_function(
             input_dataset, target_dataset)
 
-        save_error = None
+        def save_error(weights):
+            global iteration
+            error = loss_function(weights, iteration)
+            print(f"Iteration {iteration} - Error: {error}")
+            iteration += 1
 
         if error_filename is not None:
             error_file = open(error_filename, 'a')
