@@ -22,15 +22,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 disable_eager_execution()
 
-batch_size = 100
 
 original_dim = 28*28
+batch_size = original_dim
 
 latent_dim = 2
 latent_activation = "sigmoid"
-intermediate_dims = [256, 180, 128, 64]
-activations=["relu", "relu", "relu", "relu"]
-epochs = 5
+intermediate_dims = [256, 180, 128, 64, 32]
+activations=["relu", "relu", "relu", "relu", "relu"]
+epochs = 2
 
 
 # input to our encoder
@@ -90,7 +90,7 @@ x_test = x_test.astype('float32') / 255.
 x_train = x_train.reshape((len(x_train), np.prod(x_train.shape[1:])))
 x_test = x_test.reshape((len(x_test), np.prod(x_test.shape[1:])))
 
-simple_autoencoder.fit(x_train, x_train,
+history = simple_autoencoder.fit(x_train, x_train,
         shuffle=True,
         epochs=epochs,
         batch_size=batch_size)
@@ -103,6 +103,13 @@ plt.figure(figsize=(6, 6))
 plt.scatter(x_test_encoded[:, 0],
             x_test_encoded[:, 1], c=y_test, cmap='viridis')
 plt.colorbar()
+plt.show()
+
+plt.plot(history.history['loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train'], loc='upper right')
 plt.show()
 
 def plot_decoded_latent_space():
