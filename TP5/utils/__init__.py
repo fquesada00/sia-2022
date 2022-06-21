@@ -64,7 +64,7 @@ def plot_latent_space(encoder: Model, labelled_dataset: list[dict]):
     plt.show()
 
 
-def plot_decoded_latent_space(image_shape: tuple, decoder, grid_transform, digits: int = 10):
+def plot_decoded_latent_space_v1(image_shape: tuple, decoder, grid_transform, digits: int = 10):
     figure = np.zeros((image_shape[0] * digits, image_shape[1] * digits))
     # linearly spaced coordinates on the unit square were transformed through the inverse CDF (ppf) of the Gaussian
     # to produce values of the latent variables z, since the prior of the latent space is Gaussian
@@ -81,4 +81,28 @@ def plot_decoded_latent_space(image_shape: tuple, decoder, grid_transform, digit
 
     plt.figure(figsize=(10, 10))
     plt.imshow(figure, cmap='Greys_r')
+    plt.show()
+
+def plot_decoded_latent_space(decoder: Model):
+    height = 7
+    width = 5
+    n = 10
+    figure = np.zeros((height * n, width * n))
+    # linearly spaced coordinates on the unit square were transformed through the inverse CDF (ppf) of the Gaussian
+    # to produce values of the latent variables z, since the prior of the latent space is Gaussian
+    grid_x = np.linspace(width // 2, width * n - (width // 2), n)
+    grid_y = np.linspace(height // 2, height * n - (height // 2), n)
+
+    for y_index, yi in enumerate(grid_y):
+        for x_index, xi in enumerate(grid_x):
+            z_sample = np.array([xi, yi])
+            x_decoded = decoder(z_sample)
+            # Load the decoded x
+            for y in range(height):
+                for x in range(width):
+                    figure[(n - 1 - y_index) * height + y][x_index * width + x] = x_decoded[y * width + x]
+    plt.figure(figsize=(10, 10))
+    plt.imshow(figure, cmap=monocromatic_cmap)
+    plt.xticks([])
+    plt.yticks([])
     plt.show()

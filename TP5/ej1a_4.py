@@ -1,6 +1,7 @@
 import time
 from matplotlib import pyplot as plt
 import numpy as np
+from utils import plot_decoded_latent_space
 from models.Autoencoder import Autoencoder, create_autoencoder
 from utils import to_bin_array, to_raw_dataset
 from models.Model import Model
@@ -18,7 +19,7 @@ def get_distance(source, target):
 
 
 def normalize_vector(vector, distance):
-    print("vector & distance: ", vector, distance)
+    print("vector unit & distance: ", vector, distance)
     if distance == 0:
         return (0, 0)
     return (vector[0] / distance, vector[1] / distance)
@@ -159,7 +160,8 @@ def plot_generated_letters(generated_letters: list[list[dict]]):
             # ax.set_title(f"{source_char} -> {target_char} ({point[0]}, {point[1]})")
             # ax.set_title(f"{source_char} -> {target_char} {distance}")
 
-            # axs[i][j].axis('off')
+            axs[i][j].axis('off')
+    plt.axis('off')
     plt.show()
     
 
@@ -204,8 +206,8 @@ def create_and_train_default_autoencoder(font, total_fonts: int = 5, epochs: int
     latent_space_size = 2
     encoder_layers = [20, 10, latent_space_size]
     decoder_layers = [10, 20, input_size]
-    encoder_activations = ["logistic", "relu", "identity"]
-    decoder_activations = ["identity", "relu", "logistic"]
+    encoder_activations = ["logistic", "relu", "logistic"]
+    decoder_activations = ["logistic", "relu", "logistic"]
 
     encoder, decoder = create_autoencoder(
         input_size, encoder_layers, decoder_layers, encoder_activations, decoder_activations)
@@ -238,6 +240,7 @@ def main():
     total_fonts = 32
     epochs = 2
     encoder, decoder, autoencoder = create_and_train_default_autoencoder(font, total_fonts=total_fonts, epochs=epochs)
+    plot_decoded_latent_space(decoder)
     latent_space_representation = [{"point": encoder(to_bin_array(font[i]["bitmap"]).flatten()), "char": font[i]["char"]} for i in range(total_fonts)]
     farthest_points = get_all_farthest_points_tuple(latent_space_representation)
     save_farthest_points_to_csv(farthest_points, "farthest_points.csv")
