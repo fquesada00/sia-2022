@@ -3,18 +3,15 @@ import os
 
 
 if __name__ == "__main__":
-    latent_space = 2
-    architectures = [
-        [25, 10]
-    ]
+    latent_spaces = [10, 7, 5, 3, 2]
+    architecture = [20, 10]
+    epochs = 100
 
-    epochs = 200
+    background = True
 
-    background = False
+    read_weights = False
 
-    read_weights = True
-
-    for architecture in architectures:
+    for latent_space in latent_spaces:
         cmd = f'python3 main.py --latent {latent_space} --architecture "{str(architecture)}" --epochs {epochs} {"&" if background else ""} {"--read_weights" if read_weights else ""}'
         print(cmd)
         os.system(cmd)
