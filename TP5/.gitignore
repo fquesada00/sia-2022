@@ -130,4 +130,4 @@ ui-tests/playwright-report
 # Benchmark outputs
 *.txt
 *.png
-  
+*.csv

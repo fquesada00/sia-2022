@@ -103,7 +103,7 @@ class Autoencoder():
             decoder_weights = weights[total_encoder_weights:]
             predictions = np.array(self.feed_forward(
                 input_dataset, encoder_weights, decoder_weights))
-            predictions = np.clip(predictions, 1e-15, 1-1e-15)
+            # predictions = np.clip(predictions, 1e-15, 1-1e-15)
 
             # loss_output = np.divide(-np.sum(target_dataset * np.log(predictions) + (1 - target_dataset) * np.log(1 - predictions), axis=1), len(input_dataset[0]))
             # loss = np.sum(loss_output)

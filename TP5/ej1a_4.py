@@ -50,7 +50,7 @@ def get_n_points_in_line(source, target, n):
             slope = 0
         else:
             slope = (points[index][1] - points[index-1][1]) / (points[index][0] - points[index-1][0])
-        print("slope: ", slope)
+        # print("slope: ", slope)
     return points
 
 
@@ -190,6 +190,7 @@ def plot_generated_lines(generated_letters: list[list[dict]]):
     plt.grid()
     plt.show()
 
+
 def create_and_train_default_autoencoder(font, total_fonts: int = 5, epochs: int = 2):
     labelled_dataset = font
 
@@ -201,10 +202,10 @@ def create_and_train_default_autoencoder(font, total_fonts: int = 5, epochs: int
     # Create autoencoder
     input_size = len(raw_dataset[0])
     latent_space_size = 2
-    encoder_layers = [25, 10, latent_space_size]
-    decoder_layers = [10, 25, input_size]
-    encoder_activations = ["relu", "logistic", "relu"]
-    decoder_activations = ["relu", "logistic", "logistic"]
+    encoder_layers = [20, 10, latent_space_size]
+    decoder_layers = [10, 20, input_size]
+    encoder_activations = ["logistic", "relu", "identity"]
+    decoder_activations = ["identity", "relu", "logistic"]
 
     encoder, decoder = create_autoencoder(
         input_size, encoder_layers, decoder_layers, encoder_activations, decoder_activations)
@@ -219,13 +220,27 @@ def create_and_train_default_autoencoder(font, total_fonts: int = 5, epochs: int
 
     return encoder, decoder, autoencoder
 
+
+def save_farthest_points_to_csv(farthest_points: list[dict], filename: str):
+    with open(filename, "w") as f:
+        f.write("source_char,target_char,source_point,target_point,distance\n")
+        top_10_farthest_points = farthest_points[:10]
+        middle_index = len(farthest_points) // 2
+        top_10_intermediate_points = farthest_points[middle_index - 5:middle_index + 5]
+        top_10_closer_points = farthest_points[-10:]
+        save_points = top_10_farthest_points + top_10_intermediate_points + top_10_closer_points
+        for point_data in save_points:
+            f.write(f"{point_data['chars'][0]},{point_data['chars'][1]},({point_data['points'][0][0]}; {point_data['points'][0][1]}),({point_data['points'][1][0]}; {point_data['points'][1][1]}),{point_data['distance']}\n")
+
 def main():
+    np.random.seed(2)
     font = font_2
-    total_fonts = 6
+    total_fonts = 32
     epochs = 2
     encoder, decoder, autoencoder = create_and_train_default_autoencoder(font, total_fonts=total_fonts, epochs=epochs)
     latent_space_representation = [{"point": encoder(to_bin_array(font[i]["bitmap"]).flatten()), "char": font[i]["char"]} for i in range(total_fonts)]
     farthest_points = get_all_farthest_points_tuple(latent_space_representation)
+    save_farthest_points_to_csv(farthest_points, "farthest_points.csv")
     sources, targets = get_source_and_target_from_farthest_points(farthest_points)
     number_of_points_in_line = 3
     generated_letters = generate_n_new_letters_per_source_and_target(decoder, sources, targets, n=number_of_points_in_line)
