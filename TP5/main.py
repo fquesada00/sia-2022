@@ -19,6 +19,8 @@ if __name__ == "__main__":
     parser.add_argument("--architecture", type=str,
                         default="[]", help="Architecture")
     parser.add_argument("--epochs", type=int, default=100, help="Epochs")
+    parser.add_argument("--optimizer", type=str,
+                        default="powell", help="Optimizer")
 
     parser.add_argument("--read_weights", action="store_true",
                         help="Read weights from file")
@@ -28,6 +30,7 @@ if __name__ == "__main__":
     architecture = eval(args.architecture)
     epochs = args.epochs
     read_weights = args.read_weights
+    optimizer = args.optimizer
 
     font = font_2
     labelled_dataset = font
@@ -50,7 +53,7 @@ if __name__ == "__main__":
     encoder, decoder = create_autoencoder(
         input_size, encoder_layers, decoder_layers, encoder_activations, decoder_activations,)
 
-    autoencoder = Autoencoder(encoder, decoder, optimizer='powell')
+    autoencoder = Autoencoder(encoder, decoder, optimizer=optimizer)
 
     start = time.time()
 
