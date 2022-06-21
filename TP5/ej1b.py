@@ -1,3 +1,4 @@
+import itertools
 import time
 from matplotlib import pyplot as plt
 import numpy as np
@@ -130,6 +131,15 @@ def get_architecture_label(architecture) -> str:
         [str(size) for size in [35, *architecture['encoder_layers'], *architecture['decoder_layers']]])
 
 
+def get_noise_variant_label(noise_type, noise_amount) -> str:
+    if noise_type == 'gauss':
+        noise_type = "Gaussian"
+    elif noise_type == 's&p':
+        noise_type = "Salt & Pepper"
+
+    return f'{noise_type} {noise_amount}'
+
+
 def run_architectures(dataset: np.ndarray, architectures: list[dict[list[int], list[int], list[str], list[str]]], optimizer: str, epochs: int, noise_type: str, noise_amount: float, noise_samples: int):
 
     for i, architecture in enumerate(architectures):
@@ -173,10 +183,55 @@ def plot_architecture_errors(error_filename_prefix: str, architectures: list[dic
 
     plt.xlabel("Epochs", fontsize=15)
     plt.ylabel("Error", fontsize=15)
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
     plt.title("Error vs Epochs for different architectures", fontsize=20)
-    plt.legend()
+    plt.legend(fontsize=15)
 
     plt.savefig(f"{error_filename_prefix}_errors.png")
+
+
+def plot_noise_errors(error_filename_prefix: str, noise_variants: list[tuple[str, float]]):
+    # clear figure
+    plt.clf()
+
+    plt.figure(figsize=(10, 10))
+
+    error_filenames = [
+        f"{error_filename_prefix}{noise_type}_{noise_amount}.txt" for noise_type, noise_amount in noise_variants]
+
+    errors = [np.loadtxt(filename) for filename in error_filenames]
+    epochs = np.arange(len(errors[0]))
+
+    for i, error in enumerate(errors):
+        plt.plot(epochs, error,
+                 label=get_noise_variant_label(noise_variants[i][0], noise_variants[i][1]))
+
+    plt.xlabel("Epochs", fontsize=15)
+    plt.ylabel("Error", fontsize=15)
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
+    plt.title("Error vs Epochs for different noise generation", fontsize=20)
+    plt.legend(fontsize=15)
+    plt.xscale('log')
+    plt.yscale('log')
+
+    plt.savefig(f"{error_filename_prefix}_noise_errors.png")
+
+
+def run_noise_benchmark(dataset: np.ndarray, architecture: dict[list[int], list[int], list[str], list[str]], optimizer: str, epochs: int, noise_variants: list[tuple[str, float]], noise_samples: int, seed: float = 1):
+    for noise_type, noise_amount in noise_variants:
+        dae = denoising_autoencoder(dataset, architecture["encoder_layers"], architecture["decoder_layers"], architecture["encoder_activations"], architecture["decoder_activations"],
+                                    optimizer, epochs, noise_type, noise_amount, noise_samples, error_filename=f"denoiser_error_{noise_type}_{noise_amount}.txt", seed=seed)
+        test_set = [add_noise(char.copy(), noise_type, noise_amount)
+                    for char in raw_dataset[:10]]
+
+        predictions = [dae(noisy_char)
+                       for noisy_char in test_set]
+        # Plot denoised output
+        plot_denoiser(test_set, predictions, font_2,
+                      get_noise_variant_label(noise_type, noise_amount),
+                      f"denoiser_output_{noise_type}_{noise_amount}.png")
 
 
 if __name__ == "__main__":
@@ -186,62 +241,42 @@ if __name__ == "__main__":
     raw_dataset = np.array([data.flatten() for data in map(
         to_bin_array, to_raw_dataset(labelled_dataset))])
 
-    input_size = len(raw_dataset[0])
-    latent_space_size = 45
-    encoder_layers = [40, latent_space_size]
-    decoder_layers = [40, input_size]
-    encoder_activations = ["relu", "relu", "logistic"]
-    decoder_activations = ["relu", "relu", "logistic"]
     architectures = [
-        {
-            "encoder_layers": [40, 45],
-            "decoder_layers": [40, 35],
-            "encoder_activations": ["relu", "logistic"],
-            "decoder_activations": ["relu", "logistic"],
-        },
         {
             "encoder_layers": [40],
             "decoder_layers": [35],
             "encoder_activations": ["logistic"],
             "decoder_activations": ["logistic"],
         },
-        # {
-        #     "encoder_layers": [20],
-        #     "decoder_layers": [35],
-        #     "encoder_activations": ["logistic"],
-        #     "decoder_activations": ["logistic"],
-        # },
-        # {
-        #     "encoder_layers": [20, 10],
-        #     "decoder_layers": [20, 35],
-        #     "encoder_activations": ["relu", "logistic"],
-        #     "decoder_activations": ["relu", "logistic"],
-        # },
-        # {
-        #     "encoder_layers": [15, 2],
-        #     "decoder_layers": [15, 35],
-        #     "encoder_activations": ["relu", "logistic"],
-        #     "decoder_activations": ["relu", "logistic"],
-        # },
+        {
+            "encoder_layers": [20],
+            "decoder_layers": [35],
+            "encoder_activations": ["logistic"],
+            "decoder_activations": ["logistic"],
+        },
+        {
+            "encoder_layers": [20, 10],
+            "decoder_layers": [20, 35],
+            "encoder_activations": ["relu", "logistic"],
+            "decoder_activations": ["relu", "logistic"],
+        },
+        {
+            "encoder_layers": [15, 2],
+            "decoder_layers": [15, 35],
+            "encoder_activations": ["relu", "logistic"],
+            "decoder_activations": ["relu", "logistic"],
+        },
     ]
 
-    run_architectures(raw_dataset, architectures=architectures, optimizer="powell", epochs=50,
-                      noise_type="gauss", noise_amount=0.5, noise_samples=5)
+    # run_architectures(raw_dataset, architectures=architectures, optimizer="powell", epochs=50,
+    #   noise_type="gauss", noise_amount=0.5, noise_samples=5)
 
-    plot_architecture_errors("denoiser_error_", architectures)
+    # plot_architecture_errors("denoiser_error_", architectures)
 
-    # # Create and train autoencoder
-    # start = time.time()
-    # dae = denoising_autoencoder(raw_dataset, encoder_layers, decoder_layers, encoder_activations,
-    #                             decoder_activations, optimizer='powell', epochs=10, noise_type="gauss", noise_amount=0.5, noise_samples=5, error_filename="denoiser_error.txt")
-    # end = time.time()
-    # print("Training time: ", end - start)
+    noise_variants = list(itertools.product(
+        ["gauss", "s&p"], [0.1, 0.2, 0.3, 0.4, 0.5]))
 
-    # # Test autoencoder
-    # test_set = [add_noise(char.copy(), "gauss", 0.5)
-    #             for char in raw_dataset]
+    # run_noise_benchmark(
+    # raw_dataset, architectures[0], "powell", 50,  noise_variants, 5)
 
-    # predictions = [dae(noisy_char)
-    #                for noisy_char in test_set]
-
-    # plot_denoiser(test_set, predictions, labelled_dataset)
+    plot_noise_errors("denoiser_error_", noise_variants)

@@ -7,6 +7,7 @@ import numdifftools as nd
 class OptimizerFunction():
     ADAM = "adam"
     POWELL = "powell"
+    CG = "cg"
 
     def __init__(self, name):
         self.name = name
@@ -20,6 +21,8 @@ class OptimizerFunction():
             return lambda loss_function, weights, num_iters=10, step_size=None, callback=None: adam(nd.Gradient(loss_function), weights, num_iters=num_iters, step_size=step_size)
         elif self.name == OptimizerFunction.POWELL:
             return lambda loss_function, weights, num_iters=1000, step_size=None, callback=None: minimize(loss_function, weights, method="Powell", options={'maxiter': num_iters, "disp": True}, callback=callback, tol=1e-5)['x']
+        elif self.name == OptimizerFunction.CG:
+            return lambda loss_function, weights, num_iters=1000, step_size=None, callback=None: minimize(loss_function, weights, method="CG", options={'maxiter': num_iters, "disp": True}, callback=callback, tol=1e-5)['x']
         else:
             raise Exception("Unknown optimizer function")
 
