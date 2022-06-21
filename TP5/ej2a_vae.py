@@ -22,13 +22,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 disable_eager_execution()
 
-batch_size = 100
 
 original_dim = 28*28
+batch_size = original_dim
 
 latent_dim = 2
-intermediate_dim = 256
-epochs = 50
+intermediate_dim = 450
+epochs = 200
 epsilon_std = 1.0
 
 
@@ -46,6 +46,8 @@ def sampling(args: tuple):
 x = Input(shape=(original_dim,), name="input")
 # intermediate layer
 h = Dense(intermediate_dim, activation='relu', name="encoding")(x)
+h = Dense(275, activation='relu', name="encoding-3")(h)
+h = Dense(128, activation='relu', name="encoding-4")(h)
 # defining the mean of the latent space
 z_mean = Dense(latent_dim, name="mean")(h)
 # defining the log variance of the latent space
@@ -60,8 +62,12 @@ encoder.summary()
 # Input to the decoder
 input_decoder = Input(shape=(latent_dim,), name="decoder_input")
 # taking the latent space to intermediate dimension
+decoder_h = Dense(128, activation='relu',
+                  name="decoder_h-3")(input_decoder)
+decoder_h = Dense(275, activation='relu',
+                  name="decoder_h-2")(decoder_h)
 decoder_h = Dense(intermediate_dim, activation='relu',
-                  name="decoder_h")(input_decoder)
+                  name="decoder_h")(decoder_h)
 # getting the mean from the original dimension
 x_decoded = Dense(original_dim, activation='sigmoid',
                   name="flat_decoded")(decoder_h)
@@ -97,7 +103,7 @@ x_test = x_test.astype('float32') / 255.
 x_train = x_train.reshape((len(x_train), np.prod(x_train.shape[1:])))
 x_test = x_test.reshape((len(x_test), np.prod(x_test.shape[1:])))
 
-vae.fit(x_train, x_train,
+history = vae.fit(x_train, x_train,
         shuffle=True,
         epochs=epochs,
         batch_size=batch_size)
@@ -108,6 +114,19 @@ plt.scatter(x_test_encoded[:, 0],
             x_test_encoded[:, 1], c=y_test, cmap='viridis')
 plt.colorbar()
 plt.show()
+
+with open('vae_fashion_mnist_history.txt', 'a') as f:
+    f.write(f"{original_dim}-{intermediate_dim}-{375}-{200}-{75}-{latent_dim}-{75}-{200}-{375}-{intermediate_dim}-{original_dim}\n")
+    for loss in history.history["loss"]:
+        f.write(f"{loss};")
+    f.write("\n")
+
+# plt.plot(history.history['loss'])
+# plt.title('model loss')
+# plt.ylabel('loss')
+# plt.xlabel('epoch')
+# plt.legend(['train'], loc='upper right')
+# plt.show()
 
 def plot_decoded_latent_space():
     n = 15  # figure with 15x15 digits
