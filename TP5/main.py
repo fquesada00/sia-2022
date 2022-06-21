@@ -11,7 +11,7 @@ import argparse
 
 
 if __name__ == "__main__":
-    np.random.seed(42)
+    np.random.seed(4)
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--latent", type=int, default=2,
@@ -20,10 +20,14 @@ if __name__ == "__main__":
                         default="[]", help="Architecture")
     parser.add_argument("--epochs", type=int, default=100, help="Epochs")
 
+    parser.add_argument("--read_weights", action="store_true",
+                        help="Read weights from file")
+
     args = parser.parse_args()
     latent_space = args.latent
     architecture = eval(args.architecture)
     epochs = args.epochs
+    read_weights = args.read_weights
 
     font = font_2
     labelled_dataset = font
@@ -49,9 +53,18 @@ if __name__ == "__main__":
     autoencoder = Autoencoder(encoder, decoder, optimizer='powell')
 
     start = time.time()
+
+    weights_filename = f"data/weights_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}.txt"
+
+    error_filename = f"data/error_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}.txt"
+
+    if read_weights:
+        weights = np.loadtxt(weights_filename)
+        autoencoder.load_weights(weights)
+
     autoencoder.fit(raw_dataset, raw_dataset, epochs=epochs,
-                    weights_filename=f"data/weights_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}.txt",
-                    error_filename=f"data/error_{'-'.join(map(str, architecture))}_{latent_space}_{epochs}.txt")
+                    weights_filename=weights_filename,
+                    error_filename=error_filename)
     end = time.time()
 
     print("Training time: ", end - start)
